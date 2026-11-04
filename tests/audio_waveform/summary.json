@@ -1,0 +1,28 @@
+{
+  "sources": {
+    "rtl/video_audio_waveform.v": "09adf1d4b7acc6e07b6c7e2b3db01438af61eb2eca48c33825e7ca8d7404db56",
+    "tests/audio_waveform/tb.sv": "e78b239ff220e0f57140a6226fce47c45818bcc152b51ee0590626831ee3cc27"
+  },
+  "baseline_pass": true,
+  "mutations": [],
+  "coverage": {
+    "cycles": 94429,
+    "checked": 94420,
+    "held": 94416,
+    "observed_samples": 4158,
+    "stored_points": 1032,
+    "pending_ignored": 29,
+    "completed": 4,
+    "published": 3,
+    "reset_partial": 1,
+    "reset_pending": 1,
+    "reset_active": 1,
+    "trace": 1075,
+    "center": 3229,
+    "background": 81412,
+    "bypass": 8704,
+    "frame_edges": 10,
+    "enable_changes": 6
+  },
+  "pass": true
+}

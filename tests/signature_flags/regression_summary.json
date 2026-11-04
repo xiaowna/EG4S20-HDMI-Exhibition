@@ -1,0 +1,166 @@
+{
+  "status": "passed",
+  "runs": [
+    {
+      "case": "tb_signature_boot",
+      "shared_bpb": 0,
+      "timeout": 800,
+      "metrics": {
+        "SHARED": "0",
+        "timeout": "800",
+        "scenarios": "1085",
+        "accepted": "1085",
+        "completed": "1069",
+        "aborted": "16",
+        "resets": "19",
+        "success": "285",
+        "failure": "784",
+        "cycles": "568453",
+        "public_bits": "460",
+        "signature_mutations": "512"
+      }
+    },
+    {
+      "case": "tb_signature_locator",
+      "shared_bpb": 0,
+      "timeout": 800,
+      "metrics": {
+        "SHARED": "0",
+        "timeout": "800",
+        "scenarios": "1115",
+        "completed": "1111",
+        "successes": "70",
+        "failures": "1045",
+        "resets": "6",
+        "cycles": "599234",
+        "public_bits": "357",
+        "signature_mutations": "1024"
+      }
+    },
+    {
+      "case": "tb_signature_boot",
+      "shared_bpb": 1,
+      "timeout": 800,
+      "metrics": {
+        "SHARED": "1",
+        "timeout": "800",
+        "scenarios": "1085",
+        "accepted": "1085",
+        "completed": "1069",
+        "aborted": "16",
+        "resets": "19",
+        "success": "285",
+        "failure": "784",
+        "cycles": "568453",
+        "public_bits": "460",
+        "signature_mutations": "512"
+      }
+    },
+    {
+      "case": "tb_signature_locator",
+      "shared_bpb": 1,
+      "timeout": 800,
+      "metrics": {
+        "SHARED": "1",
+        "timeout": "800",
+        "scenarios": "1115",
+        "completed": "1111",
+        "successes": "70",
+        "failures": "1045",
+        "resets": "6",
+        "cycles": "599234",
+        "public_bits": "357",
+        "signature_mutations": "1024"
+      }
+    },
+    {
+      "case": "tb_signature_boot",
+      "shared_bpb": 0,
+      "timeout": 2048,
+      "metrics": {
+        "SHARED": "0",
+        "timeout": "2048",
+        "scenarios": "1085",
+        "accepted": "1085",
+        "completed": "1069",
+        "aborted": "16",
+        "resets": "19",
+        "success": "285",
+        "failure": "784",
+        "cycles": "573445",
+        "public_bits": "460",
+        "signature_mutations": "512"
+      }
+    },
+    {
+      "case": "tb_signature_locator",
+      "shared_bpb": 0,
+      "timeout": 2048,
+      "metrics": {
+        "SHARED": "0",
+        "timeout": "2048",
+        "scenarios": "1115",
+        "completed": "1111",
+        "successes": "70",
+        "failures": "1045",
+        "resets": "6",
+        "cycles": "604226",
+        "public_bits": "357",
+        "signature_mutations": "1024"
+      }
+    },
+    {
+      "case": "tb_signature_boot",
+      "shared_bpb": 1,
+      "timeout": 2048,
+      "metrics": {
+        "SHARED": "1",
+        "timeout": "2048",
+        "scenarios": "1085",
+        "accepted": "1085",
+        "completed": "1069",
+        "aborted": "16",
+        "resets": "19",
+        "success": "285",
+        "failure": "784",
+        "cycles": "573445",
+        "public_bits": "460",
+        "signature_mutations": "512"
+      }
+    },
+    {
+      "case": "tb_signature_locator",
+      "shared_bpb": 1,
+      "timeout": 2048,
+      "metrics": {
+        "SHARED": "1",
+        "timeout": "2048",
+        "scenarios": "1115",
+        "completed": "1111",
+        "successes": "70",
+        "failures": "1045",
+        "resets": "6",
+        "cycles": "604226",
+        "public_bits": "357",
+        "signature_mutations": "1024"
+      }
+    }
+  ],
+  "source_sha256": {
+    "rtl/fat32_boot_parser.v": "303b72364d49f158b615b4e20eab5acc9de2bf43defc41b7190a1e879f77193b",
+    "rtl/fat32_volume_locator.v": "184991b41e329c534b72b2c4406880efdaa8a8e90da28ae3a03b5c778454f9a6",
+    "reports/o22_signature_flags_20261023/before/worktree/rtl/fat32_boot_parser.v": "7c5d92f962b0668c3d9cbf4749a139604ed2ab39e7c48372a9f227c63993ed03",
+    "reports/o22_signature_flags_20261023/before/worktree/rtl/fat32_volume_locator.v": "3c7446ac7eaf6ed97474909e83eda77c4dd5548512e4567eff7090f9d494d41c",
+    "tests/signature_flags/tb_signature_boot.sv": "981791e2523371578f63a852da2a9f9b07852f62bc61794500034de973c6645c",
+    "tests/signature_flags/tb_signature_locator.sv": "d6a04a3878aa7c2206335671d2512f6ae7a9d17b640eade85d55a2b4e199dc51",
+    "tests/signature_flags/verify.py": "56dbbbf9281997a523b69d4a266b34ad8098f80e56b64921666605682058f020"
+  },
+  "frozen_modules_independently_renamed": [
+    "fat32_boot_parser",
+    "fat32_volume_locator",
+    "fat32_bpb_math"
+  ],
+  "oracle": "Inherited independent integer sector classifiers and transport models; compare every public port, including 256-bit bpb_fields, on every clock. No candidate signature/state internal signal is inspected.",
+  "modified_production_rtl": false,
+  "hardware_tested": false
+}

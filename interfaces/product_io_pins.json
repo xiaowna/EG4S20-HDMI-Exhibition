@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "stage": "rtc_active",
+  "date": "2026-10-25",
+  "board": "DMZ-EG4S20 core + M0 baseboard",
+  "device": "EG4S20BG256",
+  "applied_to_active_project": true,
+  "active_ports": [
+    "mode_sw7",
+    "infrared_n",
+    "rtc_scl",
+    "rtc_sda",
+    "rtc_ce"
+  ],
+  "hardware_tested": false,
+  "constraint_fragment": "constraints/product_io_stage0.adc.example",
+  "header": "Core LEFT40, front P2 numbering: top1/2=3.3V/GND; backside P3 numbering is mirrored",
+  "power": {
+    "3v3": "CORE_LEFT40.1",
+    "ground": "CORE_LEFT40.2"
+  },
+  "signals": [
+    {
+      "port": "mode_sw7",
+      "connector": "onboard SW7",
+      "header_pin": null,
+      "ball": "A14",
+      "bank": 0,
+      "direction": "input",
+      "io_standard": "LVCMOS33",
+      "module_signal": "SW7",
+      "behavior": "0=demo auto-slideshow + 48kHz-sampled test tone; 1=product/manual gallery by default"
+    },
+    {
+      "port": "infrared_n",
+      "connector": "CORE_LEFT40",
+      "header_pin": 38,
+      "ball": "R16",
+      "bank": 2,
+      "direction": "input",
+      "io_standard": "LVCMOS33",
+      "module_signal": "S, active-low38kHz demodulated signal",
+      "pull_type": "PULLUP"
+    },
+    {
+      "port": "rtc_scl",
+      "connector": "CORE_LEFT40",
+      "header_pin": 7,
+      "ball": "T7",
+      "bank": 2,
+      "direction": "output",
+      "io_standard": "LVCMOS33",
+      "module_signal": "DS1302 CLK",
+      "drive": "push_pull"
+    },
+    {
+      "port": "rtc_sda",
+      "connector": "CORE_LEFT40",
+      "header_pin": 8,
+      "ball": "T8",
+      "bank": 2,
+      "direction": "inout",
+      "io_standard": "LVCMOS33",
+      "module_signal": "DS1302 DAT",
+      "drive": "push_pull_or_Z",
+      "pull_type": "PULLDOWN"
+    },
+    {
+      "port": "rtc_ce",
+      "connector": "CORE_LEFT40",
+      "header_pin": 9,
+      "ball": "T9",
+      "bank": 2,
+      "direction": "output",
+      "io_standard": "LVCMOS33",
+      "module_signal": "DS1302 RST / CE, active high",
+      "drive": "push_pull"
+    }
+  ],
+  "reserved_hdmi_negative_balls": [
+    "R1",
+    "M1",
+    "N4",
+    "J4"
+  ],
+  "baseline_area_report": "reports/bpb_share_20261019/original_final_area.rpt",
+  "resource_budget": {
+    "lut_total": 19600,
+    "lut_reserved_minimum": 2500,
+    "lut_used_cap": 17100,
+    "slice_total": 9800,
+    "slice_reserved_recommended": 1200,
+    "slice_used_cap_recommended": 8600
+  },
+  "sources": [
+    {
+      "path": "E:/FPGA艾路/微处理器原理综合设计底板/EG4S20_综合底板.pdf",
+      "pages": [
+        1
+      ],
+      "evidence": "P5 numbered pins and +3.3V/GND supply"
+    },
+    {
+      "path": "E:/FPGA艾路/EG4S20BG256核心板 - 2023.pdf",
+      "pages": [
+        1,
+        2,
+        4
+      ],
+      "evidence": "Front left P2 header numbering, Bank2 and VCCO=3.3V, SW7"
+    }
+  ],
+  "source_review": "IR S=front P2 pin38/R16, G=pin40/GND, V=shared3.3V; DS1302 CLK/DAT/CE=7/8/9. Encoder removed at user request; pins3/4/5 unused.",
+  "next_software_steps": [
+    "T00 existing O12 board acceptance",
+    "T01 common control events with existing keys",
+    "T02 synchronized/debounced SW7 and safe audio source switching",
+    "T03 encoder",
+    "T04 infrared",
+    "T05 shared Chinese font and slogan",
+    "T06 RTC"
+  ],
+  "rtc_device": "DS1302",
+  "module_power_overrides": {
+    "infrared_n": {
+      "vcc": "Shared3.3V rail supplied from CORE_LEFT40.1; branch down to module V",
+      "ground": "CORE_LEFT40.40"
+    }
+  },
+  "encoder_enabled": false
+}

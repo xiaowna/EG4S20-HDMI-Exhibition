@@ -1,0 +1,252 @@
+{
+  "passed": true,
+  "runs": [
+    {
+      "case": "bpb_full_arithmetic_and_transport",
+      "timeout_profiles": [
+        800,
+        2048
+      ]
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 1,
+      "metrics": {
+        "LIMIT": "1",
+        "checks": "6",
+        "cycles": "23"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 2,
+      "metrics": {
+        "LIMIT": "2",
+        "checks": "6",
+        "cycles": "25"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 3,
+      "metrics": {
+        "LIMIT": "3",
+        "checks": "6",
+        "cycles": "27"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 7,
+      "metrics": {
+        "LIMIT": "7",
+        "checks": "6",
+        "cycles": "35"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 8,
+      "metrics": {
+        "LIMIT": "8",
+        "checks": "6",
+        "cycles": "37"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 9,
+      "metrics": {
+        "LIMIT": "9",
+        "checks": "6",
+        "cycles": "39"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 31,
+      "metrics": {
+        "LIMIT": "31",
+        "checks": "6",
+        "cycles": "83"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 32,
+      "metrics": {
+        "LIMIT": "32",
+        "checks": "6",
+        "cycles": "85"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 33,
+      "metrics": {
+        "LIMIT": "33",
+        "checks": "6",
+        "cycles": "87"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 511,
+      "metrics": {
+        "LIMIT": "511",
+        "checks": "6",
+        "cycles": "1043"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 512,
+      "metrics": {
+        "LIMIT": "512",
+        "checks": "6",
+        "cycles": "1045"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 513,
+      "metrics": {
+        "LIMIT": "513",
+        "checks": "6",
+        "cycles": "1047"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 800,
+      "metrics": {
+        "LIMIT": "800",
+        "checks": "6",
+        "cycles": "1621"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 2048,
+      "metrics": {
+        "LIMIT": "2048",
+        "checks": "6",
+        "cycles": "4117"
+      }
+    },
+    {
+      "case": "bpb_endpoint",
+      "limit": 50000000,
+      "metrics": {
+        "LIMIT": "50000000",
+        "checks": "6",
+        "cycles": "27"
+      }
+    },
+    {
+      "case": "catalog_wrap_and_errors",
+      "limit": 800,
+      "four_files": 0,
+      "metrics": {
+        "LIMIT": "800",
+        "FOUR": "0",
+        "completed": "10",
+        "successes": "4",
+        "failures": "6",
+        "wraps": "1",
+        "root_stalls": "1",
+        "reset_aborts": "1",
+        "cycles": "9638"
+      }
+    },
+    {
+      "case": "catalog_wrap_and_errors",
+      "limit": 2048,
+      "four_files": 0,
+      "metrics": {
+        "LIMIT": "2048",
+        "FOUR": "0",
+        "completed": "10",
+        "successes": "4",
+        "failures": "6",
+        "wraps": "1",
+        "root_stalls": "1",
+        "reset_aborts": "1",
+        "cycles": "12134"
+      }
+    },
+    {
+      "case": "catalog_wrap_and_errors",
+      "limit": 2048,
+      "four_files": 1,
+      "metrics": {
+        "LIMIT": "2048",
+        "FOUR": "1",
+        "completed": "10",
+        "successes": "4",
+        "failures": "6",
+        "wraps": "1",
+        "root_stalls": "1",
+        "reset_aborts": "1",
+        "cycles": "12894"
+      }
+    },
+    {
+      "case": "catalog_wrap_and_errors",
+      "limit": 50000000,
+      "four_files": 1,
+      "metrics": {
+        "LIMIT": "50000000",
+        "FOUR": "1",
+        "completed": "10",
+        "successes": "4",
+        "failures": "6",
+        "wraps": "1",
+        "root_stalls": "1",
+        "reset_aborts": "1",
+        "cycles": "8807"
+      }
+    }
+  ],
+  "source_sha256": {
+    "rtl/fat32_boot_parser.v": "69280b49af23b227a8971954ac5cc160850a6e94c9f61194ee7d54969a8c440a",
+    "rtl/fat32_dir_scan.v": "f02e503b4f13a03c4618b43aee2c3b4529e031d12966524959eddd1e0c2e1654",
+    "rtl/fat32_bmp_catalog.v": "22f528ecba732cd3a4eefa0d73dd790a4f793cdc42cbf7ed6ec56da0f3cff634",
+    "rtl/fat32_volume_locator.v": "f7a6ab8f2d2bb04c9b874c9a1e4a12e8a8ad0bae81fb345165be9d4d59520d22",
+    "rtl/fat32_card_catalog.v": "f56a91edc8534e47066f8bf39f83f96bad4a69602ccdc2c550daaf5623f99b48",
+    "rtl/fat32_file_reader.v": "60b3c61dbf54fd2b929799cf064aedd8378ae5466ae0d2cf3bfa03873e38867e",
+    "rtl/bmp_stream_decoder.v": "9773de7cb029c29391dcc1dfaf38b8d7916ae4db67353bea9e0139a5f7042918",
+    "rtl/fat32_image_loader.v": "1d02c65624cd29bf28a99763c9c1c54938efd642ce85a204d896c111471fcc13",
+    "rtl/frame_buffer_manager.v": "620f7650d8c47df4c355d660d7f32a4e2fb7b214fa55ca8454022f0f8353c937",
+    "rtl/fat32_frame_loader.v": "42a2307e1fd7c982cdb05f19a184a0d604d9de8d13ed5cd15421cad152187970",
+    "rtl/pixel_async_fifo.v": "abc71fb2da0652a99c473d59733bb6c7d4354eeddecf3bea440a90fa61a9e6db",
+    "rtl/frame_burst_prefetch.v": "1166611955ff581abb6fc2957f8291997d6847057e820ec671882d8c0d0bf133",
+    "rtl/video_pixel_sink.v": "ffa65f9bec127b2ebe8cd9bb64943be3d0eeb7af0ecbfd801f8c7f2bc7f1139a",
+    "rtl/video_raster_timing.v": "7ff4dc609d59bc68ca6988d6d3cf6fbb91d85e7488a077351d288de5507258a3",
+    "rtl/frame_stream_display.v": "d6a83a9e6eae72c5939f44039689b3997e029cf95ce209de23e7354d2b71ed49",
+    "rtl/em638325_stream_controller.v": "5aee0de69d7fe5e6eb8393222bad86771921f8a7168ce77f81318a2bcaff2412",
+    "rtl/eg4s20_stream_memory.v": "132eaf4c01678ecb8dbf8ffb6335cc53498f2fa50bcb3aa2c0eb2e32982eb6df",
+    "rtl/media_stream_pipeline.v": "8aa9b01c3d954a0f8d9fefa2a452b30e06b68748b9e7d3b5f8db4e74f59d3cb6",
+    "rtl/media_playlist_control.v": "faca7e0802e3c23f91ab826a68b6deb1d1453e19d7bf0b3603645d2b29a3a97d",
+    "rtl/media_prefetch_control.v": "c6ce828a1a88bb84a1db9eac99a8640f7b40bd86d83b15e51c71a594ce5e195b",
+    "rtl/sd_media_player.v": "3b6ae7de1c3e7225a5976e2c211198e62e18dc7879b91d23a2fac787b8f93d5f",
+    "rtl/sd_subsystem.v": "688320dfd424651221eefbd176a9c906e114b15c39cd4bfd2df0f811fdff7383",
+    "rtl/sd_spi_master.v": "0f1d29271ec308474fa9d1afc97fa47ed0de0a8529393c716ad91bc8087eb4c1",
+    "rtl/sd_init_controller.v": "2a1e940c2132cf24c23dffa6dfa8f641b53ede116b87651480d0a526ebb63ed2",
+    "rtl/sd_command_engine.v": "d04b30f825fc353bfadefd2deea841d507dea82a29b34e62e3a1a351a4e7778e",
+    "rtl/sd_data_block_reader.v": "af4e678e4c76b9a0fbe4345e4f4216a9ea2101e79b0b69e8faf6d8f16cdb22d4",
+    "rtl/sd_sector_arbiter.v": "e48c7a5dc5ecdeab839033f48620610e9e4a22107f1a0183dc16fc06cb82c17a",
+    "rtl/wav_pcm_decoder.v": "545ee81cdc2eff7402c1711b3a2bb99da6b37c1262f25ad1b6d2d4bff0576475",
+    "rtl/fat32_wav_player.v": "467340707fbdaf1876e7bd135244b392ee4d802a87e8009f5208317f18f2babd",
+    "reports/catalog_timers_20261019/before/worktree/rtl/fat32_boot_parser.v": "69280b49af23b227a8971954ac5cc160850a6e94c9f61194ee7d54969a8c440a",
+    "reports/catalog_timers_20261019/before/worktree/rtl/fat32_bmp_catalog.v": "1c402dac13888b6372cf95f44a97df9fa9bd0e480f07c9f333e1d46e85086073",
+    "tests/catalog_timers/tb_bpb_timer.sv": "6a2e5036d1680f6b09f8808ec125ed030d65901af6296e2ff5ebb612d634e686",
+    "tests/catalog_timers/tb_catalog_timer.sv": "8073774dab2d197b127671b9b8e88cedbc98b9bc0fe138e8d8f86449da3a333d",
+    "tests/safety_counters/verify.py": "d7b344eb2a9e938eb939b2b00bde65bdfa7cb83460292182d08297eec9273ff0",
+    "tests/bpb_width/verify.py": "798e83fd450ae2d2adae50919ddffa0d9937e6298d59f60e68622e947c9c5955",
+    "tests/bpb_width/tb_bpb_width.sv": "d9fdb1c1ba204e87ef3db2068c63e36f5c6a2276dc1b0faeace69209f63539a6",
+    "tests/wav_playback/card_fixture.hex": "d3afbaf89b9d0e2ca92d99149732f56400564f8dd4cb51e056c90ca84429a41b",
+    "tests/wav_playback/card_fixture_4bmp.hex": "36cb36fce3d9f10e4d2b9bfb0b4a53054509874a2af40628f8111958f9eab0fd"
+  },
+  "large_timeout_method": "Identical timer deposits skip elapsed idle clocks only; ordinary smaller limits run naturally. All public outputs compared every cycle."
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 3,
+  "configured": true,
+  "protocol": "standard_8_bit_address_NEC",
+  "address": "00",
+  "right": "09",
+  "ok": "15",
+  "left": "07",
+  "settings": "43",
+  "home": "16",
+  "status": "Compiled from actual captured remote codes; no runtime learning required.",
+  "extras": {
+    "back": "0D",
+    "egg_a": "46",
+    "egg_b": "45"
+  },
+  "directions": {
+    "up": "40",
+    "down": "19"
+  }
+}

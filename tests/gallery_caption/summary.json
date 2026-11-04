@@ -1,0 +1,134 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "topic": 0,
+      "phase": 0,
+      "bank": 0,
+      "captions": true,
+      "intro": false
+    },
+    {
+      "topic": 1,
+      "phase": 6,
+      "bank": 1,
+      "captions": true,
+      "intro": false
+    },
+    {
+      "topic": 2,
+      "phase": 12,
+      "bank": 0,
+      "captions": true,
+      "intro": false
+    },
+    {
+      "topic": 3,
+      "phase": 18,
+      "bank": 1,
+      "captions": true,
+      "intro": false,
+      "slide_offset": 1,
+      "slide_right": false,
+      "slide_alpha": 32
+    },
+    {
+      "topic": 0,
+      "phase": 18,
+      "bank": 0,
+      "captions": true,
+      "intro": false,
+      "slide_offset": 1,
+      "slide_right": true,
+      "slide_alpha": 32
+    },
+    {
+      "topic": 1,
+      "phase": 18,
+      "bank": 1,
+      "captions": true,
+      "intro": false,
+      "slide_offset": 319,
+      "slide_right": false,
+      "slide_alpha": 16
+    },
+    {
+      "topic": 2,
+      "phase": 18,
+      "bank": 0,
+      "captions": true,
+      "intro": false,
+      "slide_offset": 319,
+      "slide_right": true,
+      "slide_alpha": 16
+    },
+    {
+      "topic": 3,
+      "phase": 18,
+      "bank": 1,
+      "captions": true,
+      "intro": false,
+      "slide_offset": 639,
+      "slide_right": false,
+      "slide_alpha": 1
+    },
+    {
+      "topic": 0,
+      "phase": 18,
+      "bank": 0,
+      "captions": true,
+      "intro": false,
+      "slide_offset": 639,
+      "slide_right": true,
+      "slide_alpha": 1
+    },
+    {
+      "topic": 1,
+      "phase": 9,
+      "bank": 1,
+      "captions": true,
+      "intro": false,
+      "slide_offset": 319,
+      "slide_right": true,
+      "slide_alpha": 16
+    },
+    {
+      "topic": 0,
+      "phase": 49,
+      "bank": 0,
+      "captions": true,
+      "intro": true
+    },
+    {
+      "topic": 3,
+      "phase": 63,
+      "bank": 1,
+      "captions": true,
+      "intro": true
+    }
+  ],
+  "pixels": 7372800,
+  "native_scanline_branch": true,
+  "inputs_sha256": {
+    "rtl/intro_assets_rom.v": "ba9ac535878c33b1cd43d20c34635547e7d9908742784268bdb1ff3ec7672e72",
+    "rtl/intro_text_layer.v": "5cef6c87ed70a52b83d3dc555020aa1cc9e454907fdd69cf7ef7ddefd99b65c6",
+    "rtl/intro_line_store.v": "a07a13b8217c6705c64d0168a0923339730d527fe0797186e268bfb365221e4b",
+    "rtl/frame_intro_prefetch.v": "3859c6f3dfbeb61992163d72298e061918daf0295229b04e8b72b30a509ff11d",
+    "tests/gallery_caption/tb_gallery.sv": "ba92f039a9d933a27b43fe29b25ba6496714d2e42d8a28305e77f6a83d3f9d45",
+    "rtl/media_prefetch_control.v": "1480de19700119c10685878fa00c9c163a0d9dbe75c251f2df68a9527a193d26",
+    "rtl/media_home_control.v": "06384136667e6f5d355edc7ac2850d102bac8d43976cb7ec13905e2f2986ea94",
+    "tests/gallery_caption/tb_entry.sv": "da82fd986ccddb9f71ba07abdfdd0b6f57af35b4b64ddd599eb1aa8e467b4351",
+    "rtl/video_audio_spectrum.v": "9f72e555b5d30856c8e6d4bcf01748c13467c392389911dbb55238e8b7c64af7",
+    "tests/gallery_caption/tb_spectrum.sv": "a8002ba13faa81df81cbcde786b32945fbcb8453eb9f72f5a60136b7f27b5058",
+    "rtl/sd_media_player.v": "e738e6ed13a153703832be90cea19b30cf9f24c95073048c060130cba6a594d2",
+    "rtl/sd_sector_arbiter.v": "e48c7a5dc5ecdeab839033f48620610e9e4a22107f1a0183dc16fc06cb82c17a",
+    "rtl/fat32_wav_player.v": "c9b08294a23a885481d54e8ad352b14818156f4a32ea02ca263ade206684df8c",
+    "rtl/fat32_file_reader.v": "92f868750ebd73ba4472300f19b3f6a2a9e32d2efb26d1e6507c96c13b83519f",
+    "rtl/wav_pcm_decoder.v": "86f592d97dfd8eb4eee7cd17bd93d117efc3ae406ca067d00fae45464f8a6e84",
+    "tests/gallery_caption/pause_pipeline_stubs.sv": "21a0a51837f04a7679d21e4f01d08f69d08633668425d71da18031a161dd0314",
+    "tests/gallery_caption/tb_pause_caption.sv": "3c04b6b30642f45c26d87b35bdcf9c10db3fb7bfc5f980cf5ea9cc7620ec2e96",
+    "tests/intro_animation/verify_producer.py": "77a6c6289fe3d1c3a5febec8fd8558657df12af6bff286f11dd9a730968c94b1",
+    "assets/intro_assets.json": "65dbc873bdd49cdf80105d68d44cb1c65c8a073353cba8844f358086b7998653",
+    "tests/gallery_caption/verify.py": "04e8ef5bc941a242f66b9bfa4760885738084821f5ce3057f3ff4e2783e029cb"
+  }
+}

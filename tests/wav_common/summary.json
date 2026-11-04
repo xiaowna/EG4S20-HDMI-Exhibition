@@ -1,0 +1,93 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "top": "tb_wav_fields",
+      "mode": null,
+      "compared_cycles": 2819348,
+      "passed": true
+    },
+    {
+      "top": "tb_wav_pcm_decoder",
+      "mode": null,
+      "compared_cycles": 835,
+      "passed": true
+    },
+    {
+      "top": "tb_wav_bounds",
+      "mode": 0,
+      "compared_cycles": 105,
+      "passed": true
+    },
+    {
+      "top": "tb_wav_bounds",
+      "mode": 1,
+      "compared_cycles": 51,
+      "passed": true
+    },
+    {
+      "top": "tb_wav_bounds",
+      "mode": 2,
+      "compared_cycles": 33,
+      "passed": true
+    },
+    {
+      "top": "tb_wav_bounds",
+      "mode": 3,
+      "compared_cycles": 35,
+      "passed": true
+    },
+    {
+      "top": "tb_wav_bounds",
+      "mode": 4,
+      "compared_cycles": 99,
+      "passed": true
+    },
+    {
+      "top": "tb_wav_bounds",
+      "mode": 5,
+      "compared_cycles": 51,
+      "passed": true
+    },
+    {
+      "top": "tb_wav_bounds",
+      "mode": 6,
+      "compared_cycles": 33,
+      "passed": true
+    },
+    {
+      "top": "tb_wav_bounds",
+      "mode": 7,
+      "compared_cycles": 99,
+      "passed": true
+    },
+    {
+      "top": "tb_wav_bounds",
+      "mode": 8,
+      "compared_cycles": 105,
+      "passed": true
+    },
+    {
+      "top": "tb_wav_bounds",
+      "mode": 9,
+      "compared_cycles": 33,
+      "passed": true
+    },
+    {
+      "top": "tb_wav_bounds",
+      "mode": 10,
+      "compared_cycles": 11,
+      "passed": true
+    }
+  ],
+  "inputs_sha256": {
+    "rtl/wav_pcm_decoder.v": "86f592d97dfd8eb4eee7cd17bd93d117efc3ae406ca067d00fae45464f8a6e84",
+    "reports/o19_wav_common_20261021/before/worktree/rtl/wav_pcm_decoder.v": "545ee81cdc2eff7402c1711b3a2bb99da6b37c1262f25ad1b6d2d4bff0576475",
+    "tests/wav_common/verify.py": "4779bec5cd5272d4e40761d2ce104335952ba011be8c18ed95f28c109299144c",
+    "tests/wav_common/wrapper.sv": "14e3afa993f359489908407b855db45b07a5153cd5640cb9398905d9f450afd6",
+    "tests/wav_common/tb_wav_fields.sv": "67b77d05a76495548abf76118cf39ea2c5815b429862cd37b503813b806e33ff",
+    "tests/wav_playback/tb_wav_pcm_decoder.sv": "4cd36fca08b9fbb75a06623f7f263574b643392bbbd4d0426b46c44e78e0b588",
+    "tests/wav_playback/tb_wav_bounds.sv": "036ff9cbf99eb0111246f18c6e1512fc888234e3dafa173157060659097122ee"
+  },
+  "oracle": "Every public bit including invalid sample_data compared every clock; independent common-field rejection, valid PCM samples and eleven RIFF bounds scenarios retained"
+}

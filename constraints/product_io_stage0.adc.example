@@ -1,0 +1,7 @@
+# Peripheral pin contract example; NOT registered separately. Active definitions are in board.adc.
+# Core LEFT40 front P2: pin1=3.3V, pin2=GND, encoder pins3..5, RTC pins7..9; IR S moves to pin38/R16.
+set_pin_assignment { mode_sw7 } { LOCATION = A14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { infrared_n } { LOCATION = R16; IOSTANDARD = LVCMOS33; PULLTYPE = PULLUP; }
+set_pin_assignment { rtc_scl } { LOCATION = T7; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { rtc_sda } { LOCATION = T8; IOSTANDARD = LVCMOS33; PULLTYPE = PULLDOWN; }
+set_pin_assignment { rtc_ce } { LOCATION = T9; IOSTANDARD = LVCMOS33; }

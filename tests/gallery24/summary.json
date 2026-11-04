@@ -1,0 +1,56 @@
+{
+  "status": "passed",
+  "max_images": 24,
+  "index_bits": 5,
+  "count_bits": 5,
+  "catalogue_cases": [
+    {
+      "input_images": 0,
+      "accepted": 0
+    },
+    {
+      "input_images": 1,
+      "accepted": 1
+    },
+    {
+      "input_images": 6,
+      "accepted": 6
+    },
+    {
+      "input_images": 23,
+      "accepted": 23
+    },
+    {
+      "input_images": 24,
+      "accepted": 24
+    },
+    {
+      "input_images": 25,
+      "accepted": 24
+    },
+    {
+      "input_images": 32,
+      "accepted": 24
+    }
+  ],
+  "four_wav_scenarios": 11,
+  "media_checker_cases": 5,
+  "inputs_sha256": {
+    "rtl\\fat32_boot_parser.v": "7c5d92f962b0668c3d9cbf4749a139604ed2ab39e7c48372a9f227c63993ed03",
+    "rtl\\fat32_volume_locator.v": "3c7446ac7eaf6ed97474909e83eda77c4dd5548512e4567eff7090f9d494d41c",
+    "rtl\\fat32_card_catalog.v": "0392c6f8a598a52b80dc732b0d8834b2ac5d0f2b087594fb43c718fae2f98366",
+    "rtl\\fat32_bmp_catalog.v": "d36a0b177747a1be82a99cfee9501c5e45bf4a326ebb2083c2c8a15c78c0363e",
+    "rtl\\fat32_dir_scan.v": "e8ef51cf0616d2dc08cb9f167898360b15ef57d56a8bf88a1ad6185c716d67e5",
+    "rtl\\fat32_file_reader.v": "a253907ea65c43d2f3acc920abffb889e1c14d16f78e36de868a0671b45655de",
+    "rtl\\bmp_stream_decoder.v": "9773de7cb029c29391dcc1dfaf38b8d7916ae4db67353bea9e0139a5f7042918",
+    "rtl\\fat32_image_loader.v": "b0c91815dadbc90d911cd948dddc38590cef55474b187c913ec72e76702d68d1",
+    "rtl\\fat32_frame_loader.v": "bdae168ecabe1c7d9947f6d6dd45001dea495eefdd1c1366fc0bbf3a26de9820",
+    "rtl\\frame_buffer_manager.v": "3c08a1307d11b829f8321625fe8f25253c1ed32d046a1c2768acf74d1597ff0e",
+    "rtl\\media_prefetch_control.v": "c7f82a8d976fa181292659df4cccfe8c76ffc2d448ccb877ca1c0d9e98218dd4",
+    "rtl\\sd_sector_arbiter.v": "e48c7a5dc5ecdeab839033f48620610e9e4a22107f1a0183dc16fc06cb82c17a",
+    "tests\\gallery32\\tb_gallery.sv": "b85301cfe6018b4ef8ae38b4d511c5a0fc2cd7acfe19d470a8fa0e4e510414e1",
+    "tests\\music_select\\tb_catalog.sv": "a1628fcafb1acfe046e80d7cdc07ab672f5c55b57602dfa65478f37380dd3c28",
+    "tools\\check_demo_media.py": "ac0feefe02bac7117c451e04661e9af9dab3c02bbad067a61987c8730d4915b2",
+    "tests\\gallery24\\verify.py": "1e495c9d0098c4c75661af7254d32aa3611d2d0578deb59d85095d8aa0bce872"
+  }
+}

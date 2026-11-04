@@ -1,0 +1,141 @@
+"""Compile editable home labels/ranges/music into FPGA ROM; no runtime CPU."""
+from pathlib import Path
+import hashlib,json,math
+from PIL import Image,ImageDraw,ImageFont,ImageChops,ImageOps
+ROOT=Path(__file__).resolve().parents[1]
+
+def main():
+ config_path=ROOT/'assets/home_config.json'
+ config=json.loads(config_path.read_text(encoding='utf-8'));columns=config['columns']
+ assert len(columns)==5,'Exactly five columns are required'
+ font_path=Path('C:/Windows/Fonts/simhei.ttf')
+ font=ImageFont.truetype(str(font_path),16);title=ImageFont.truetype(str(font_path),20)
+ images=[]
+ def centered(draw,y,text,f=font):
+  assert f.getlength(text)<=124,f'Text too wide: {text}'
+  draw.text(((128-round(f.getlength(text)))//2,y),text,font=f,fill=1)
+ for index,column in enumerate(columns):
+  assert 1<=column['first_image']<=column['last_image']<=24
+  assert 1<=column['music']<=4
+  tile=Image.new('1',(128,128));d=ImageDraw.Draw(tile)
+  # Geometric album symbol, independent of photos stored on the TF card.
+  kind=column.get('type')
+  if kind=='sun':
+   d.ellipse((42,19,86,63),outline=1,width=2)
+   for angle in range(0,360,30):
+    a=math.radians(angle)
+    d.line((64+28*math.cos(a),41+28*math.sin(a),64+35*math.cos(a),41+35*math.sin(a)),fill=1,width=2)
+  elif kind=='rock':
+   for cx,cy,r in [(40,27,12),(82,23,15),(47,60,17),(91,60,11)]:
+    d.ellipse((cx-r,cy-r,cx+r,cy+r),outline=1,width=2)
+    d.arc((cx-r+5,cy-r+5,cx+4,cy+4),30,270,fill=1,width=1)
+  elif kind=='giant':
+   d.ellipse((37,18,91,72),outline=1,width=2)
+   d.arc((14,32,113,62),0,180,fill=1,width=2)
+   d.arc((14,30,113,60),180,360,fill=1,width=2)
+   d.line((42,35,86,35),fill=1,width=1);d.line((41,49,87,49),fill=1,width=1)
+  elif kind=='voyager':
+   d.ellipse((34,20,91,72),outline=1,width=2)
+   d.ellipse((61,44,65,48),fill=1)
+   d.line((64,46,100,14),fill=1,width=1)
+   d.ellipse((93,8,103,18),outline=1,width=1)
+  elif kind=='solar':
+   for r in [17,29,42]:d.ellipse((64-r,42-r//2,64+r,42+r//2),outline=1)
+   d.ellipse((57,35,71,49),fill=1)
+   for cx,cy in [(48,38),(88,50),(30,54)]:d.ellipse((cx-3,cy-3,cx+3,cy+3),fill=1)
+  elif kind=='cube':
+   assert index==4,'Cube view belongs to the fifth home item'
+   points=[(36,30),(65,16),(94,32),(66,48),(36,60),(66,76),(94,60)]
+   for path in [(0,1,2,3,0,4,5,6,2),(3,5),(4,6)]:
+    d.line([points[k] for k in path],fill=1,width=2)
+  else:
+   d.rounded_rectangle((30,11,99,70),radius=7,outline=1,width=2)
+   d.line((25,21,25,76,90,76),fill=1,width=2)
+   d.ellipse((75,23,84,32),fill=1)
+   d.polygon([(40,60),(56,39),(70,55),(79,44),(91,60)],fill=1)
+  centered(d,87,column['name'])
+  centered(d,110,'LIVE ORBITS' if kind=='solar' else ('3D CUBE' if kind=='cube' else f'{column["first_image"]:02d} - {column["last_image"]:02d}'))
+  images.append(tile)
+ panel=Image.new('1',(128,128));d=ImageDraw.Draw(panel)
+ centered(d,0,config['title'],title)
+ if config.get('subtitle'):centered(d,21,config['subtitle'],ImageFont.truetype(str(font_path),10))
+ centered(d,32,'暂无图片')
+ centered(d,48,'正在准备')
+ centered(d,64,'K1 →   K3 ←')
+ centered(d,80,'K2确认 K4设置')
+ branding={}
+ packed_logo=[]
+ for name,box in [('competition',(0,0,152,52)),('challenge',(92,96,36,24))]:
+  source=ROOT/config['branding'][name];image=Image.open(source).convert('RGB')
+  # The larger anniversary logo uses one packed 8192-bit bank. The challenge
+  # and nine secret glyphs share the previously reserved page5 bottom rows.
+  if name=='competition':
+   mask=ImageChops.lighter(ImageChops.lighter(image.getchannel('R'),image.getchannel('G')),image.getchannel('B')).point(lambda v:255 if v>40 else 0)
+  else:mask=ImageChops.difference(image,Image.new('RGB',image.size,'white')).convert('L').point(lambda v:255 if v>60 else 0)
+  crop=mask.getbbox();assert crop,'Empty branding source'
+  resized=ImageOps.contain(mask.crop(crop),(box[2],box[3]),Image.Resampling.LANCZOS)
+  stamp=Image.new('L',(box[2],box[3]));stamp.paste(resized,((box[2]-resized.width)//2,(box[3]-resized.height)//2))
+  stamp=stamp.point(lambda v:255 if v>=96 else 0).convert('1')
+  brand={'file':config['branding'][name],'sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'crop':crop}
+  if name=='competition':
+   packed_logo=[int(stamp.getpixel((x,y))!=0) for y in range(52) for x in range(152)]
+   brand.update(bit_offset=98304,width=152,height=52)
+  else:
+   panel.paste(stamp,box[:2]);brand['rom_box']=box
+  branding[name]=brand
+ secret='恭喜你发现了彩蛋。'
+ for i,char in enumerate(secret):
+  glyph=Image.new('1',(16,16));ImageDraw.Draw(glyph).text((0,0),char,font=font,fill=1)
+  panel.paste(glyph,(16*(i%5),96+16*(i//5)))
+ images.append(panel)
+ bits=[int(im.getpixel((x,y))!=0) for im in images for y in range(128) for x in range(128)]
+ assert len(packed_logo)==7904
+ bits+=packed_logo+[0]*(8192-len(packed_logo))
+ # Six UI pages and one packed logo bank; 13 native 4096x2 memories.
+ constants=',\n'.join(f"  8192'h{sum(bit<<j for j,bit in enumerate(bits[n:n+8192])):02048x}" for n in range(len(bits)-8192,-1,-8192))
+ rtl='''// Generated by tools/generate_home_assets.py; assets/home_config.json is editable.
+module home_assets_rom(input wire clk,input wire [16:0] address,output wire pixel);
+ localparam [106495:0] DATA={
+'''+constants+'''};
+ wire [25:0] pairs;
+ genvar b;
+ generate for(b=0;b<13;b=b+1)begin:bank
+  (* rom_style="bram" *) reg [1:0] memory[0:4095];reg [1:0] q;integer i;
+  localparam [8191:0] BANK_DATA=DATA[b*8192+:8192];
+  initial for(i=0;i<4096;i=i+1)memory[i]=BANK_DATA[i*2+:2];
+  always @(posedge clk)q<=memory[address[12:1]];
+  assign pairs[b*2+:2]=q;
+ end endgenerate
+ reg [4:0] select_q;
+ always @(posedge clk)select_q<={address[16:13],address[0]};
+ assign pixel=(select_q<26)?pairs[select_q]:1'b0;
+endmodule
+'''
+ (ROOT/'rtl/home_assets_rom.v').write_text(rtl,encoding='utf-8')
+ first=sum((c['first_image']-1)<<(5*i) for i,c in enumerate(columns))
+ limit=sum(c['last_image']<<(6*i) for i,c in enumerate(columns))
+ music=sum((c['music']-1)<<(2*i) for i,c in enumerate(columns))
+ cfg=f'''// Generated static column descriptors; catalogue indices are zero-based.
+module home_album_config #(parameter TOPIC_FOLDERS=0)(input wire [2:0] index,output wire [4:0] first_image,
+ output wire [5:0] image_limit,output wire [1:0] music_index,input wire [24:0] folder_info);
+ localparam [24:0] FIRST=25'h{first:07x};
+ localparam [29:0] LIMIT=30'h{limit:08x};
+ localparam [9:0] MUSIC=10'h{music:03x};
+ wire folders=TOPIC_FOLDERS&&folder_info[24]&&index<4;
+ wire [5:0] folder_first=(index==0)?6'd0:((index==1)?folder_info[5:0]:((index==2)?folder_info[11:6]:folder_info[17:12]));
+ wire [5:0] folder_end=(index==0)?folder_info[5:0]:((index==1)?folder_info[11:6]:((index==2)?folder_info[17:12]:folder_info[23:18]));
+ assign first_image=folders?folder_first[4:0]:FIRST[index*5+:5];
+ assign image_limit=folders?folder_end:LIMIT[index*6+:6];
+ assign music_index=MUSIC[index*2+:2];
+endmodule
+'''
+ (ROOT/'rtl/home_album_config.v').write_text(cfg,encoding='utf-8')
+ preview=Image.new('RGB',(128*6,128),(15,28,45))
+ for i,im in enumerate(images):preview.paste((220,245,250),(i*128,0,(i+1)*128,128),im)
+ preview.save(ROOT/'assets/home_asset_preview.png')
+ record={'config':config,'config_sha256':hashlib.sha256(config_path.read_bytes()).hexdigest(),
+  'font_sha256':hashlib.sha256(font_path.read_bytes()).hexdigest(),'pages':6,'width':128,'height':128,
+  'bits':bits,'native_banks':13,'runtime_cpu_required':False,'branding':branding,'secret_message':secret}
+ (ROOT/'assets/home_assets.json').write_text(json.dumps(record,ensure_ascii=False,separators=(',',':'))+'\n',encoding='utf-8')
+ print('Generated 6 UI pages, packed anniversary logo and secret glyphs: 106496 bits in 13 native BRAM banks')
+if __name__=='__main__':main()

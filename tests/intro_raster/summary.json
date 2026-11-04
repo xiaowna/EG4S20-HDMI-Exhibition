@@ -1,0 +1,38 @@
+{
+  "status": "passed",
+  "smoke_only": false,
+  "actual_vga_640x480_sys50MHz_pix25MHz": true,
+  "actual_sdram_controller_model_refresh_and_competing_back_writes": true,
+  "selected_raster_phases_forced_in_test_only": [
+    0,
+    49,
+    63
+  ],
+  "phase_fsm_all64_control_only": true,
+  "control_test_mocking": [
+    "mailbox request",
+    "prefetch readiness/completion",
+    "prefetch start held disabled"
+  ],
+  "hardware_tested": false,
+  "input_sha256": {
+    "rtl\\frame_stream_display.v": "d31ed9f80c03ad965dfad25cc6a1dcd8d77e695220a8c37b3ba9b8b9d46d6517",
+    "rtl\\frame_burst_prefetch.v": "64f14127fba67b53cf5c5add5598c07ecebf8d22ff3cd19feff8be8ce917655d",
+    "rtl\\frame_intro_prefetch.v": "3859c6f3dfbeb61992163d72298e061918daf0295229b04e8b72b30a509ff11d",
+    "rtl\\intro_line_store.v": "a07a13b8217c6705c64d0168a0923339730d527fe0797186e268bfb365221e4b",
+    "rtl\\intro_text_layer.v": "5cef6c87ed70a52b83d3dc555020aa1cc9e454907fdd69cf7ef7ddefd99b65c6",
+    "rtl\\intro_assets_rom.v": "ba9ac535878c33b1cd43d20c34635547e7d9908742784268bdb1ff3ec7672e72",
+    "rtl\\pixel_async_fifo.v": "abc71fb2da0652a99c473d59733bb6c7d4354eeddecf3bea440a90fa61a9e6db",
+    "rtl\\video_pixel_sink.v": "ffa65f9bec127b2ebe8cd9bb64943be3d0eeb7af0ecbfd801f8c7f2bc7f1139a",
+    "rtl\\video_raster_timing.v": "7ff4dc609d59bc68ca6988d6d3cf6fbb91d85e7488a077351d288de5507258a3",
+    "rtl\\eg4s20_stream_memory.v": "132eaf4c01678ecb8dbf8ffb6335cc53498f2fa50bcb3aa2c0eb2e32982eb6df",
+    "rtl\\em638325_stream_controller.v": "27925c5c6af0bec2ee11031cf41eca6ba3b297fd212123313dca163fdc4dcb7c",
+    "tests\\clock_buffer_model.v": "ea0a3f1107cc0ffd3c797f0ce7fe656750f6c469b85a3c47f10f2fa44e0f449a",
+    "tests\\em638325_model.sv": "e5b6fa93a76431dda1c249ff3f15820f66b29e911701a1e686501a3eb96da711",
+    "tests\\intro_raster\\tb_raster.sv": "12110be3ecfe7bd7ac24cd65e9dbf80d7741d992c4a9c609f5b201b857a6fa8d",
+    "tests\\intro_raster\\tb_control.sv": "fc7e055326fc2fb3ebb49de42b44826faff1bcad06b56f6c6fd8e504c7231bb0",
+    "tests\\intro_animation\\verify_producer.py": "77a6c6289fe3d1c3a5febec8fd8558657df12af6bff286f11dd9a730968c94b1",
+    "assets\\intro_assets.json": "65dbc873bdd49cdf80105d68d44cb1c65c8a073353cba8844f358086b7998653",
+    "tests\\intro_raster\\verify.py": "d636345e4eb3fd3dca9403ea3a81e729b80c70be8f63be0499a1942e17f48bc2"
+  }
+}

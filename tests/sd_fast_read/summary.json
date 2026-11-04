@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "old_sector_clocks": 35176,
+  "new_sector_clocks": 18376,
+  "sector_time_reduction_percent": 47.76,
+  "card_return_delays_ns": [
+    14,
+    25,
+    39
+  ],
+  "crc_corruption_rejected": true,
+  "hardware_tested": false,
+  "input_sha256": {
+    "rtl/sd_spi_master.v": "efcee42410cc2d2c4de8366d757cc815db6a825ae106e97d2d135abb7f77d146",
+    "rtl/sd_subsystem.v": "c95c728914fa7991b7ee9d06cf2d3babe4f45754516dcb01e0858e0280ab4cc5",
+    "rtl/sd_init_controller.v": "2a1e940c2132cf24c23dffa6dfa8f641b53ede116b87651480d0a526ebb63ed2",
+    "rtl/sd_command_engine.v": "d04b30f825fc353bfadefd2deea841d507dea82a29b34e62e3a1a351a4e7778e",
+    "rtl/sd_data_block_reader.v": "af4e678e4c76b9a0fbe4345e4f4216a9ea2101e79b0b69e8faf6d8f16cdb22d4",
+    "tests/sd_fast_read/tb_fast_card.sv": "4cf99944f4720f3bf55a78cae5814aff92e882a6f6665da5fd1cad88a2887e23",
+    "tests/sd_fast_read/verify.py": "4b9f30f093d9ab01b2f35abc757ac77831cb79accbbcb7c244d2636017670cf8"
+  }
+}

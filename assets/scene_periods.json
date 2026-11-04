@@ -1,0 +1,19 @@
+{
+  "period_kind": "mean sidereal orbit",
+  "year_days": 365.25,
+  "planets": [
+    {"name": "水星", "years": 0.2408467},
+    {"name": "金星", "years": 0.61519726},
+    {"name": "地球", "years": 1.0000174},
+    {"name": "火星", "years": 1.8808476},
+    {"name": "木星", "years": 11.862615},
+    {"name": "土星", "years": 29.447498},
+    {"name": "天王星", "years": 84.016846},
+    {"name": "海王星", "years": 164.79132}
+  ],
+  "moon_days": 27.3217,
+  "sources": {
+    "planets": "https://ssd.jpl.nasa.gov/planets/phys_par.html",
+    "moon": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html"
+  }
+}

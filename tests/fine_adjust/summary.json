@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "cases": [
+    "tb_fine_control",
+    "tb_fine_lut",
+    "tb_fine_board",
+    "tb_fine_menu"
+  ],
+  "menu_pixels": 2242560,
+  "brightness_levels": 129,
+  "contrast_levels": 101,
+  "all_512_q8_gains_tested": true,
+  "hardware_tested": false
+}

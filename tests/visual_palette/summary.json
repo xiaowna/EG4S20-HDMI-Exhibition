@@ -1,0 +1,42 @@
+{
+  "status": "passed",
+  "cases": [
+    "tb_home_pixels",
+    "tb_home_menu",
+    "tb_prepare_pixels",
+    "tb_subtitle_soft",
+    "tb_rtc_set_menu"
+  ],
+  "pixel_vectors": {
+    "home": 391200,
+    "menu": 921600,
+    "progress": 559872,
+    "subtitle": 186240
+  },
+  "production_color_only": true,
+  "source_sha256": {
+    "rtl/video_home.v": "e1a4367adb879cf18a5c830c7cfa45779873dd4502fc368ab06525ffa2ebdedf",
+    "rtl/video_chinese_settings.v": "a5a0535f4479cc5ebbdba02e2777633834b6eb885df4811a2a796e9d50021b19",
+    "rtl/video_prepare_overlay.v": "c98c40599968ddad1bc2c23a004c70af92dc0eaef0ab59d73cb72c9959a284a3",
+    "rtl/video_chinese_subtitle.v": "da854aee056978fedfcff7a5387a85f579581392735b2dcff4112f988c611d50",
+    "rtl/video_scroll_osd.v": "c8bb128836e65a1c0c1e9979b770a40915ec9292191cc81557ed35a7124bfcf2"
+  },
+  "font_initialization_proof": {
+    "original_sha256": "d5038b1d0d7c47db9f2a6d9eeff1f02eb810e68577829ecfee74429b9492c54d",
+    "generated_sha256": "8d4587d363afd2dd7897ea9c89944df4caecef33fbdb9181113e6e901e3d32bc",
+    "bits_checked": 32768,
+    "words_checked": 16384,
+    "production_modified": false
+  },
+  "home_initialization_proof": {
+    "kind": "native_or_equivalent_initialization",
+    "original_sha256": "ed944d52e762b2274999ca0db33705ded06c1ed9ebf3ac4d2da6129224e7b66b",
+    "generated_sha256": "ed944d52e762b2274999ca0db33705ded06c1ed9ebf3ac4d2da6129224e7b66b",
+    "native_words_checked": 53248,
+    "bits_checked": 106496,
+    "production_rtl_modified": false
+  },
+  "logos_and_firework_color_constants_preserved": true,
+  "hardware_tested": false,
+  "limitations": "Software RTL raster acceptance; resource packing and final board appearance require TD/hardware verification."
+}

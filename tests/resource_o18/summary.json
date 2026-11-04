@@ -1,0 +1,63 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "top": "tb_bpb_width",
+      "parameters": {
+        "TIMEOUT_CYCLES": 800,
+        "SHARED": 0
+      },
+      "passed": true
+    },
+    {
+      "top": "tb_bpb_width",
+      "parameters": {
+        "TIMEOUT_CYCLES": 2048,
+        "SHARED": 0
+      },
+      "passed": true
+    },
+    {
+      "top": "tb_bpb_width",
+      "parameters": {
+        "TIMEOUT_CYCLES": 800,
+        "SHARED": 1
+      },
+      "passed": true
+    },
+    {
+      "top": "tb_bpb_width",
+      "parameters": {
+        "TIMEOUT_CYCLES": 2048,
+        "SHARED": 1
+      },
+      "passed": true
+    },
+    {
+      "top": "tb_ir_receiver",
+      "parameters": {
+        "SAMPLE": 1
+      },
+      "passed": true
+    },
+    {
+      "top": "tb_ir_receiver",
+      "parameters": {
+        "SAMPLE": 7
+      },
+      "passed": true
+    }
+  ],
+  "inputs_sha256": {
+    "rtl/fat32_boot_parser.v": "7c5d92f962b0668c3d9cbf4749a139604ed2ab39e7c48372a9f227c63993ed03",
+    "rtl/media_nec_receiver.v": "0a262f44b9ddfcf8fa4872179f44c64ca3a505535feb736f62d5071e9a16e1e1",
+    "reports/o18_resource_20261021/before/worktree/rtl/fat32_boot_parser.v": "2037ce40b55b7c16f3e0975f5895391ee769e218790e6cbd088a9bac666a3ef3",
+    "reports/o18_resource_20261021/before/worktree/rtl/media_nec_receiver.v": "4e44e015e46485b8bd0f873b3d96c1969d8b52e9cd681fc30717c2efbfc91d76",
+    "tests/resource_o18/verify.py": "ec76b21566a6dacfa021e3f091829740a954cfed40b5be4e431aa634f20705c3",
+    "tests/bpb_width/tb_bpb_width.sv": "2b216d8df1b477bf908bff86a751e9f828f329d5c5adb57e134e9f925549ae3c",
+    "tests/infrared/verify.py": "a3593ef69bfd0043cedf4efdde10ea1abc77cc195331dab716669178cead128c",
+    "tests/infrared/tb_receiver.sv": "e3bdfad42e1a13a3f40965a6d44a92f629039f9a4d012652d9daed3e684bf3c7"
+  },
+  "bpb_oracle": "204 public bits every clock; all 256 values of each of ten fixed bytes, shared and local arithmetic, two timeout profiles; existing arithmetic/transport/reset cases retained",
+  "nec_oracle": "all sampling/valid/repeat pulses every clock, address/command only when valid; intermediate uncommitted shift data intentionally private"
+}

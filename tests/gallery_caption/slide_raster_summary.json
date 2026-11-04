@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "both_directions": true,
+  "styles": 3,
+  "phases_each": 9,
+  "real_sdram_refresh_arbitration": true,
+  "concurrent_writes_outside_both_source_banks": true,
+  "hardware_tested": false,
+  "inputs_sha256": {
+    "rtl/frame_stream_display.v": "d31ed9f80c03ad965dfad25cc6a1dcd8d77e695220a8c37b3ba9b8b9d46d6517",
+    "rtl/frame_burst_prefetch.v": "64f14127fba67b53cf5c5add5598c07ecebf8d22ff3cd19feff8be8ce917655d",
+    "rtl/frame_intro_prefetch.v": "3859c6f3dfbeb61992163d72298e061918daf0295229b04e8b72b30a509ff11d",
+    "rtl/intro_line_store.v": "a07a13b8217c6705c64d0168a0923339730d527fe0797186e268bfb365221e4b",
+    "rtl/intro_text_layer.v": "5cef6c87ed70a52b83d3dc555020aa1cc9e454907fdd69cf7ef7ddefd99b65c6",
+    "rtl/intro_assets_rom.v": "ba9ac535878c33b1cd43d20c34635547e7d9908742784268bdb1ff3ec7672e72",
+    "rtl/pixel_async_fifo.v": "abc71fb2da0652a99c473d59733bb6c7d4354eeddecf3bea440a90fa61a9e6db",
+    "rtl/video_pixel_sink.v": "ffa65f9bec127b2ebe8cd9bb64943be3d0eeb7af0ecbfd801f8c7f2bc7f1139a",
+    "rtl/video_raster_timing.v": "7ff4dc609d59bc68ca6988d6d3cf6fbb91d85e7488a077351d288de5507258a3",
+    "rtl/eg4s20_stream_memory.v": "132eaf4c01678ecb8dbf8ffb6335cc53498f2fa50bcb3aa2c0eb2e32982eb6df",
+    "rtl/em638325_stream_controller.v": "27925c5c6af0bec2ee11031cf41eca6ba3b297fd212123313dca163fdc4dcb7c",
+    "tests/clock_buffer_model.v": "ea0a3f1107cc0ffd3c797f0ce7fe656750f6c469b85a3c47f10f2fa44e0f449a",
+    "tests/em638325_model.sv": "e5b6fa93a76431dda1c249ff3f15820f66b29e911701a1e686501a3eb96da711",
+    "tests/gallery_caption/tb_slide_raster.sv": "8448ed41a94073671240780a9bba8e0ddc4b6cd58ca880b452f7724988b349b2",
+    "tests/gallery_motion/oracle.py": "538264047b0a93b1fad7cb96c393b524e934b295d6a02085a9e6dcb2a51a3ad1",
+    "tests/intro_animation/verify_producer.py": "77a6c6289fe3d1c3a5febec8fd8558657df12af6bff286f11dd9a730968c94b1",
+    "assets/intro_assets.json": "65dbc873bdd49cdf80105d68d44cb1c65c8a073353cba8844f358086b7998653",
+    "tests/gallery_caption/verify_slide_raster.py": "40f2f7c656d85396b9d7a2e26bca8a7fe17c864b8b6c824f9046c0a0cdc419e3"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "cases": [
+    "tb_home_album",
+    "tb_home_board",
+    "tb_home_control",
+    "tb_home_restart",
+    "tb_home_menu",
+    "tb_home_pixels"
+  ],
+  "pixels": 435200,
+  "hardware_tested": false
+}

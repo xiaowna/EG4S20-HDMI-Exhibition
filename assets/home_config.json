@@ -1,0 +1,45 @@
+{
+  "title": "星穹视界",
+  "columns": [
+    {
+      "name": "太阳",
+      "type": "sun",
+      "first_image": 1,
+      "last_image": 6,
+      "music": 1
+    },
+    {
+      "name": "岩石世界",
+      "type": "rock",
+      "first_image": 7,
+      "last_image": 12,
+      "music": 2
+    },
+    {
+      "name": "巨行星",
+      "type": "giant",
+      "first_image": 13,
+      "last_image": 18,
+      "music": 3
+    },
+    {
+      "name": "边界与回望",
+      "type": "voyager",
+      "first_image": 19,
+      "last_image": 24,
+      "music": 4
+    },
+    {
+      "name": "太阳系仪",
+      "first_image": 1,
+      "last_image": 6,
+      "music": 1,
+      "type": "solar"
+    }
+  ],
+  "subtitle": "交互式天文展陈",
+  "branding": {
+    "competition": "assets/branding/competition_original.jpg",
+    "challenge": "assets/branding/challenge_original.jpg"
+  }
+}

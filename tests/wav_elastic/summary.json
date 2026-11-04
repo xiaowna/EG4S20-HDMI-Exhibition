@@ -1,0 +1,87 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "bits": 16,
+      "case": 0,
+      "description": "EOF last byte held, then final sample stalled across valid loop",
+      "passed": true
+    },
+    {
+      "bits": 16,
+      "case": 2,
+      "description": "one-byte next file completed while old final sample held, error then clean replay",
+      "passed": true
+    },
+    {
+      "bits": 16,
+      "case": 3,
+      "description": "zero-byte next file completed while old final sample held, error then clean replay",
+      "passed": true
+    },
+    {
+      "bits": 16,
+      "case": 4,
+      "description": "truncated next RIFF rejected after old final sample, clean replay",
+      "passed": true
+    },
+    {
+      "bits": 16,
+      "case": 5,
+      "description": "controlled stop inside sector, wait CRC boundary, replay different PCM",
+      "passed": true
+    },
+    {
+      "bits": 16,
+      "case": 6,
+      "description": "controlled stop with prefetched R and pending old sample, discard and clean replay",
+      "passed": true
+    },
+    {
+      "bits": 24,
+      "case": 0,
+      "description": "EOF last byte held, then final sample stalled across valid loop",
+      "passed": true
+    },
+    {
+      "bits": 24,
+      "case": 2,
+      "description": "one-byte next file completed while old final sample held, error then clean replay",
+      "passed": true
+    },
+    {
+      "bits": 24,
+      "case": 3,
+      "description": "zero-byte next file completed while old final sample held, error then clean replay",
+      "passed": true
+    },
+    {
+      "bits": 24,
+      "case": 4,
+      "description": "truncated next RIFF rejected after old final sample, clean replay",
+      "passed": true
+    },
+    {
+      "bits": 24,
+      "case": 5,
+      "description": "controlled stop inside sector, wait CRC boundary, replay different PCM",
+      "passed": true
+    },
+    {
+      "bits": 24,
+      "case": 6,
+      "description": "controlled stop with prefetched R and pending old sample, discard and clean replay",
+      "passed": true
+    }
+  ],
+  "source_sha256": {
+    "rtl/fat32_wav_player.v": "c9b08294a23a885481d54e8ad352b14818156f4a32ea02ca263ade206684df8c",
+    "rtl/fat32_file_reader.v": "9581340ab1364c8cd97631210d5bb3af19b6666e9b26640a1c2d0543c02ef5fb",
+    "rtl/wav_pcm_decoder.v": "86f592d97dfd8eb4eee7cd17bd93d117efc3ae406ca067d00fae45464f8a6e84",
+    "tests/wav_elastic/tb_elastic.sv": "ea5a2c771c674854417002095cd8a4afa694bcf26fda9585ed6f4a9bb8d5aa3e"
+  },
+  "real_file_reader": true,
+  "sector_crc_boundary": true,
+  "controlled_stop": true,
+  "hardware_tested": false
+}

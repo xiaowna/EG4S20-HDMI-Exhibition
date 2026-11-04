@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "cases": [
+    "tb_scene",
+    "tb_cube_board",
+    "tb_3d_matrix",
+    "tb_3d_matrix",
+    "tb_3d_control",
+    "tb_3d_keys_board"
+  ],
+  "all_angle_pairs_bounded": 16384,
+  "worst_render_bound_sys_clocks": 17010,
+  "deadline_sys_clocks": 22000,
+  "blanking_sys_clocks": 56000,
+  "canvas_pixels_checked": 524288,
+  "raster_pixels_checked": 307200,
+  "hardware_tested": false
+}

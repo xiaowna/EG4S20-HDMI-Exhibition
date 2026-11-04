@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "top": "tb_file",
+      "modes": 18
+    },
+    {
+      "top": "tb_chain_cycles",
+      "modes": 19
+    },
+    {
+      "top": "tb_cluster_limit",
+      "modes": 3
+    }
+  ],
+  "compares_every_output_every_cycle": true,
+  "no_added_cycles": true,
+  "input_sha256": {
+    "rtl/fat32_file_reader.v": "92f868750ebd73ba4472300f19b3f6a2a9e32d2efb26d1e6507c96c13b83519f",
+    "tests/gallery_caption/fat32_file_reader_reference.v": "b163874b68a56f012fca5a15511125606ca7f161d5bc33a38e0889b42ac01bd7",
+    "tests/gallery_caption/verify_file_equivalence.py": "ae15cb90f92edd16e6b34677175fab82446b48a503e946e952ea09fe912e6a72",
+    "tests/file_read_verify/tb_file.sv": "94010d0ff679847730dadb233e473ecad9aae48a339661f8da5aae64bd03c091",
+    "tests/file_read_verify/tb_chain_cycles.sv": "bd4e740f65f0c1f9a7a5b674259dbe1d5e082ece023cbd2edebc0e15a9076e0c",
+    "tests/file_read_verify/tb_cluster_limit.sv": "cbbd5692e5fc131c51d8fd8f1762e7bd90660f1a6c15c3f17d9d166d59300262"
+  }
+}

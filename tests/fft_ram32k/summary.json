@@ -1,0 +1,33 @@
+{
+  "status": "passed",
+  "rtl_native_32k_instances": 2,
+  "behavioral_and_native_complex_bins_each": 2048,
+  "cycle_equivalence_reference": "tests/fft_ram32k/reference_audio_fft512.v",
+  "reference_origin": "reports/intro_animation_20261024/before/rtl/audio_fft512.v",
+  "reference_origin_sha256": "efec5a2ce80134dc0e6f5313b53039eb8e5bd37e10f1d0c0241da9a4b38dfdb1",
+  "official_primitive_api_elaboration": {
+    "path": "C:\\Anlogic\\TD_6.2.1_Engineer_6.2.168.116\\arch\\eagle_macro.v",
+    "sha256": "7882cda0cf3497463372ecd443b1b99e1555ad70bc04df2682ac40dbb504199d"
+  },
+  "all_capture_and_complex_addresses": 512,
+  "randomized_simultaneous_memory_operations": 4096,
+  "reset_cases_each_branch": [
+    "partial_capture",
+    "processing",
+    "valid_output"
+  ],
+  "reset_retained_words_each_case": 1024,
+  "primitive_model_scope": "Public true-dual-port synchronous RAM contract; encrypted vendor timing and physical resource mapping require TD build.",
+  "input_sha256": {
+    "rtl\\audio_fft_coeff_rom.v": "185b64ab0247c91487fa88bc7897c42498cb49955ac78bb95788c2416a3c6aed",
+    "rtl\\audio_fft_memory.v": "d8d875959a250049bdf4ae3d2d467b7a26ec8ed97020b7aacf43b5372eddd5cd",
+    "rtl\\audio_fft512.v": "9a37e0964c11ce4d6f64d77d4b7289621463a6ac181052591837e63a0122ec2d",
+    "tests\\fft_ram32k\\bram32k_contract.sv": "dfef6fc58df9ecc0efd0469e1bebdbd0a5109d54ba9fed2b620b56f1f093f13d",
+    "tests\\fft_ram32k\\tb_memory.sv": "1091da6428e2d2c1aef41a09f41893ef7f136b1b35c09c94896dff00013cd5ce",
+    "tests\\fft_ram32k\\tb_core.sv": "3867b5228b147a976b9a051b1f7afaeb3cdcfd90527f3bdfc52323dd3de6ad67",
+    "tests\\fft_ram32k\\reference_audio_fft512.v": "e85a06fac70803f658c45263d914e346aec09e675b6ff98146a860aa588c3b80",
+    "tests\\fft_ram32k\\verify.py": "9f4813cfb89004d4735b1c0995050ecfbce2ad92b65a36060b9f6d74543a11b4",
+    "tests\\audio_spectrum\\verify.py": "ac714a8473dfa65cbf5f7970b6d1d88ee6451e040dab258a6d7ca999e973b8b8",
+    "assets\\fft512_q15.json": "edfe488da156e1c8420197ee9cc6253f4f8aa2b633b678d2aaa3aa9deb85554c"
+  }
+}

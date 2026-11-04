@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "cases": [
+    "tb_music_notice",
+    "tb_music_pixels"
+  ],
+  "pixel_vectors": 1151856,
+  "home_font_unchanged": true,
+  "settings_rom_initialization": {
+    "original_sha256": "d5038b1d0d7c47db9f2a6d9eeff1f02eb810e68577829ecfee74429b9492c54d",
+    "generated_sha256": "8d4587d363afd2dd7897ea9c89944df4caecef33fbdb9181113e6e901e3d32bc",
+    "bits_checked": 32768,
+    "words_checked": 16384,
+    "production_modified": false
+  },
+  "hardware_tested": false
+}

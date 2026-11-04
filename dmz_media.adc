@@ -1,0 +1,20 @@
+# DMZ-EG4S20 core + version-matched HDMI/TF expansion. Draft: no TF mapping yet.
+# Core source: https://www.yuque.com/yingmuketang/01/sz9qkx4rnuw6yctz
+# HDMI guide mirror: https://community.aijishu.com/a/1060000000305205
+# Hardware evidence and limitations: dmz_media_hardware.json
+# Stop GUI/custom builds from silently assigning the four unknown TF signals.
+error {DMZ_MEDIA_HARDWARE_INCOMPLETE: TF pin map and expansion electrical checks are pending. Use tools/run_dmz_media.py --action synthesize for logic-only validation.}
+set_pin_assignment { clk50 } { LOCATION = R7; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { rst_n } { LOCATION = A9; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { key_next_n } { PACKREG = OFF; LOCATION = A10; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { key_pause_n } { PACKREG = OFF; LOCATION = B10; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { hdmi_clk_p } { LOCATION = P4; IOSTANDARD = LVDS33; }
+set_pin_assignment { hdmi_d0_p } { LOCATION = J3; IOSTANDARD = LVDS33; }
+set_pin_assignment { hdmi_d1_p } { LOCATION = N1; IOSTANDARD = LVDS33; }
+set_pin_assignment { hdmi_d2_p } { LOCATION = P1; IOSTANDARD = LVDS33; }
+set_pin_assignment { led[0] } { LOCATION = B14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { led[1] } { LOCATION = B15; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { led[2] } { LOCATION = B16; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { led[3] } { LOCATION = C15; IOSTANDARD = LVCMOS33; }
+# sd_sck=TF CLK, sd_mosi=TF CMD, sd_miso=TF DAT0, sd_cs=TF DAT3.
+# No guessed LOCATION is assigned. Replace the error guard only after review.

@@ -1,0 +1,44 @@
+# DMZ-EG4S20 core with the M0 microprocessor/SoC baseboard.
+# Evidence: reports/e_drive_board_review_20261004/source_index.json
+# Pin guide PDF: page 9 HDMI; pages 12-13 SD. Official M0_Borad ADCs agree.
+# HDMI CLK/D0/D1/D2 P/N: P1/R1, N1/M1, P4/N4, J3/J4 (Bank3).
+# TD allocates the paired N pads; do not assign them to other ports.
+# SD SPI uses Bank1, LVCMOS33. This mapping supports an initial test build;
+# actual card timing and display compatibility still require board testing.
+set_pin_assignment { clk50 } { LOCATION = R7; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { rst_n } { LOCATION = A9; IOSTANDARD = LVCMOS33; }
+# Core schematic pages 2/4: SW7=A14, 3.3V. 0 demo / 1 product.
+set_pin_assignment { mode_sw7 } { LOCATION = A14; IOSTANDARD = LVCMOS33; }
+# Encoder removed; LEFT40 pins3/4/5 are no longer connected.
+# Matches front P2 numbering in the supplied board pin diagram.
+# Core LEFT40 pin38 (R16): demodulated IR S. V=3.3V rail, G=pin40 GND.
+set_pin_assignment { infrared_n } { LOCATION = R16; IOSTANDARD = LVCMOS33; PULLTYPE = PULLUP; }
+# Core LEFT40 pins7/8/9: DS1302 CLK/DAT/CE(RST). DAT turns around for reads.
+set_pin_assignment { rtc_scl } { LOCATION = T7; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { rtc_sda } { LOCATION = T8; IOSTANDARD = LVCMOS33; PULLTYPE = PULLDOWN; }
+set_pin_assignment { rtc_ce } { LOCATION = T9; IOSTANDARD = LVCMOS33; }
+# Core schematic (2023.pdf), page 2 pin map and page 4 KEY matrix.
+# Logical row0/1/2/3 = E10/C10/F9/D9 (official LCD ADC numbers rows in reverse).
+# KEY0=row0/col0, KEY1=row0/col1; inactive rows are high impedance.
+set_pin_assignment { key_row_n[0] } { LOCATION = E10; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { key_row_n[1] } { LOCATION = C10; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { key_row_n[2] } { LOCATION = F9; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { key_row_n[3] } { LOCATION = D9; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { key_col_n[0] } { PACKREG = OFF; LOCATION = E11; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { key_col_n[1] } { PACKREG = OFF; LOCATION = D11; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { key_col_n[2] } { PACKREG = OFF; LOCATION = C11; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { key_col_n[3] } { PACKREG = OFF; LOCATION = F10; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { hdmi_clk_p } { LOCATION = P1; IOSTANDARD = LVDS33; }
+set_pin_assignment { hdmi_d0_p } { LOCATION = N1; IOSTANDARD = LVDS33; }
+set_pin_assignment { hdmi_d1_p } { LOCATION = P4; IOSTANDARD = LVDS33; }
+set_pin_assignment { hdmi_d2_p } { LOCATION = J3; IOSTANDARD = LVDS33; }
+set_pin_assignment { led[0] } { LOCATION = B14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { led[1] } { LOCATION = B15; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { led[2] } { LOCATION = B16; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { led[3] } { LOCATION = C15; IOSTANDARD = LVCMOS33; }
+# sd_sck = TF CLK; sd_mosi = TF CMD; sd_miso = TF DAT0; sd_cs = TF DAT3.
+set_pin_assignment { sd_sck } { LOCATION = F15; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { sd_mosi } { LOCATION = F14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { sd_miso } { LOCATION = D14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { sd_cs } { LOCATION = F13; IOSTANDARD = LVCMOS33; }
+

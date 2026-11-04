@@ -1,0 +1,6 @@
+{
+  "label": "O12 current controller before T01",
+  "original_sha256": "56e7b892c41400d03e085adc83a5b5724e746e508eee634cfdbb9812407ced33",
+  "reference_sha256": "ae280a0be44aa96c3e745f78db598d0fd6a7aeb6673c550d8a9aa5f7ea0a4f39",
+  "only_change": "module name media_adjust_control -> media_adjust_control_o12"
+}

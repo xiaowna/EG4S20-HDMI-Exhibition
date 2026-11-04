@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "frames_per_branch": 16,
+  "pixels": 9830400,
+  "native_scanline_ports_tested": true,
+  "malformed_last_backend_error_issue_receive_timeouts_and_reset_tested": true,
+  "input_sha256": {
+    "rtl\\intro_assets_rom.v": "ba9ac535878c33b1cd43d20c34635547e7d9908742784268bdb1ff3ec7672e72",
+    "rtl\\intro_text_layer.v": "5cef6c87ed70a52b83d3dc555020aa1cc9e454907fdd69cf7ef7ddefd99b65c6",
+    "rtl\\intro_line_store.v": "a07a13b8217c6705c64d0168a0923339730d527fe0797186e268bfb365221e4b",
+    "rtl\\frame_intro_prefetch.v": "2f0c8a3603f385c519f4b5e80a3da77690edc833d4446c38442360b343952025",
+    "tests\\intro_animation\\tb_producer.sv": "be3baac4ee406bcc137041a99a7a763d35e0c2d1e806dcd6819c6b2625bb4aa6",
+    "assets\\intro_assets.json": "a2a4344874bd087f6ce3e3651e670052fb980451826ae376026b5353cce41780",
+    "tests\\intro_animation\\line_bram32k_model.sv": "54add67620bd62242f892e525964ac956ce54867037533d8e012e799b0d1a5c4",
+    "tests\\intro_animation\\verify_producer.py": "604d0c57a7bf48946116345a4bae882ddcc48716023c3f7de44cb72c36cb8286"
+  }
+}

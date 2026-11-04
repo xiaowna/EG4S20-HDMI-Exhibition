@@ -1,0 +1,9 @@
+* -text
+# Keep production bytes identical to the accepted FPGA build.
+rtl/** -text
+*.adc -text
+*.sdc -text
+*.bit binary
+*.png binary
+*.jpg binary
+*.hex -text

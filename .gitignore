@@ -1,0 +1,20 @@
+# TD generated runs and databases
+*_Runs/
+out/
+log/
+*.db
+*.bid
+*.log
+*.logw
+.hdmi_gui_*.profile
+reports/td_gui_profile_backups/
+reports/td_gui_reopen_backups/
+reports/display_sim/
+# Keep reports/*/before/**/*.v: they are regression inputs.
+__pycache__/
+*.py[cod]
+*.vvp
+*.vcd
+*.fst
+.env
+.env.*

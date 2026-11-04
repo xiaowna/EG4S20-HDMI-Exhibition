@@ -1,0 +1,75 @@
+{
+  "status": "passed",
+  "default_timing_tested": true,
+  "cases": [
+    {
+      "top": "tb_encoder",
+      "parameters": {
+        "SAMPLE": 1,
+        "FILTER": 1,
+        "BUTTON": 1,
+        "LONG": 80
+      },
+      "passed": true
+    },
+    {
+      "top": "tb_encoder",
+      "parameters": {
+        "SAMPLE": 3,
+        "FILTER": 3,
+        "BUTTON": 5,
+        "LONG": 80
+      },
+      "passed": true
+    },
+    {
+      "top": "tb_encoder",
+      "parameters": {
+        "SAMPLE": 17,
+        "FILTER": 3,
+        "BUTTON": 5,
+        "LONG": 80
+      },
+      "passed": true
+    },
+    {
+      "top": "tb_encoder",
+      "parameters": {
+        "SAMPLE": 1,
+        "FILTER": 3,
+        "BUTTON": 200,
+        "LONG": 6000
+      },
+      "passed": true
+    },
+    {
+      "top": "tb_encoder_board",
+      "parameters": {},
+      "passed": true
+    },
+    {
+      "top": "tb_default_timing",
+      "parameters": {},
+      "passed": true
+    }
+  ],
+  "inputs_sha256": {
+    "rtl/rtc_ds1302.v": "22cc73e21fef86aac659a1a36df9ac6ab7950e982d48398d708ac59b0d93dee5",
+    "rtl/rtc_set_control.v": "8ff103c2b11a59012969cf4db10700576e0afe01df71dfabcfd1d3747d8b1ca8",
+    "rtl/media_rotary_encoder.v": "6784934e0a6d78d7f6ad8dfc8a426ec91465bd5b2d07df9f57a14601972606e3",
+    "rtl/hdmi_media_board_top.v": "9362aa9f92246cb1758250142c3a19f12cb676d6e5991659e35da3423741a06b",
+    "rtl/board_key.v": "649dc2bf5ab2e9bd41576127f4b82ac37c9509fe8867a3a1afb4df9c87ae93b1",
+    "rtl/media_control_events.v": "de99b2af823018e1aa4a8851e6ef4c283b3c76a88a294f038836fff7a54c05d2",
+    "rtl/media_mode_control.v": "40df0465c24897f885edf80a71c86f152ffe2da30298e2868a3bdc6058aa5578",
+    "rtl/media_adjust_control.v": "fc7dd0ce9fb42b3020fcaf8bfb6ffaa32ed3ce8a4fb62c20fe373d12ee973af4",
+    "rtl/board_matrix_keys.v": "56d63e5c9691779a5a766a8429cf554d1ccb97402afd8794d68cc43838f6e729",
+    "rtl/media_nec_receiver.v": "0a262f44b9ddfcf8fa4872179f44c64ca3a505535feb736f62d5071e9a16e1e1",
+    "rtl/media_infrared_control.v": "7a967899c8b2bb85df22bc5ab01388f213368dcf80f685e3fc2ce34d6d33cb80",
+    "tests/rotary_encoder/tb_board.sv": "ed0fefc7945330540ae7a5d0fd11d2f239245c984b2af26ff702031754b8e9bd",
+    "tests/rotary_encoder/tb_default_timing.sv": "2f6f20e3b5dacb68857dd7947a4cb7dc6c77bab2a62483adb5018c7bce253a6c",
+    "tests/rotary_encoder/tb_encoder.sv": "46e656745b0084fde5b56f875e531e6b00d6fa6fad205cd74bd2ade1774d224b",
+    "tests/rotary_encoder/verify.py": "42c349d019edb3ee2af283afa49bae4ea88db7cfbc40f1643a23502120747643",
+    "tests/dmz_media/tb_hdmi_media_board_top.sv": "b44d114cd2cf5289f8d8b903b7991ab5dffd9cf46eedcdbd5a6ff9122325b380",
+    "tests/dmz_media/dmz_keyboard_model.sv": "da5d6b5cab5b4475341dbe03208cebafa23f6d2107d855802bdde7eda7dd9318"
+  }
+}

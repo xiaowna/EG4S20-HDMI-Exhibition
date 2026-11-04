@@ -1,0 +1,11 @@
+# DMZ-EG4S20 core + HDMI_VGA_Ethernet_SD_DAP expansion module.
+# Sources and board-version limits: docs/硬木课堂上板操作说明.md
+# TD creates the LVDS N pads; do not assign inverted GPIOs.
+set_pin_assignment { clk50 } { LOCATION = R7; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { rst_n } { LOCATION = A9; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { hdmi_clk_p } { LOCATION = P4; IOSTANDARD = LVDS33; }
+set_pin_assignment { hdmi_d0_p } { LOCATION = J3; IOSTANDARD = LVDS33; }
+set_pin_assignment { hdmi_d1_p } { LOCATION = N1; IOSTANDARD = LVDS33; }
+set_pin_assignment { hdmi_d2_p } { LOCATION = P1; IOSTANDARD = LVDS33; }
+set_pin_assignment { led[0] } { LOCATION = B14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { led[1] } { LOCATION = B15; IOSTANDARD = LVCMOS33; }

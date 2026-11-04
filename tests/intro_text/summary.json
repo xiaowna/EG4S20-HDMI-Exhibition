@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "vectors_per_shader_run": 202680,
+  "dda_coordinate_checks": 173788,
+  "media_qa": {
+    "bmp_headers": 24,
+    "pure_photo_regions": 24,
+    "separate_caption_strips": 24,
+    "read_only_inputs": 53
+  },
+  "runs": [
+    {
+      "top": "tb_intro_roms",
+      "native_contract": false,
+      "output": "tests/intro_text/tb_roms.sv:31: $finish called at 86746000 (1ps)"
+    },
+    {
+      "top": "tb_intro_text",
+      "native_contract": false,
+      "output": "tests/intro_text/tb_text.sv:74: $finish called at 3797116000 (1ps)"
+    },
+    {
+      "top": "tb_intro_roms",
+      "native_contract": true,
+      "output": "tests/intro_text/tb_roms.sv:31: $finish called at 86746000 (1ps)"
+    },
+    {
+      "top": "tb_intro_text",
+      "native_contract": true,
+      "output": "tests/intro_text/tb_text.sv:74: $finish called at 3797116000 (1ps)"
+    }
+  ],
+  "inputs_sha256": {
+    "rtl/intro_assets_rom.v": "ba9ac535878c33b1cd43d20c34635547e7d9908742784268bdb1ff3ec7672e72",
+    "rtl/intro_text_layer.v": "5cef6c87ed70a52b83d3dc555020aa1cc9e454907fdd69cf7ef7ddefd99b65c6",
+    "assets/intro_assets.json": "a2a4344874bd087f6ce3e3651e670052fb980451826ae376026b5353cce41780",
+    "tests/intro_text/tb_text.sv": "6e935f3b070b422634823a10fecc6e013199deacedbd532bb79ac2a12299b0dc",
+    "tests/intro_text/tb_roms.sv": "dbc6b95ce8a7119b5e0ad8d2ddbb1b862f74529979d6b7114791c1c9d54a8623",
+    "tests/intro_text/native_bram32k_contract.v": "9e6bbd1253386fa46c8397d8412345b4d08417e1eba93ce6d115b3993d70299e",
+    "tests/intro_text/verify.py": "b6c74470cefe80b71b76cf8d0860e7c09804a82aa6f26bff465ca885a48dd648"
+  },
+  "hardware_tested": false
+}

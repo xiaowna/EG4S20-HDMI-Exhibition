@@ -1,0 +1,1095 @@
+{
+  "passed": true,
+  "runs": [
+    {
+      "top": "tb_sd_counters",
+      "params": {
+        "LIMIT": 1
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "sd_data_block_reader",
+          200511
+        ],
+        [
+          "sd_command_engine",
+          200511
+        ],
+        [
+          "sd_command_engine",
+          200503
+        ],
+        [
+          "sd_init_controller",
+          200511
+        ]
+      ]
+    },
+    {
+      "top": "tb_sd_counters",
+      "params": {
+        "LIMIT": 2
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "sd_data_block_reader",
+          200630
+        ],
+        [
+          "sd_command_engine",
+          200630
+        ],
+        [
+          "sd_command_engine",
+          200622
+        ],
+        [
+          "sd_init_controller",
+          200630
+        ]
+      ]
+    },
+    {
+      "top": "tb_sd_counters",
+      "params": {
+        "LIMIT": 3
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "sd_data_block_reader",
+          200693
+        ],
+        [
+          "sd_command_engine",
+          200693
+        ],
+        [
+          "sd_command_engine",
+          200685
+        ],
+        [
+          "sd_init_controller",
+          200693
+        ]
+      ]
+    },
+    {
+      "top": "tb_sd_counters",
+      "params": {
+        "LIMIT": 7
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "sd_data_block_reader",
+          206888
+        ],
+        [
+          "sd_command_engine",
+          206888
+        ],
+        [
+          "sd_command_engine",
+          204929
+        ],
+        [
+          "sd_init_controller",
+          206888
+        ]
+      ]
+    },
+    {
+      "top": "tb_sd_counters",
+      "params": {
+        "LIMIT": 8
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "sd_data_block_reader",
+          207000
+        ],
+        [
+          "sd_command_engine",
+          207000
+        ],
+        [
+          "sd_command_engine",
+          205042
+        ],
+        [
+          "sd_init_controller",
+          207000
+        ]
+      ]
+    },
+    {
+      "top": "tb_sd_counters",
+      "params": {
+        "LIMIT": 9
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "sd_data_block_reader",
+          207114
+        ],
+        [
+          "sd_command_engine",
+          207114
+        ],
+        [
+          "sd_command_engine",
+          205157
+        ],
+        [
+          "sd_init_controller",
+          207114
+        ]
+      ]
+    },
+    {
+      "top": "tb_sd_counters",
+      "params": {
+        "LIMIT": 31
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "sd_data_block_reader",
+          210128
+        ],
+        [
+          "sd_command_engine",
+          210128
+        ],
+        [
+          "sd_command_engine",
+          208193
+        ],
+        [
+          "sd_init_controller",
+          210128
+        ]
+      ]
+    },
+    {
+      "top": "tb_sd_counters",
+      "params": {
+        "LIMIT": 32
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "sd_data_block_reader",
+          210288
+        ],
+        [
+          "sd_command_engine",
+          210288
+        ],
+        [
+          "sd_command_engine",
+          208354
+        ],
+        [
+          "sd_init_controller",
+          210288
+        ]
+      ]
+    },
+    {
+      "top": "tb_sd_counters",
+      "params": {
+        "LIMIT": 33
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "sd_data_block_reader",
+          210450
+        ],
+        [
+          "sd_command_engine",
+          210450
+        ],
+        [
+          "sd_command_engine",
+          208517
+        ],
+        [
+          "sd_init_controller",
+          210450
+        ]
+      ]
+    },
+    {
+      "top": "tb_sd_counters",
+      "params": {
+        "LIMIT": 228
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "sd_data_block_reader",
+          280260
+        ],
+        [
+          "sd_command_engine",
+          280260
+        ],
+        [
+          "sd_command_engine",
+          278522
+        ],
+        [
+          "sd_init_controller",
+          280260
+        ]
+      ]
+    },
+    {
+      "top": "tb_sd_counters",
+      "params": {
+        "LIMIT": 256
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "sd_data_block_reader",
+          296528
+        ],
+        [
+          "sd_command_engine",
+          296528
+        ],
+        [
+          "sd_command_engine",
+          294818
+        ],
+        [
+          "sd_init_controller",
+          296528
+        ]
+      ]
+    },
+    {
+      "top": "tb_sd_counters",
+      "params": {
+        "LIMIT": 257
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "sd_data_block_reader",
+          297138
+        ],
+        [
+          "sd_command_engine",
+          297138
+        ],
+        [
+          "sd_command_engine",
+          295429
+        ],
+        [
+          "sd_init_controller",
+          297138
+        ]
+      ]
+    },
+    {
+      "top": "tb_playlist",
+      "params": {},
+      "mode": 0,
+      "monitors": [
+        [
+          "media_playlist_control",
+          64
+        ]
+      ]
+    },
+    {
+      "top": "tb_pipeline",
+      "params": {},
+      "mode": 0,
+      "monitors": [
+        [
+          "fat32_volume_locator",
+          18540
+        ],
+        [
+          "fat32_dir_scan",
+          18540
+        ],
+        [
+          "fat32_file_reader",
+          18540
+        ],
+        [
+          "frame_buffer_manager",
+          18540
+        ],
+        [
+          "em638325_stream_controller",
+          18540
+        ],
+        [
+          "video_raster_timing",
+          3090
+        ],
+        [
+          "frame_burst_prefetch",
+          18540
+        ],
+        [
+          "video_pixel_sink",
+          3090
+        ]
+      ]
+    },
+    {
+      "top": "tb_pipeline",
+      "params": {},
+      "mode": 1,
+      "monitors": [
+        [
+          "fat32_volume_locator",
+          11201
+        ],
+        [
+          "fat32_dir_scan",
+          11201
+        ],
+        [
+          "fat32_file_reader",
+          11201
+        ],
+        [
+          "frame_buffer_manager",
+          11201
+        ],
+        [
+          "em638325_stream_controller",
+          11201
+        ],
+        [
+          "video_raster_timing",
+          1867
+        ],
+        [
+          "frame_burst_prefetch",
+          11201
+        ],
+        [
+          "video_pixel_sink",
+          1867
+        ]
+      ]
+    },
+    {
+      "top": "tb_pipeline",
+      "params": {},
+      "mode": 2,
+      "monitors": [
+        [
+          "fat32_volume_locator",
+          11201
+        ],
+        [
+          "fat32_dir_scan",
+          11201
+        ],
+        [
+          "fat32_file_reader",
+          11201
+        ],
+        [
+          "frame_buffer_manager",
+          11201
+        ],
+        [
+          "em638325_stream_controller",
+          11201
+        ],
+        [
+          "video_raster_timing",
+          1867
+        ],
+        [
+          "frame_burst_prefetch",
+          11201
+        ],
+        [
+          "video_pixel_sink",
+          1867
+        ]
+      ]
+    },
+    {
+      "top": "tb_pipeline",
+      "params": {},
+      "mode": 3,
+      "monitors": [
+        [
+          "fat32_volume_locator",
+          11201
+        ],
+        [
+          "fat32_dir_scan",
+          11201
+        ],
+        [
+          "fat32_file_reader",
+          11201
+        ],
+        [
+          "frame_buffer_manager",
+          11201
+        ],
+        [
+          "em638325_stream_controller",
+          11201
+        ],
+        [
+          "video_raster_timing",
+          1867
+        ],
+        [
+          "frame_burst_prefetch",
+          11201
+        ],
+        [
+          "video_pixel_sink",
+          1867
+        ]
+      ]
+    },
+    {
+      "top": "tb_pipeline",
+      "params": {},
+      "mode": 4,
+      "monitors": [
+        [
+          "fat32_volume_locator",
+          11633
+        ],
+        [
+          "fat32_dir_scan",
+          11633
+        ],
+        [
+          "fat32_file_reader",
+          11633
+        ],
+        [
+          "frame_buffer_manager",
+          11633
+        ],
+        [
+          "em638325_stream_controller",
+          11633
+        ],
+        [
+          "video_raster_timing",
+          1939
+        ],
+        [
+          "frame_burst_prefetch",
+          11633
+        ],
+        [
+          "video_pixel_sink",
+          1939
+        ]
+      ]
+    },
+    {
+      "top": "tb_pipeline",
+      "params": {},
+      "mode": 5,
+      "monitors": [
+        [
+          "fat32_volume_locator",
+          11201
+        ],
+        [
+          "fat32_dir_scan",
+          11201
+        ],
+        [
+          "fat32_file_reader",
+          11201
+        ],
+        [
+          "frame_buffer_manager",
+          11201
+        ],
+        [
+          "em638325_stream_controller",
+          11201
+        ],
+        [
+          "video_raster_timing",
+          1867
+        ],
+        [
+          "frame_burst_prefetch",
+          11201
+        ],
+        [
+          "video_pixel_sink",
+          1867
+        ]
+      ]
+    },
+    {
+      "top": "tb_pipeline",
+      "params": {},
+      "mode": 6,
+      "monitors": [
+        [
+          "fat32_volume_locator",
+          11201
+        ],
+        [
+          "fat32_dir_scan",
+          11201
+        ],
+        [
+          "fat32_file_reader",
+          11201
+        ],
+        [
+          "frame_buffer_manager",
+          11201
+        ],
+        [
+          "em638325_stream_controller",
+          11201
+        ],
+        [
+          "video_raster_timing",
+          1867
+        ],
+        [
+          "frame_burst_prefetch",
+          11201
+        ],
+        [
+          "video_pixel_sink",
+          1867
+        ]
+      ]
+    },
+    {
+      "top": "tb_pipeline",
+      "params": {},
+      "mode": 7,
+      "monitors": [
+        [
+          "fat32_volume_locator",
+          18540
+        ],
+        [
+          "fat32_dir_scan",
+          18540
+        ],
+        [
+          "fat32_file_reader",
+          18540
+        ],
+        [
+          "frame_buffer_manager",
+          18540
+        ],
+        [
+          "em638325_stream_controller",
+          18540
+        ],
+        [
+          "video_raster_timing",
+          3090
+        ],
+        [
+          "frame_burst_prefetch",
+          18540
+        ],
+        [
+          "video_pixel_sink",
+          3090
+        ]
+      ]
+    },
+    {
+      "top": "tb_stream_memory",
+      "params": {},
+      "mode": 0,
+      "monitors": [
+        [
+          "em638325_stream_controller",
+          14089
+        ]
+      ]
+    },
+    {
+      "top": "tb_full_display",
+      "params": {
+        "FULL": 0
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "em638325_stream_controller",
+          64192
+        ],
+        [
+          "video_raster_timing",
+          32096
+        ],
+        [
+          "frame_burst_prefetch",
+          64192
+        ],
+        [
+          "video_pixel_sink",
+          32096
+        ]
+      ]
+    },
+    {
+      "top": "tb_prepare_count",
+      "params": {},
+      "mode": 0,
+      "monitors": [
+        [
+          "frame_buffer_manager",
+          576014
+        ]
+      ]
+    },
+    {
+      "top": "tb_sdram_command_guard",
+      "params": {
+        "RESPONSE": 3
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "em638325_stream_controller",
+          260
+        ]
+      ]
+    },
+    {
+      "top": "tb_sdram_command_guard",
+      "params": {
+        "RESPONSE": 4
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "em638325_stream_controller",
+          263
+        ]
+      ]
+    },
+    {
+      "top": "tb_sdram_refresh_deadline",
+      "params": {},
+      "mode": 0,
+      "monitors": [
+        [
+          "em638325_stream_controller",
+          72
+        ]
+      ]
+    },
+    {
+      "top": "tb_frame_address_bounds",
+      "params": {
+        "PIXELS": 1
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "frame_buffer_manager",
+          25
+        ]
+      ]
+    },
+    {
+      "top": "tb_frame_address_bounds",
+      "params": {
+        "PIXELS": 2
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "frame_buffer_manager",
+          27
+        ]
+      ]
+    },
+    {
+      "top": "tb_frame_address_bounds",
+      "params": {
+        "PIXELS": 3
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "frame_buffer_manager",
+          29
+        ]
+      ]
+    },
+    {
+      "top": "tb_frame_address_bounds",
+      "params": {
+        "PIXELS": 7
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "frame_buffer_manager",
+          37
+        ]
+      ]
+    },
+    {
+      "top": "tb_frame_address_bounds",
+      "params": {
+        "PIXELS": 8
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "frame_buffer_manager",
+          39
+        ]
+      ]
+    },
+    {
+      "top": "tb_frame_address_bounds",
+      "params": {
+        "PIXELS": 9
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "frame_buffer_manager",
+          41
+        ]
+      ]
+    },
+    {
+      "top": "tb_frame_address_bounds",
+      "params": {
+        "PIXELS": 24
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "frame_buffer_manager",
+          71
+        ]
+      ]
+    },
+    {
+      "top": "tb_frame_address_bounds",
+      "params": {
+        "PIXELS": 255
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "frame_buffer_manager",
+          533
+        ]
+      ]
+    },
+    {
+      "top": "tb_frame_address_bounds",
+      "params": {
+        "PIXELS": 256
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "frame_buffer_manager",
+          535
+        ]
+      ]
+    },
+    {
+      "top": "tb_frame_address_bounds",
+      "params": {
+        "PIXELS": 257
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "frame_buffer_manager",
+          537
+        ]
+      ]
+    },
+    {
+      "top": "tb_frame_address_bounds",
+      "params": {
+        "PIXELS": 307200
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "frame_buffer_manager",
+          614423
+        ]
+      ]
+    },
+    {
+      "top": "tb_dir_bram",
+      "params": {
+        "MAX_FILES": 1,
+        "FIND_WAV": 0
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "fat32_dir_scan",
+          598
+        ]
+      ]
+    },
+    {
+      "top": "tb_dir_bram",
+      "params": {
+        "MAX_FILES": 1,
+        "FIND_WAV": 1
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "fat32_dir_scan",
+          662
+        ]
+      ]
+    },
+    {
+      "top": "tb_dir_bram",
+      "params": {
+        "MAX_FILES": 4,
+        "FIND_WAV": 0
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "fat32_dir_scan",
+          664
+        ]
+      ]
+    },
+    {
+      "top": "tb_dir_bram",
+      "params": {
+        "MAX_FILES": 4,
+        "FIND_WAV": 1
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "fat32_dir_scan",
+          45000
+        ]
+      ]
+    },
+    {
+      "top": "tb_mbr_stream",
+      "params": {
+        "TIMEOUT_CYCLES": 800
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "fat32_volume_locator",
+          49705
+        ]
+      ]
+    },
+    {
+      "top": "tb_mbr_stream",
+      "params": {
+        "TIMEOUT_CYCLES": 2048
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "fat32_volume_locator",
+          54697
+        ]
+      ]
+    },
+    {
+      "top": "tb_reader_width",
+      "params": {
+        "TIMEOUT_CYCLES": 800
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "fat32_file_reader",
+          538160
+        ]
+      ]
+    },
+    {
+      "top": "tb_reader_width",
+      "params": {
+        "TIMEOUT_CYCLES": 2048
+      },
+      "mode": 0,
+      "monitors": [
+        [
+          "fat32_file_reader",
+          540657
+        ]
+      ]
+    }
+  ],
+  "source_sha256": {
+    "rtl/fat32_boot_parser.v": "7c5d92f962b0668c3d9cbf4749a139604ed2ab39e7c48372a9f227c63993ed03",
+    "rtl/fat32_dir_scan.v": "5d245d721772fa074af280637ec9b5a9ca1605550563f97a9eccd1ddca68ef3d",
+    "rtl/fat32_bmp_catalog.v": "c0954b469d0ff57ceaec53a97ab111dc6690599190d55bdac8eb00e565992d56",
+    "rtl/fat32_volume_locator.v": "3c7446ac7eaf6ed97474909e83eda77c4dd5548512e4567eff7090f9d494d41c",
+    "rtl/fat32_card_catalog.v": "071de3bbdd639a193c5ca0e62cf0dfd4f857c811dfe65b49aa646aab1aa53b14",
+    "rtl/fat32_file_reader.v": "f0ffc05954de41cdd27a6a45f25f2a3572db8462be5ca3f9ec77bb6a915cf4bc",
+    "rtl/bmp_stream_decoder.v": "9773de7cb029c29391dcc1dfaf38b8d7916ae4db67353bea9e0139a5f7042918",
+    "rtl/fat32_image_loader.v": "9786a75f11c7387b42139b0949ee1b0cdb75c3ca171b6f121612fa7954888bff",
+    "rtl/frame_buffer_manager.v": "3c08a1307d11b829f8321625fe8f25253c1ed32d046a1c2768acf74d1597ff0e",
+    "rtl/fat32_frame_loader.v": "6f88139666d81e2fe90cb2b746ef1bc218f6663d7307971ab1a600e1fd9337ab",
+    "rtl/pixel_async_fifo.v": "abc71fb2da0652a99c473d59733bb6c7d4354eeddecf3bea440a90fa61a9e6db",
+    "rtl/frame_burst_prefetch.v": "ee275fb1be96ae33bfd0f2524115f5d9616af18a1c0f8797195e4813a23cb113",
+    "rtl/video_pixel_sink.v": "ffa65f9bec127b2ebe8cd9bb64943be3d0eeb7af0ecbfd801f8c7f2bc7f1139a",
+    "rtl/video_raster_timing.v": "7ff4dc609d59bc68ca6988d6d3cf6fbb91d85e7488a077351d288de5507258a3",
+    "rtl/frame_stream_display.v": "9623c88343545d79048ef2c18e6bab69044aa4503491abbc2cc09e5ec8a16049",
+    "rtl/em638325_stream_controller.v": "27925c5c6af0bec2ee11031cf41eca6ba3b297fd212123313dca163fdc4dcb7c",
+    "rtl/eg4s20_stream_memory.v": "132eaf4c01678ecb8dbf8ffb6335cc53498f2fa50bcb3aa2c0eb2e32982eb6df",
+    "rtl/media_stream_pipeline.v": "2a8865f582600a85750162851a72ed3059790889db487379dc82dd8a50e9f90e",
+    "rtl/media_playlist_control.v": "faca7e0802e3c23f91ab826a68b6deb1d1453e19d7bf0b3603645d2b29a3a97d",
+    "rtl/media_prefetch_control.v": "1ab33de79af43dc58fe4f0321825acc0890bfb5842a5fe0a2ec5e7a2dab021a8",
+    "rtl/sd_media_player.v": "8d3927c00617abca5d8b81abab5b2448099c54a4fcce357f4b9bffb8352e39d8",
+    "rtl/sd_subsystem.v": "688320dfd424651221eefbd176a9c906e114b15c39cd4bfd2df0f811fdff7383",
+    "rtl/sd_spi_master.v": "0f1d29271ec308474fa9d1afc97fa47ed0de0a8529393c716ad91bc8087eb4c1",
+    "rtl/sd_init_controller.v": "2a1e940c2132cf24c23dffa6dfa8f641b53ede116b87651480d0a526ebb63ed2",
+    "rtl/sd_command_engine.v": "d04b30f825fc353bfadefd2deea841d507dea82a29b34e62e3a1a351a4e7778e",
+    "rtl/sd_data_block_reader.v": "af4e678e4c76b9a0fbe4345e4f4216a9ea2101e79b0b69e8faf6d8f16cdb22d4",
+    "rtl/sd_sector_arbiter.v": "e48c7a5dc5ecdeab839033f48620610e9e4a22107f1a0183dc16fc06cb82c17a",
+    "rtl/wav_pcm_decoder.v": "86f592d97dfd8eb4eee7cd17bd93d117efc3ae406ca067d00fae45464f8a6e84",
+    "rtl/fat32_wav_player.v": "84f80970f90e6ce2cb129568d53beffac3a9428a7dfdd5c14a7d9b6192ad4590",
+    "rtl/rtc_ds3231.v": "dc31693d3775a5ab98a6bc7689c91bfb69b9dbaf16a5adee3b6bef587276f608",
+    "rtl/rtc_set_control.v": "8ff103c2b11a59012969cf4db10700576e0afe01df71dfabcfd1d3747d8b1ca8",
+    "rtl/media_3d_control.v": "b94bc466297070e37ac5bee98e932346422cc89b9f50bdd0505be41f295c9f31",
+    "rtl/video_scene3d.v": "f3a23b6ab1e475a29b71486893e067378b7c111d63a35704ce41d6801269faee",
+    "rtl/video_prepare_overlay.v": "bf8c5d19625b2c02b7475d0701851aee1c26b7457a22bc9819fa6d4b7f675790",
+    "reports/safety_counters_20261018/before/worktree/rtl/sd_data_block_reader.v": "4ab9dadd2efd0269a3b73b933b7ea5ab90a182099743495a3dabfe4afb140ae2",
+    "reports/safety_counters_20261018/before/worktree/rtl/sd_init_controller.v": "8f486fd5be3b427756150ad078c994de029027b380048ca3b4999e8c0c9c9e1a",
+    "reports/safety_counters_20261018/before/worktree/rtl/sd_command_engine.v": "e8ffedcbc9012aa0c5d9b89062c8856a6ff302997040d94a07791fa8c2e4b4c9",
+    "reports/safety_counters_20261018/before/worktree/rtl/frame_burst_prefetch.v": "b3a619d03c7bd3e63a4657a0dedf8785abf6ef8f7204a146ba6f56cfc8d5ad7a",
+    "reports/safety_counters_20261018/before/worktree/rtl/frame_buffer_manager.v": "42e15740fe251c062aea407c268527af5cdf2e7591348f7ec0851fc56bf8ae27",
+    "reports/safety_counters_20261018/before/worktree/rtl/video_pixel_sink.v": "23a4182331cb079318d2b86240fa5fd48f668d682b588dfc5be3280f73721349",
+    "reports/safety_counters_20261018/before/worktree/rtl/video_raster_timing.v": "bf322d8dde8e744d743041ffa8a178e5d808558c03815175e612e1a3a1b7ade7",
+    "reports/safety_counters_20261018/before/worktree/rtl/media_playlist_control.v": "dc9ac2f9a777905e3a1074b2d64c7187ac32194f319dbedf36776558876a0d45",
+    "reports/safety_counters_20261018/before/worktree/rtl/fat32_file_reader.v": "fb01f296928579913269245461f87a038f63ba73025bc50fc02e083383b33f0d",
+    "reports/safety_counters_20261018/before/worktree/rtl/fat32_dir_scan.v": "47c9601fe22b08d1bfd135d3f26bf3f4de71a421903da6ab6f4009e1bf06da87",
+    "reports/safety_counters_20261018/before/worktree/rtl/fat32_volume_locator.v": "d8b9a6689f89802b67ea05fb85e0a7d55b208336c4950c681c5acc870f36cdd4",
+    "tests/safety_counters/reference_s01_em638325_stream_controller.v": "27925c5c6af0bec2ee11031cf41eca6ba3b297fd212123313dca163fdc4dcb7c",
+    "tests/safety_counters/verify.py": "d804a9a1a7206f45a39ad777451ae1d0a655757733c750303582a7b079fea1ea",
+    "tests/prepare_bar/tb_count.sv": "c21558f9535219f58d5c1c0a0bf9a01a1163eb0dfb22878f9122c6411a4e0e7e",
+    "tests/tb_sdram_command_guard.sv": "0fe1b53995fd66b00dccc528b21b2153d973491460c36bc80bc1924e9d114232",
+    "tests/tb_sdram_refresh_deadline.sv": "f04a60730aaadb916264481239fc8eb74daac85335110fdb9f17086b8c41fcb3"
+  },
+  "module_count": 12,
+  "simulations": 46,
+  "module_clock_comparisons": 14186649,
+  "explicit_interface_additions": {
+    "frame_burst_prefetch": {
+      "slide_active": [
+        "input",
+        ""
+      ],
+      "slide_right": [
+        "input",
+        ""
+      ],
+      "slide_offset": [
+        "input",
+        "[15:0]"
+      ]
+    },
+    "frame_buffer_manager": {
+      "discard_frame": [
+        "input",
+        ""
+      ],
+      "prepare_pixels": [
+        "output",
+        "[6:0]"
+      ]
+    },
+    "media_playlist_control": {
+      "prev_pulse": [
+        "input",
+        ""
+      ]
+    },
+    "fat32_dir_scan": {
+      "wav_index": [
+        "input",
+        "[1:0]"
+      ],
+      "wav_count": [
+        "output",
+        "[2:0]"
+      ]
+    },
+    "fat32_volume_locator": {
+      "bpb_fields": [
+        "output",
+        "[255:0]"
+      ],
+      "bpb_result": [
+        "input",
+        "[128:0]"
+      ]
+    }
+  },
+  "new_interface_acceptance": {
+    "frame_buffer_manager.prepare_pixels": "tb_prepare_count runs in this suite: independent accepted-write scoreboard; valid/ready stalls, drain, commit, reject and reset",
+    "frame_buffer_manager.discard_frame": "ALLOW_DISCARD=0 enforced here; enabled cache discard tested in tests/next_prefetch/verify.py",
+    "frame_burst_prefetch.slide_active/slide_right/slide_offset": "SLIDE_TRANSITIONS=0 enforced here; enabled addressing tested in tests/slide/verify.py",
+    "media_playlist_control.prev_pulse": "prev_pulse=0 enforced here; reverse/pending navigation tested in tests/four_key/verify.py and tests/gallery24/verify.py",
+    "fat32_dir_scan.wav_index/wav_count": "MAX_WAVS=1 enforced; new wav_count checked here against wav_found every cycle; four-WAV catalog tested in tests/music_select/verify.py",
+    "fat32_volume_locator.bpb_fields/bpb_result": "Shared arithmetic public results compared here to frozen independent private arithmetic; complete bus contract tested in tests/bpb_share/verify.py"
+  },
+  "new_progress_output_tested": true,
+  "unknown_interface_differences_rejected": true,
+  "adapter_negative_cases_rejected": [
+    "unknown output",
+    "missing reviewed output",
+    "new output wrong direction",
+    "historical port width changed",
+    "unknown parameter"
+  ],
+  "reference_overrides": {
+    "em638325_stream_controller": {
+      "path": "tests/safety_counters/reference_s01_em638325_stream_controller.v",
+      "sha256": "27925c5c6af0bec2ee11031cf41eca6ba3b297fd212123313dca163fdc4dcb7c",
+      "reason": "Accepted S01 inserts a CHECK command-validation stage, intentionally changing transaction latency. Compare to that frozen accepted stage and run independent command/refresh/SDRAM-model tests below; do not change the original 20261018 baseline."
+    }
+  },
+  "independent_S01_functional_guards_tested": true
+}
