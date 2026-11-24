@@ -3,12 +3,12 @@
 // Two distinct 3x2 images expose mixed banks. A concurrent urgent audio client
 // checks complete-sector ownership while image prefetch runs in the background.
 module tb_slide_pipeline;
- parameter integer BAD=0;
+ parameter integer BAD=0,FAST=0;
  localparam integer LEGACY=0;
  reg clk=0,pix=0,rst_n=0,pause=1,next_pulse=0,prev_pulse=0;
  always #10 clk=~clk;always #60 pix=~pix;
  wire scan_start,load_start,load_ready,scan_done,image_done,error,front_valid,front_bank;
- wire frame_prepared,frame_committed,frame_rejected,commit_enable,discard_cached,transition_active;
+ wire frame_prepared,frame_committed,frame_rejected,commit_enable,discard_cached,transition_active,cancel_load;
  wire transition_manual,transition_backward,slide_ready;
  wire [1:0] image_index;reg [1:0] display_index=0,loading_index=0;
  wire [2:0] image_count;
@@ -22,8 +22,9 @@ module tb_slide_pipeline;
  wire audio_ready,audio_done,audio_error,audio_valid;wire [8:0] audio_addr;wire [7:0] audio_data;
  integer cycles=0,requests=0,image_requests=0,audio_sectors=0,audio_bytes=0;
  integer commits=0,good_frames=0,seen=0,lit=0,frame_id=-1,bank,k,request_at_commit=0;
- integer start_cycle,start_requests,hit_cycles=0,hit_reads=0,cold_cycles=0,cold_reads=0,goal,before_commit;
- reg bad_image=BAD;reg [7:0] mem[0:3583];
+ integer start_cycle,start_requests,hit_cycles=0,hit_reads=0,cold_cycles=0,cold_reads=0,goal,before_commit,cancelled=0;
+ reg reverse_wait=0;
+ reg bad_image=BAD;reg [7:0] mem[0:4095];
  integer animation_serial=0,seen_animation=0,animation_frames=0,animations=0;
  integer animation_phase=0,old_id=0,new_id=1,shift=0,source_x=0,source_id=0,source_pixel=0;
  reg animation_armed=0,animating=0,direction=0;
@@ -32,25 +33,26 @@ module tb_slide_pipeline;
    .clk(clk),.rst_n(rst_n),.card_ready(sdram_ready),.load_ready(load_ready),.scan_done(scan_done),
    .image_done(image_done),.error(error),.image_count(image_count),.next_pulse(next_pulse),.prev_pulse(prev_pulse),
    .pause(pause),.scan_start(scan_start),.load_start(load_start),.image_index(image_index));
-  assign commit_enable=1;assign discard_cached=0;assign transition_active=0;
- end else begin
-  media_prefetch_control #(.INTERVAL_CYCLES(100000)) control(
+  assign commit_enable=1;assign discard_cached=0;assign transition_active=0;assign cancel_load=0;
+ end else begin:prefetched
+  media_prefetch_control #(.INTERVAL_CYCLES(100000),.AUTOPLAY_CYCLES(600),.FAST_MANUAL(FAST)) control(
+   .fast_pulse(FAST!=0),
    .clk(clk),.rst_n(rst_n),.card_ready(sdram_ready),.load_ready(load_ready),.scan_done(scan_done),
    .image_done(image_done),.error(error),.image_count(image_count),.next_pulse(next_pulse),.prev_pulse(prev_pulse),
    .pause(pause),.front_valid(front_valid),.display_index(display_index),.frame_prepared(frame_prepared),
    .frame_committed(frame_committed),.transition_ready(transition_manual?slide_ready:transition_active),.scan_start(scan_start),
    .load_start(load_start),.image_index(image_index),.commit_enable(commit_enable),
    .discard_cached(discard_cached),.transition_active(transition_active),
-   .transition_manual(transition_manual),.transition_backward(transition_backward));
+   .transition_manual(transition_manual),.transition_backward(transition_backward),.cancel_load(cancel_load));
  end endgenerate
  media_stream_pipeline #(.FRAME_WIDTH(3),.FRAME_HEIGHT(2),.TIMEOUT_CYCLES(50000),
-  .H_FP(2),.H_SYNC(2),.H_BP(2),.V_FP(2),.V_SYNC(2),.V_BP(2),.FIFO_ADDR_BITS(3),.CONTROLLED_SWAP(!LEGACY),.SLIDE_TRANSITIONS(1)) media(
+  .H_FP(2),.H_SYNC(2),.H_BP(2),.V_FP(2),.V_SYNC(2),.V_BP(2),.FIFO_ADDR_BITS(3),.CONTROLLED_SWAP(!LEGACY),.SLIDE_TRANSITIONS(1),.ABORTABLE(FAST)) media(
   .clk(clk),.pix_clk(pix),.rst_n(rst_n),.scan_start(scan_start),.load_start(load_start),.image_index(image_index),
   .load_ready(load_ready),.scan_done(scan_done),.image_done(image_done),.error(error),.image_count(image_count),
   .rd_start(rd_start),.rd_lba(rd_lba),.rd_ready(rd_ready),.rd_done(rd_done),.rd_error(rd_error),
   .rd_valid(rd_valid),.rd_addr(rd_addr),.rd_data(rd_data),.front_valid(front_valid),.front_bank(front_bank),
   .frame_committed(frame_committed),.frame_rejected(frame_rejected),.frame_prepared(frame_prepared),
-  .commit_enable(commit_enable),.discard_cached(discard_cached),.de(de),.hsync(hsync),.vsync(vsync),.rgb(rgb),
+  .commit_enable(commit_enable),.discard_cached(discard_cached),.abort_load(cancel_load),.intro_instant(1'b0),.de(de),.hsync(hsync),.vsync(vsync),.rgb(rgb),
   .frame_underflow(frame_underflow),.video_started(video_started),.sdram_ready(sdram_ready),
   .memory_fault(memory_fault),.prefetch_error(prefetch_error),
   .slide_request(transition_manual),.slide_right(transition_backward),.slide_ready(slide_ready));
@@ -72,13 +74,18 @@ module tb_slide_pipeline;
    audio_bytes<=audio_bytes+1;
   end
   if(load_start&&load_ready)loading_index<=image_index;
+  if(cancel_load&&image_done)begin
+   if(!error)$fatal(1,"cancelled frame completed successfully");
+   cancelled<=cancelled+1;
+  end
   if(!transition_manual)animation_armed=0;
   if(media.swap_window&&transition_manual&&frame_prepared&&!animation_armed)begin
    animation_serial=animation_serial+1;animation_armed=1;animation_frames=0;
   end
+  if(FAST&&commits!=0&&transition_active)$fatal(1,"fast gallery emitted an animation request");
   if(transition_manual&&media.wr_valid)$fatal(1,"a sliding source bank became writable");
   if(frame_committed)begin
-   if(commits!=0 && animation_frames!=18)$fatal(1,"bank released before all 18 mixed frames retired: %0d",animation_frames);
+   if(!FAST && commits!=0 && animation_frames!=18)$fatal(1,"bank released before all 18 mixed frames retired: %0d",animation_frames);
    display_index<=loading_index;commits<=commits+1;request_at_commit<=image_requests;
   end
   if(memory_fault||prefetch_error||frame_underflow)$fatal(1,"SDRAM/raster fault");
@@ -130,12 +137,13 @@ module tb_slide_pipeline;
   @(posedge clk);
   if(rst_n&&card_start)begin
    if(!card_ready)$fatal(1,"overlapped card transaction");#1;card_ready=0;requests=requests+1;
+   if(reverse_wait&&card_lba==3408)$fatal(1,"cancelled prefetch read the next BMP data sector");
    if(card_lba!=900000)image_requests=image_requests+1;
    case(card_lba)0:bank=0;2048:bank=1;3281:bank=2;2080:bank=3;3283:bank=4;3408:bank=5;3287:bank=6;2081:bank=7;
-    900000:bank=8;default:$fatal(1,"unexpected LBA %d",card_lba);endcase
+    900000:bank=8;3288:bank=9;default:$fatal(1,"unexpected LBA %d",card_lba);endcase
    repeat(7)@(negedge clk);
    for(k=0;k<512;k=k+1)begin
-    card_valid=1;card_addr=k;card_data=(bank==7)?8'hff:((bank==8)?k[7:0]:mem[bank*512+k]);@(negedge clk);
+    card_valid=1;card_addr=k;card_data=(bank==7)?8'hff:((bank==8)?k[7:0]:mem[((bank==9)?7:bank)*512+k]);@(negedge clk);
    end
    card_valid=0;card_error=(bad_image&&bank==6);card_done=1;@(negedge clk);card_done=0;card_error=0;card_ready=1;
   end
@@ -144,7 +152,15 @@ module tb_slide_pipeline;
   @(negedge clk);prev_pulse=back;next_pulse=!back;@(negedge clk);prev_pulse=0;next_pulse=0;
  end endtask
  initial begin
-  $readmemh("fixture.hex",mem);
+  $readmemh("fixture.hex",mem,0,3583);
+  if(FAST&&!BAD)begin
+   // A third one-sector BMP makes reverse navigation compete against the
+   // two-sector slot 0 prefetch after slot 2 becomes visible.
+   for(k=0;k<32;k=k+1)mem[2*512+64+k]=mem[2*512+32+k];
+   mem[2*512+64+4]="2";mem[2*512+64+26]=10;
+   for(k=0;k<512;k=k+1)mem[7*512+k]=mem[6*512+k];
+   for(k=0;k<6;k=k+1)mem[7*512+54+(k/3)*12+(k%3)*3+2]=mem[7*512+54+(k/3)*12+(k%3)*3+2]+128;
+  end
   for(k=0;k<6;k=k+1)mem[6*512+54+(k/3)*12+(k%3)*3+2]=mem[6*512+54+(k/3)*12+(k%3)*3+2]+64;
   repeat(4)@(negedge pix);rst_n=1;
   wait(commits==1);wait(good_frames>=2);
@@ -158,15 +174,25 @@ module tb_slide_pipeline;
    start_cycle=cycles;start_requests=image_requests;press(0);wait(commits==2);#1;
    hit_cycles=cycles-start_cycle;hit_reads=request_at_commit-start_requests;
    if(display_index!=1 || (!LEGACY&&hit_reads!=0) || (LEGACY&&hit_reads<1))$fatal(1,"cache hit re-read SD / baseline did not load legacy=%0d shown=%0d reads=%0d total=%0d before=%0d",LEGACY,display_index,hit_reads,request_at_commit,start_requests);
-   // Reverse immediately: the request is retained while the next load starts.
-   start_cycle=cycles;start_requests=image_requests;press(1);wait(commits==3);#1;
+   if(FAST)begin
+    wait(frame_prepared);press(0);wait(commits==3);#1;
+    if(display_index!=2)$fatal(1,"third picture did not become visible");
+    // The real sector reader is busy with the two-sector next picture while
+    // AUTO claims it. Manual left must replace it before the next data sector.
+    pause=0;
+    wait(card_start&&card_lba==3283);reverse_wait=1;
+    wait(prefetched.control.foreground);#1;pause=1;
+   end
+   // Reverse during the first sector of the unrelated two-sector prefetch.
+   start_cycle=cycles;start_requests=image_requests;press(1);wait(commits==(FAST?4:3));#1;
    cold_cycles=cycles-start_cycle;cold_reads=request_at_commit-start_requests;
-   if(display_index!=0)$fatal(1,"reverse miss wrong image");
+   if(display_index!=(FAST?1:0))$fatal(1,"reverse miss wrong image");
+   if(FAST&&cancelled!=1)$fatal(1,"reverse miss did not cancel the ongoing prefetch");
   end
   goal=good_frames+3;wait(good_frames>=goal);
   if(audio_sectors<6)$fatal(1,"audio concurrency not exercised");
-  if(animations<1)$fatal(1,"sliding frames not exercised");
-  $display("PASS slide pipeline BAD=%0d frames=%0d animations=%0d commits=%0d image_requests=%0d audio_sectors=%0d hit_cycles=%0d hit_reads=%0d cold_cycles=%0d cold_reads=%0d; real FAT/BMP/SDRAM, both banks locked, 18 complete frames per transition",BAD,good_frames,animations,commits,image_requests,audio_sectors,hit_cycles,hit_reads,cold_cycles,cold_reads);$finish;
+  if(FAST?(animations!=0):(animations<1))$fatal(1,"wrong animation count for selected path");
+  $display("PASS slide pipeline FAST=%0d BAD=%0d frames=%0d animations=%0d commits=%0d image_requests=%0d audio_sectors=%0d hit_cycles=%0d hit_reads=%0d cold_cycles=%0d cold_reads=%0d; real FAT/BMP/SDRAM, complete frames and both banks protected",FAST,BAD,good_frames,animations,commits,image_requests,audio_sectors,hit_cycles,hit_reads,cold_cycles,cold_reads);$finish;
  end
  initial begin #30000000;$fatal(1,"cache pipeline timeout commits=%0d requests=%0d good=%0d error=%b catalog=%b arbiter=%0d audio_busy=%b",commits,requests,good_frames,error,media.u_loader.catalog_ready,arbiter.state,audio_busy);end
 endmodule

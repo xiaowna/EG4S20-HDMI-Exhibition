@@ -35,6 +35,11 @@ def main():
                 output=run([tools/'vvp.exe',image],ROOT/'tests')
                 assert 'PASS next-cache control' in output
                 runs.append({'case':'control','count':n,'metrics':dict(re.findall(r'(\w+)=(\d+)',output))})
+            run([tools/'iverilog.exe','-g2012','-s','tb_prefetch_control','-Ptb_prefetch_control.FAST=1',
+                 '-o',image,*rtl,HERE/'tb_control.sv'],ROOT/'tests')
+            output=run([tools/'vvp.exe',image],ROOT/'tests')
+            assert 'PASS fast gallery:' in output
+            runs.append({'case':'fast_manual','output':output.strip()})
             for legacy,bad in [(1,0),(0,0),(0,1)]:
                 image=directory/'pipeline.vvp'
                 run([tools/'iverilog.exe','-g2012','-s','tb_prefetch_pipeline',

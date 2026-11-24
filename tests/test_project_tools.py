@@ -63,16 +63,16 @@ class ProjectChecks(unittest.TestCase):
     def test_solar_area_strategy_survives_gui_reopen(self):
         for key in ("opt_area", "pack_effort"):
             original = (self.root / "HDMI_media_board_WAV.al").read_text(encoding="utf-8-sig")
-            native = "medium" if key == "opt_area" else "high"
             for old, new in ((f"set_param gate {key} high", f"set_param gate {key} medium"),
-                             (f"<{key}>{native}</{key}>", f"<{key}>low</{key}>")):
+                             (f"<{key}>high</{key}>" if key == "pack_effort" else "<GateProperty>",
+                              f"<{key}>low</{key}>" if key == "pack_effort" else "<GateProperty><opt_area>low</opt_area>")):
                 with self.subTest(key=key, field=old):
                     self.edit("HDMI_media_board_WAV.al", old, new)
                     with self.assertRaises(ValueError):
                         check_project(self.root)
                     (self.root / "HDMI_media_board_WAV.al").write_text(original, encoding="utf-8")
         original = (self.root / "HDMI_media_board_WAV.al").read_text(encoding="utf-8-sig")
-        for old, new in (("<pr_strategy>1</pr_strategy>", "<pr_strategy>5</pr_strategy>"),
+        for old, new in (("<pr_strategy>5</pr_strategy>", "<pr_strategy>0</pr_strategy>"),
                          ("set_param place pr_strategy 5", "set_param place pr_strategy 0")):
             with self.subTest(physical_profile=old):
                 self.edit("HDMI_media_board_WAV.al", old, new)
@@ -81,7 +81,7 @@ class ProjectChecks(unittest.TestCase):
                 (self.root / "HDMI_media_board_WAV.al").write_text(original, encoding="utf-8")
 
         for name, old, new in [
-                ("HDMI_media_board_WAV.al", "<RouteProperty><effort>routability</effort>", "<RouteProperty><effort>normal</effort>"),
+                ("HDMI_media_board_WAV.al", "<effort>routability</effort>", "<effort>normal</effort>"),
                 ("HDMI_media_board_WAV.al", "<param>set_param route effort routability</param>", "<param>set_param route effort normal</param>"),
                 ("build_wav_project.tcl", "set_param route effort routability", "set_param route effort normal")]:
             original = (self.root / name).read_text(encoding="utf-8-sig")
@@ -98,12 +98,11 @@ class ProjectChecks(unittest.TestCase):
             check_project(self.root)
 
     def test_gui_saved_private_fields_can_reflect_the_checked_database(self):
-        self.edit("HDMI_media_board_WAV.al", '<opt_area>medium</opt_area>', '<opt_area>high</opt_area>')
-        self.edit("HDMI_media_board_WAV.al", '<post_route_opt>auto</post_route_opt>',
-                  '<post_route_opt>high</post_route_opt>')
+        self.edit("HDMI_media_board_WAV.al", '<GateProperty>', '<GateProperty><opt_area>high</opt_area>')
+        self.edit("HDMI_media_board_WAV.al", '<RouteProperty>', '<RouteProperty><post_route_opt>high</post_route_opt>')
         # TD omits its default strategy field and removes the unsupported
         # runtime strategy GUI annotation when saving; the flow helper enforces it.
-        self.edit("HDMI_media_board_WAV.al", '<pr_strategy>1</pr_strategy>', '')
+        self.edit("HDMI_media_board_WAV.al", '<pr_strategy>5</pr_strategy>', '')
         self.edit("HDMI_media_board_WAV.al", '<param>set_param place pr_strategy 5</param>', '')
         self.assertEqual(check_project(self.root)["top_ports"], 27)
 
@@ -141,7 +140,7 @@ class ProjectChecks(unittest.TestCase):
 
     def test_gui_disabled_multiseed_is_rejected(self):
         self.edit("HDMI_media_board_WAV.al", 'Enable="true"', 'Enable="false"')
-        with self.assertRaisesRegex(ValueError, "seed 13"):
+        with self.assertRaisesRegex(ValueError, "seed 19"):
             check_project(self.root)
 
     def test_ds1302_left40_clock_data_enable_pins(self):
@@ -166,8 +165,8 @@ class ProjectChecks(unittest.TestCase):
                 self.assertEqual(check_project(self.root)["top_ports"], 27)
 
     def test_gui_wrong_seed_is_rejected(self):
-        self.edit("HDMI_media_board_WAV.al", 'Init="13"', 'Init="0"')
-        with self.assertRaisesRegex(ValueError, "seed 13"):
+        self.edit("HDMI_media_board_WAV.al", 'Init="19"', 'Init="0"')
+        with self.assertRaisesRegex(ValueError, "seed 19"):
             check_project(self.root)
 
     def test_chinese_font_gui_reload_override_is_required(self):
@@ -189,7 +188,7 @@ class ProjectChecks(unittest.TestCase):
                          ('Step="1"', 'Step="2"')):
             with self.subTest(setting=new):
                 project.write_text(original.replace(old, new), encoding="utf-8")
-                with self.assertRaisesRegex(ValueError, "seed 13"):
+                with self.assertRaisesRegex(ValueError, "seed 19"):
                     check_project(self.root)
 
     def test_gui_seed_list_must_match_fixed_seed(self):
@@ -202,7 +201,7 @@ class ProjectChecks(unittest.TestCase):
                 self.assertEqual(count, 1)
                 self.assertNotEqual(mutated, original)
                 project.write_text(mutated, encoding="utf-8")
-                with self.assertRaisesRegex(ValueError, "seed 13"):
+                with self.assertRaisesRegex(ValueError, "seed 19"):
                     check_project(self.root)
 
     def test_missing_rtl(self):
@@ -396,7 +395,7 @@ class ProjectChecks(unittest.TestCase):
         opened = [args[0] for name, args in calls if name == "open_project"]
         self.assertEqual(Path(opened[0]).resolve(), self.root / "HDMI_media_board_WAV.al")
         commands = [name for name, _ in calls]
-        self.assertIn(("set_param", ("place", "seed", "13")), calls[:commands.index("place")])
+        self.assertIn(("set_param", ("place", "seed", "19")), calls[:commands.index("place")])
         self.assertIn(("set_param", ("place", "pr_strategy", "5")), calls[:commands.index("place")])
         for key, value in (("eram_init", "on"), ("opt_area", "high"), ("pack_effort", "high")):
             self.assertIn(("set_param", ("gate", key, value)), calls[:commands.index("optimize_rtl")])
@@ -404,7 +403,7 @@ class ProjectChecks(unittest.TestCase):
         # 微小负保持时间也不能到达任一 bitgen；旧位流必须保持原样。
         old_bit = self.root / "HDMI_media_board_WAV.bit"
         old_bit.write_bytes(b"previous valid bitstream")
-        gui_db = self.root / "HDMI_media_board_WAV_Runs/phy_1/seed_13/HDMI_media_board_WAV_pr.db"
+        gui_db = self.root / "HDMI_media_board_WAV_Runs/phy_1/seed_19/HDMI_media_board_WAV_pr.db"
         gui_db.parent.mkdir(parents=True)
         gui_db.write_bytes(b"mock routed database")
         self.timing_report = TIMING_REPORT.replace("HWNS: 0.060ns", "HWNS: -0.0012ns")
@@ -443,7 +442,7 @@ class ProjectChecks(unittest.TestCase):
         interp.createcommand("import_db", lambda *args: calls.append(args) or "")
         for script in ("fix_wav_gui_route.tcl", "refresh_wav_gui_reports.tcl"):
             with self.subTest(script=script):
-                with self.assertRaisesRegex(tkinter.TclError, "No routed seed-13"):
+                with self.assertRaisesRegex(tkinter.TclError, "No routed seed-19"):
                     interp.call("source", str(self.root / script))
                 self.assertEqual(calls, [])
 

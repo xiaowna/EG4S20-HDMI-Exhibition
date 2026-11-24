@@ -11,6 +11,7 @@ else:
 
 PROJECT = "HDMI_media_board_WAV.al"
 TOP = "hdmi_media_board_top"
+GUI_SEED = "19"
 TF_PORTS = frozenset({"sd_sck", "sd_mosi", "sd_miso", "sd_cs"})
 
 
@@ -37,22 +38,22 @@ def check_project(root, *, project=PROJECT, top=TOP, adc_file="board.adc",
         seed_config = xml.find("MultiSeed/Property")
         expected_seed_config = {
             "Enable": "true", "GenBit": "true", "EndStep": "route", "Random": "false",
-            "Num": "1", "Init": "13", "Jobs": "1", "Save": "1", "Step": "1",
+            "Num": "1", "Init": GUI_SEED, "Jobs": "1", "Save": "1", "Step": "1",
         }
         require(physical_run is not None and seed_config is not None and
                 all(seed_config.get(name) == value for name, value in expected_seed_config.items()) and
-                (xml.findtext("MultiSeed/Seeds") or "").split() == ["13"] and
+                (xml.findtext("MultiSeed/Seeds") or "").split() == [GUI_SEED] and
                 seed_config.find("Filter") is not None and
                 seed_config.find("Filter").get("enabled") == "false",
-                "原播放器 GUI 必须启用固定 seed 13 的单次 MultiSeed 构建；旧布局曾触发布线冲突")
-        # TD's GUI accepts strategies 1..5 and coerces an XML value of 0.
-        # The project-owned flow applies the qualified CLI strategy 5 after
-        # commit_param, immediately before place; GUI value 1 is a valid base.
+                f"当前 GUI 必须启用固定 seed {GUI_SEED} 的单次 MultiSeed 构建")
+        # TD's GUI accepts strategies 1..5 and rewrites the base value to 5
+        # when the project also specifies pr_strategy 5 in UserParams.
+        # The project-owned flow applies the qualified strategy before place.
         check_gui_profile_source(root)
-        require(physical_run.findtext("Strategy/PlaceProperty/pr_strategy") in {None, "1"} and
+        require(physical_run.findtext("Strategy/PlaceProperty/pr_strategy") in {None, "1", "5"} and
                 [" ".join((p.text or "").split()) for p in physical_run.findall("UserParams/param")
                  if re.search(r"\bplace\s+pr_strategy\b", p.text or "")] in [[], ["set_param place pr_strategy 5"]],
-                "pr_strategy=5 必须由工程GUI脚本应用，GUI基础属性应为有效值1")
+                "pr_strategy=5 必须由工程GUI脚本应用，GUI基础属性应为有效值1或5")
         require(physical_run.findtext("Strategy/RouteProperty/effort") == "routability" and
                 physical_run.findtext("Strategy/RouteProperty/post_route_opt") in {None, "auto", "high"} and
                 [" ".join((p.text or "").split()) for p in physical_run.findall("UserParams/param")

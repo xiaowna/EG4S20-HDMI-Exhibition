@@ -57,7 +57,7 @@ def main():
   image=canvas(12,10)
   (tmp/'pixels.hex').write_text(''.join(f'{pixel(x,y,image):06x}\n' for y in range(480) for x in range(640)),encoding='ascii')
   jobs=[('tb_scene',['video_scene3d.v'],[HERE/'tb_scene.sv']),
-   ('tb_cube_board',['rtc_ds1302.v','rtc_set_control.v','hdmi_media_board_top.v','board_key.v','media_control_events.v','media_rotary_encoder.v','media_nec_receiver.v','media_infrared_control.v','media_mode_control.v','media_adjust_control.v','board_matrix_keys.v','media_home_control.v','home_album_config.v','media_3d_control.v'],[HERE/'tb_board.sv',ROOT/'tests/dmz_media/tb_hdmi_media_board_top.sv',ROOT/'tests/dmz_media/dmz_keyboard_model.sv'])]
+   ('tb_cube_board',['rtc_ds1302.v','rtc_set_control.v','hdmi_media_board_top.v','board_key.v','media_control_events.v','media_rotary_encoder.v','media_nec_receiver.v','media_infrared_control.v','media_mode_control.v','media_adjust_control.v','board_matrix_keys.v','media_home_control.v','media_help_control.v','home_album_config.v','media_3d_control.v'],[HERE/'tb_board.sv',ROOT/'tests/dmz_media/tb_hdmi_media_board_top.sv',ROOT/'tests/dmz_media/dmz_keyboard_model.sv'])]
   for top,params,files in [
    ('tb_3d_matrix',{'SCAN_CYCLES':4},['tb_matrix.sv',ROOT/'tests/dmz_media/dmz_keyboard_model.sv']),
    ('tb_3d_matrix',{'SCAN_CYCLES':17},['tb_matrix.sv',ROOT/'tests/dmz_media/dmz_keyboard_model.sv']),

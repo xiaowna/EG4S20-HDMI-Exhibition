@@ -38,9 +38,9 @@ proc hdmi_prepare_project {{logic_only 0}} {
 }
 
 proc hdmi_gui_run_directory {} {
-    # The public MultiSeed configuration runs only seed 13. Never fall back to
+    # The current MultiSeed configuration runs only seed 19. Never fall back to
     # phy_1's old normal-flow DB, which may contain the failed seed-0 layout.
-    return [file join HDMI_media_board_WAV_Runs phy_1 seed_13]
+    return [file join HDMI_media_board_WAV_Runs phy_1 seed_19]
 }
 
 # 仅接受当前器件布线后的时序报告。微小负值仍是违例，不取整放行。

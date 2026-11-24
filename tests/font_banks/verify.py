@@ -43,18 +43,19 @@ def main():
         manifest = json.loads(files[1].read_text(encoding='utf-8'))
         historical = json.loads(files[5].read_text(encoding='utf-8'))
         # O20 predates M02's rotating music note. Keep that frozen RTL and its
-        # independent bitmap unchanged; only the eight newly allocated slots
-        # may differ from the historical design.
+        # independent bitmap unchanged. Note poses and the seconds unit
+        # occupy previously empty slots.
         assert sha(files[2]) == '8d6417b26175b55dddd0842004687f27400534d5371fcbdb99134eb325939c05'
         assert sha(files[5]) == 'dbeeda4b1e22585afbed4a847d15a0f5038c1e147ba347f9ea1e0c556b465e1b'
         assert len(historical['glyphs']) == 74
         assert manifest['glyphs'][:74] == historical['glyphs']
         assert manifest['music_note_first'] == 74 and manifest['music_note_frames'] == 8
-        assert len(manifest['glyphs']) == 82
+        assert len(manifest['glyphs']) == 83
         assert [g['character'] for g in manifest['glyphs'][74:82]] == [chr(0xe100+i) for i in range(8)]
+        assert manifest['glyphs'][82]['character'] == '秒'
         bits, old_bits = bitmap(manifest), bitmap(historical)
         changed = [i for i,(a,b) in enumerate(zip(bits,old_bits)) if a != b]
-        assert changed and all(74*256 <= i < 82*256 for i in changed)
+        assert changed and all(74*256 <= i < 83*256 for i in changed)
         assert all(value == '0' for value in old_bits[74*256:])
         # Also prove the copied historical bitmap belongs to the frozen ROM.
         value = 0
@@ -84,6 +85,7 @@ def main():
                        modes=[0, 1], golden_bits=len(bits),
                        frozen_reference_and_independent_bitmap=True,
                        historical_glyphs_preserved=74, added_music_note_slots=[74,81],
+                       seconds_glyph_slot=82,
                        changed_bits_confined_to_added_slots=len(changed),
                        both_historical_and_current_exhaustive_bitmaps=True)
         print(output, end='', flush=True)

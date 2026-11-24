@@ -10,7 +10,7 @@ module tb_media_wave_control;
  wire cfg_update,setting_active,next_event,prev_event,pause_event,cfg_fade_enabled,cfg_wave_enabled;
  wire [1:0] setting_page;
  board_key #(.COUNT(COUNT),.WIDTH(4)) keys(.*,.press(key_press));
- media_adjust_control dut(.home_play(1'b0),.home_music_index(2'd0),.product_mode(1'b0),.mode_change(1'b0),.cfg_autoplay(),.autoplay_page(),.music_count(3'd0),.music_page(),.cfg_music_index(),.cfg_music_request(),.rtc_page(),.rtc_exit(1'b0),.frame_tick(1'b0),.held_key_n(4'hf),.contrast_index(),.*);
+ media_adjust_control dut(.home_play(1'b0),.home_music_index(2'd0),.product_mode(1'b0),.mode_change(1'b0),.cfg_autoplay(),.autoplay_page(),.music_count(3'd0),.music_page(),.cfg_music_index(),.cfg_music_request(),.rtc_page(),.rtc_exit(1'b0),.frame_tick(1'b0),.held_key_n(4'hf),.contrast_index(),.autoplay_interval(),.*);
  integer next_events=0,prev_events=0,pause_events=0,updates=0,cases=0,i,before_updates;
  always @(negedge clk)if(rst_n)begin
   if(next_event)next_events=next_events+1;

@@ -13,7 +13,7 @@ module tb_rtc_overlay;
  reg [23:0] expected,composed;
  integer i,j,slot,glyph,nibble,address,checks=0,lit=0,fd;
  always #10 clk=~clk;
- video_chinese_settings #(.SPECTRUM_FFT(1),.MUSIC_MENU(1),.RTC_OVERLAY(1)) dut(.home_word(15'd0),.music_playing(1'b0),.fine_adjust_word(15'd0),.*,.rtc_edit_word(54'd0));
+ video_chinese_settings #(.SPECTRUM_FFT(1),.MUSIC_MENU(1),.RTC_OVERLAY(1)) dut(.home_word(15'd0),.music_playing(1'b0),.fine_adjust_word(15'd0),.autoplay_word(4'd0),.*,.rtc_edit_word(54'd0));
  task tick;begin @(posedge clk);#1;@(negedge clk);end endtask
  task frame;
   begin de=0;vsync=0;tick;vsync=1;tick;expected_frame=rtc_word;end

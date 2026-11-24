@@ -7,7 +7,7 @@ module tb_music_notice;
  reg music_playing=0;wire [23:0] rgb_out;wire overlay_valid;
  integer i,expected_alpha,checks=0;
  always #5 clk=~clk;
- video_chinese_settings #(.MUSIC_MENU(1),.RTC_SETTING(1),.COMPACT_ROWS(1),.MUSIC_TOAST(1)) dut(.*);
+ video_chinese_settings #(.MUSIC_MENU(1),.RTC_SETTING(1),.COMPACT_ROWS(1),.MUSIC_TOAST(1)) dut(.autoplay_word(4'd0),.*);
  task tick;begin @(posedge clk);#1;@(negedge clk);end endtask
  task frame;begin vsync=0;tick;vsync=1;tick;end endtask
  task check(input integer age,input integer alpha,input integer active,input integer track);
@@ -49,7 +49,7 @@ module tb_music_pixels;
  reg music_playing=1;wire [23:0] rgb_out;wire overlay_valid;
  integer file,read,xx,yy,age,track,checks=0,fd;reg [24:0] expected,actual;
  always #5 clk=~clk;
- video_chinese_settings #(.MUSIC_MENU(1),.RTC_SETTING(1),.COMPACT_ROWS(1),.MUSIC_TOAST(1)) dut(.*);
+ video_chinese_settings #(.MUSIC_MENU(1),.RTC_SETTING(1),.COMPACT_ROWS(1),.MUSIC_TOAST(1)) dut(.autoplay_word(4'd0),.*);
  initial begin
   @(negedge clk);rst_n=1;
   file=$fopen("toast_pixels.txt","r");if(!file)$fatal(1,"missing vectors");

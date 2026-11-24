@@ -19,6 +19,16 @@ def main():
   draw.text((64,24+i*20),period,font=font(12),fill=1)
   rows.append(dict(name=planet['name'],display=period))
  draw.text((11,180),'KEY5 切换地月',font=font(10),fill=1)
+ speed_labels=['0.1','0.25','0.5','1','2','4','8','10']
+ for index,rate in enumerate(speed_labels):
+  text=f'时间速度 {rate}×'
+  strip=Image.new('1',(128,16))
+  ImageDraw.Draw(strip).text((0,0),text,font=font(9),fill=1)
+  bounds=strip.getbbox()
+  assert bounds is not None
+  ink=strip.crop(bounds)
+  assert ink.height<=8
+  image.paste(ink,((128-ink.width)//2,16+index*20))
  for y,text in [(192,'地月系统'),(208,f"月球公转 {data['moon_days']:.2f}天"),
                 (224,'KEY7缩小 KEY8放大'),(240,'KEY5切换 KEY10归位')]:
   size=12 if y==192 else 10;f=font(size);assert f.getlength(text)<=128
@@ -38,7 +48,7 @@ endmodule
 '''
  (ROOT/'rtl/scene_sidebar_rom.v').write_text(rtl,encoding='utf-8')
  (ROOT/'assets/scene_sidebar.json').write_text(json.dumps(dict(width=128,height=256,bits=bits,words=words,rows=rows,
-  native_blocks=1,sources=data['sources'],config_sha256=hashlib.sha256(config.read_bytes()).hexdigest(),
+  native_blocks=1,speed_labels=speed_labels,sources=data['sources'],config_sha256=hashlib.sha256(config.read_bytes()).hexdigest(),
   font_sha256=hashlib.sha256(font_path.read_bytes()).hexdigest()),ensure_ascii=False,separators=(',',':'))+'\n',encoding='utf-8')
  image.convert('RGB').save(ROOT/'assets/scene_sidebar_preview.png')
  print('Generated all 32768 sidebar bits in one native RAM32K:',rows)

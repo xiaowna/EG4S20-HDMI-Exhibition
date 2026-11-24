@@ -3,7 +3,7 @@ from pathlib import Path
 import argparse,hashlib,json,struct,subprocess,tempfile
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
 
-def fixture(variant):
+def fixture(variant, first_count=2):
     data=bytearray(64*512)
     def u16(a,v):struct.pack_into('<H',data,a,v)
     def u32(a,v):struct.pack_into('<I',data,a,v)
@@ -21,7 +21,7 @@ def fixture(variant):
     else:
         entry(2,0,'IGNORED BMP',32,20,78)
         # Deliberately discover groups in reverse order.
-        groups=[(5,2),(7,0),(9,3),(11,1)] if variant==0 else [(9,1)]
+        groups=[(5,first_count),(7,0),(9,3),(11,1)] if variant==0 else [(9,1)]
         for n,(cluster,count) in enumerate(reversed(groups)):
             g=(cluster-5)//2
             entry(2,n+1,f'TOPIC{g+1}     ',16,cluster,0)
@@ -34,7 +34,7 @@ def fixture(variant):
                 entry(cluster,i+3,f'PIC{i+1:05}BMP',32,30+slot,78);slot+=1
         base=1+len(groups)
     for i in range(4):entry(2,base+i,f'MUSIC{i+1}  WAV',32,50+i,1000+i)
-    for i in range(6):
+    for i in range(first_count+4):
         a=(3+30+i-2)*512
         image=bytearray(78);image[:2]=b'BM'
         struct.pack_into('<I',image,2,78);struct.pack_into('<I',image,10,54)
@@ -49,7 +49,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--tool-dir',type=Path,required=True);a=p.parse_args()
     storage=['fat32_boot_parser.v','fat32_volume_locator.v','fat32_card_catalog.v','fat32_bmp_catalog.v','fat32_dir_scan.v','fat32_file_reader.v','bmp_stream_decoder.v','fat32_image_loader.v','fat32_frame_loader.v','frame_buffer_manager.v']
     player=['sd_media_player.v','sd_sector_arbiter.v','fat32_wav_player.v','fat32_file_reader.v','wav_pcm_decoder.v','media_prefetch_control.v']
-    board=['rtc_ds1302.v','rtc_set_control.v','hdmi_media_board_top.v','board_key.v','media_control_events.v','media_rotary_encoder.v','media_nec_receiver.v','media_infrared_control.v','media_mode_control.v','media_adjust_control.v','board_matrix_keys.v','media_home_control.v','home_album_config.v','media_3d_control.v']
+    board=['rtc_ds1302.v','rtc_set_control.v','hdmi_media_board_top.v','board_key.v','media_control_events.v','media_rotary_encoder.v','media_nec_receiver.v','media_infrared_control.v','media_mode_control.v','media_adjust_control.v','board_matrix_keys.v','media_home_control.v','media_help_control.v','home_album_config.v','media_3d_control.v']
     cases=[('tb_topic_directory',['fat32_dir_scan.v','home_album_config.v'],[HERE/'tb_directory.sv']),
            ('tb_topic_loader',storage,[HERE/'tb_loader.sv']),
            ('tb_topic_intro_map',player,[ROOT/'tests/gallery_caption/pause_pipeline_stubs.sv',HERE/'tb_intro_map.sv']),
@@ -57,8 +57,11 @@ def main():
            ('tb_topic_home_catalog',board,[ROOT/'tests/dmz_media/tb_hdmi_media_board_top.sv',HERE/'tb_home_catalog.sv'])]
     inputs={p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in [*(ROOT/'rtl').glob('*.v'),*HERE.glob('*.sv'),Path(__file__),ROOT/'assets/subtitle_v01.json',ROOT/'tests/chinese_subtitle/tb_subtitle_av.sv']}
     logs=[]
-    def run(cmd,cwd):
-        r=subprocess.run(list(map(str,cmd)),cwd=cwd,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=240)
+    def run(cmd,cwd,*,timeout=240):
+        try:
+            r=subprocess.run(list(map(str,cmd)),cwd=cwd,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=timeout)
+        except subprocess.TimeoutExpired as exc:
+            raise RuntimeError(f'{Path(cmd[1]).name} exceeded {timeout} seconds') from exc
         output=r.stdout+r.stderr;logs.append(output);print(output,end='',flush=True)
         if r.returncode or 'FATAL' in output:raise RuntimeError('topic/soft-edge regression failed')
     try:
@@ -74,6 +77,7 @@ def main():
                         golden.append(2 if fill[y][x] else int(outline))
             golden += [0]*(4096-len(golden));(t/'font_golden.hex').write_text('\n'.join(map(str,golden))+'\n',encoding='ascii')
             for top,rtl,bench in cases:
+                print(f'Running {top}',flush=True)
                 run([a.tool_dir/'iverilog.exe','-g2012','-s',top,'-o',t/'test.vvp',*[ROOT/'rtl'/n for n in rtl],*bench],t)
                 run([a.tool_dir/'vvp.exe',t/'test.vvp'],t)
             # Run the production 10-clock HDMI chain with HOME_UI enabled.
@@ -92,7 +96,8 @@ def main():
             assert 'blend(expected' in text
             (t/'tb_av.sv').write_text(text,encoding='utf-8')
             run([a.tool_dir/'iverilog.exe','-g2012','-s','tb_subtitle_av','-o',t/'av.vvp',*[p for p in (ROOT/'rtl').glob('*.v') if p.name!='board_pll.v'],t/'reference_av.v',t/'tb_av.sv'],t)
-            run([a.tool_dir/'vvp.exe',t/'av.vvp'],t)
+            print('Running tb_subtitle_av (full HDMI audio/video; may take several minutes)',flush=True)
+            run([a.tool_dir/'vvp.exe',t/'av.vvp'],t,timeout=600)
         assert all(hashlib.sha256((ROOT/n).read_bytes()).hexdigest()==h for n,h in inputs.items())
         (HERE/'summary.json').write_text(json.dumps(dict(status='passed',tops=[c[0] for c in cases],inputs_sha256=inputs),indent=2)+'\n',encoding='utf-8')
     finally:(HERE/'regression.log').write_text(''.join(logs),encoding='utf-8')

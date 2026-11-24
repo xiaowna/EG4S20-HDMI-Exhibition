@@ -1,20 +1,21 @@
 // Fixed Chinese settings panel. RGB, coordinates and DE/VS describe one pixel.
 // One synchronous font read runs in parallel with the subtitle, not in series.
-module video_chinese_settings #(parameter SPECTRUM_FFT=0,parameter MUSIC_MENU=0,parameter RTC_OVERLAY=0,parameter RTC_SETTING=0,parameter COMPACT_ROWS=0,parameter FINE_ADJUST=0,parameter MUSIC_TOAST=0)(
+module video_chinese_settings #(parameter SPECTRUM_FFT=0,parameter MUSIC_MENU=0,parameter RTC_OVERLAY=0,parameter RTC_SETTING=0,parameter COMPACT_ROWS=0,parameter FINE_ADJUST=0,parameter MUSIC_TOAST=0,parameter AUTOPLAY_INTERVAL_MENU=0)(
  input wire clk,rst_n,de,vsync,input wire [9:0] x,y,input wire [23:0] rgb_in,
  input wire [10:0] settings_word,input wire [3:0] mode_status,
  output wire [23:0] rgb_out,output wire overlay_valid,input wire [7:0] music_status,
  input wire [48:0] rtc_word,input wire [53:0] rtc_edit_word,input wire [14:0] fine_adjust_word,
- input wire [14:0] home_word,input wire music_playing);
+ input wire [14:0] home_word,input wire music_playing,input wire [3:0] autoplay_word);
  reg [10:0] settings_frame;
  reg [3:0] mode_frame;
  reg [7:0] music_frame;
  reg [48:0] rtc_frame;
  reg [53:0] edit_frame;
  reg [14:0] fine_frame;
+ reg [3:0] autoplay_frame;
  reg vsync_prev;
  always @(posedge clk or negedge rst_n)begin
-  if(!rst_n)begin settings_frame<=0;mode_frame<=0;music_frame<=0;rtc_frame<=0;edit_frame<=0;fine_frame<={8'd64,7'd50};vsync_prev<=1;end
+  if(!rst_n)begin settings_frame<=0;mode_frame<=0;music_frame<=0;rtc_frame<=0;edit_frame<=0;fine_frame<={8'd64,7'd50};autoplay_frame<=0;vsync_prev<=1;end
   else begin
    vsync_prev<=vsync;
    if(vsync_prev&&!vsync)begin settings_frame<=settings_word;mode_frame<=mode_status;
@@ -24,6 +25,7 @@ module video_chinese_settings #(parameter SPECTRUM_FFT=0,parameter MUSIC_MENU=0,
    if(vsync_prev&&!vsync)rtc_frame<=RTC_OVERLAY?rtc_word:49'd0;
    if(vsync_prev&&!vsync)edit_frame<=RTC_SETTING?rtc_edit_word:54'd0;
    if(vsync_prev&&!vsync)fine_frame<=FINE_ADJUST?fine_adjust_word:15'd0;
+   if(vsync_prev&&!vsync)autoplay_frame<=AUTOPLAY_INTERVAL_MENU?autoplay_word:4'd0;
   end
  end
  wire toast_active;wire [4:0] toast_alpha;wire [2:0] toast_pose;wire [1:0] toast_track;
@@ -112,7 +114,8 @@ module video_chinese_settings #(parameter SPECTRUM_FFT=0,parameter MUSIC_MENU=0,
  wire disabled_row=((row_index==4)||(MUSIC_MENU&&row_index==5))&&
   (!mode_frame[2] || (row_index==5&&music_frame[4:2]==0));
  wire switch_on=(row_index==2)?settings_frame[1]:
-  ((row_index==3)?settings_frame[0]:mode_frame[0]);
+  ((row_index==3)?settings_frame[0]:((AUTOPLAY_INTERVAL_MENU&&mode_frame[2])?autoplay_frame[3]:mode_frame[0]));
+ wire show_autoplay_seconds=AUTOPLAY_INTERVAL_MENU&&row_index==4&&mode_frame[2]&&autoplay_frame[3];
  reg [9:0] selected_top;
  always @*begin
   if(COMPACT_ROWS)begin
@@ -216,6 +219,16 @@ module video_chinese_settings #(parameter SPECTRUM_FFT=0,parameter MUSIC_MENU=0,
   endcase end
  endfunction
  reg [6:0] glyph;
+ reg [5:0] interval_tens,interval_ones;
+ always @*begin
+  case(autoplay_frame[2:0])
+   0:begin interval_tens=SP;interval_ones=N3;end
+   2:begin interval_tens=N1;interval_ones=N0;end
+   3:begin interval_tens=N1;interval_ones=N5;end
+   4:begin interval_tens=N3;interval_ones=N0;end
+   default:begin interval_tens=SP;interval_ones=N5;end
+  endcase
+ end
  reg [3:0] font_x,font_y;
  reg text_window;
  reg [23:0] text_color;
@@ -307,7 +320,14 @@ module video_chinese_settings #(parameter SPECTRUM_FFT=0,parameter MUSIC_MENU=0,
    else glyph=word_char(label_word,label_x[6:5]);
    font_x=label_x[4:1];font_y=row_y[4:1];text_window=1;
   end else if(x>=416&&x<480&&y>=160&&y<(COMPACT_ROWS?(MUSIC_MENU?352:320):(MUSIC_MENU?392:352)))begin
-   if((row_index<2 || (MUSIC_MENU&&row_index==5))&&row_y>=4&&row_y<20)begin
+   if(show_autoplay_seconds)begin
+    if(row_y>=8&&row_y<24&&value_x<48)begin
+     case(value_x[5:4])
+      0:glyph=interval_tens;1:glyph=interval_ones;default:glyph=7'd82; // 秒
+     endcase
+     font_x=value_x[3:0];font_y=row_y-10'd8;text_window=1;
+    end
+   end else if((row_index<2 || (MUSIC_MENU&&row_index==5))&&row_y>=4&&row_y<20)begin
     glyph=word_char(value_word,value_x[5:4]);
     font_x=value_x[3:0];font_y=row_y-10'd4;text_window=1;
     if(MUSIC_MENU&&row_index==5&&music_frame[6:5]!=music_frame[1:0])text_color=24'hb6e7d7;
@@ -321,7 +341,7 @@ module video_chinese_settings #(parameter SPECTRUM_FFT=0,parameter MUSIC_MENU=0,
   end
  end
  wire font_pixel;
- settings_font_rom #(.CLOCK_FONT(RTC_SETTING)) font(.clk(clk),.address({glyph,font_y,font_x}),.pixel(font_pixel));
+ settings_font_rom #(.CLOCK_FONT(RTC_SETTING||AUTOPLAY_INTERVAL_MENU)) font(.clk(clk),.address({glyph,font_y,font_x}),.pixel(font_pixel));
  reg [23:0] base_q,color_q;
  reg text_q,overlay_q,clock_only_q,toast_q,border_q;reg [4:0] alpha_q;
  always @(posedge clk or negedge rst_n)begin

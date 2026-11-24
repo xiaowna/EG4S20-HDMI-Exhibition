@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw, ImageOps
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DELIVERY = (Path.home() / "Desktop" / "太阳系特展_交付包_20261023")
+DELIVERY = Path("media_source")
 REPORT = ROOT / "reports/gallery_caption_20261024"
 HERO = (18, 36, 604, 308)
 BACKGROUND = (6, 12, 20)

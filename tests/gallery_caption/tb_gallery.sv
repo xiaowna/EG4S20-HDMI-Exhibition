@@ -28,7 +28,7 @@ module tb_gallery_producer;
  wire burst_ready=!responding&&cycles%7!=0&&mode!=4;
  wire pixel_ready=!hold_output&&cycles%11!=0&&cycles%1501<1373&&
   !(pixel_valid&&pixel_last&&last_stall<512);
- frame_intro_prefetch #(.TIMEOUT_CYCLES(1024),.GALLERY_CAPTIONS(1)) dut(.*);
+ frame_intro_prefetch #(.TIMEOUT_CYCLES(1024),.GALLERY_CAPTIONS(1)) dut(.back_base(21'd0),.*);
  function automatic [23:0] color(input integer address);
   color=(address*37)^(address<<7)^24'h5a39c7;
  endfunction

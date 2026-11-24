@@ -1,6 +1,5 @@
-"""Independent closed-sphere geometry, shared RAM, canvas and raster checks."""
+"""Independent solid Earth and Moon canvas, phase and raster checks."""
 from pathlib import Path
-import functools
 import argparse, hashlib, importlib.util, json, math, random, subprocess, tempfile
 from PIL import Image
 
@@ -8,32 +7,7 @@ ROOT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('solar',ROOT/'tests/solar_scene/verify.py')
 solar=importlib.util.module_from_spec(spec);spec.loader.exec_module(solar)
-VERTICES=[tuple(round(v) for v in (32*math.cos(math.radians(lat))*math.cos(a*math.pi/16),32*math.sin(math.radians(lat)),32*math.cos(math.radians(lat))*math.sin(a*math.pi/16))) for lat in [67.5,45,22.5,0,-22.5,-45,-67.5] for a in range(32)]+[(0,32,0),(0,-32,0)]
-
-@functools.lru_cache(maxsize=2)
-def topology(stride):
-    faces=[]
-    for a in range(0,32,stride):
-        arc=[(a+k)%32 for k in range(stride+1)]
-        faces += [(224,*arc),(*(192+n for n in arc),225)]
-        for ring in range(6):faces.append(tuple(ring*32+n for n in arc)+tuple((ring+1)*32+n for n in reversed(arc)))
-    edges=sorted({tuple(sorted((a,b))) for f in faces for a,b in zip(f,f[1:]+f[:1])})
-    draw=[(b,a) if b==224 or (a//32==b//32 and b-a==31) else (a,b) for a,b in edges]
-    return faces,edges,draw
-
 START=solar.START+[0x200000]
-
-def vertices(radius,elevation,azimuth):
-    cy,sy=solar.SINE[(azimuth+32)%128],solar.SINE[azimuth]
-    ce,se=solar.SINE[(elevation*2+32)%128],solar.SINE[elevation*2]
-    points=[]
-    for x,y,z in VERTICES:
-        rx=(x*cy+64)//128-(z*sy+64)//128
-        rz=(z*cy+64)//128+(x*sy+64)//128
-        ry=(y*ce+64)//128+(rz*se+64)//128
-        depth=(rz*ce+64)//128-(y*se+64)//128
-        points.append(((rx*radius+16)//32,(ry*radius+16)//32,depth))
-    return points
 
 def increment(n,speed):
     if n<8:return solar.increment(n,speed)
@@ -49,39 +23,22 @@ def canvas(phases,elevation,azimuth,zoom):
     centers=[(64,64,0),solar.project(radius,((phases[8]>>17)+azimuth)%128,elevation)]
     for n in sorted(range(2),key=lambda n:(centers[n][2],n)):
         cx,cy,_=centers[n]
-        points=vertices(([18,22,26] if n==0 else [8,10,12])[zoom],elevation,azimuth)
-        for front in [False,True]:
-            for a,b in topology(2 if n==0 else 4)[2]:
-                if (points[a][2]+points[b][2]>=0)!=front:continue
-                for dx,dy in solar.line(points[a][:2],points[b][:2]):
-                    x,y=cx+dx,cy+dy
-                    assert 0<=x<128 and 0<=y<128
-                    image[y*128+x]=(4 if n==0 else 7) if front else 3
+        index,radius=(2,solar.EARTH_RADII[zoom]) if n==0 else (9,solar.MOON_RADII[zoom])
+        for dx,dy,color in solar.sphere_pixels(index,radius,cx,cy):
+            x,y=cx+dx,cy+dy
+            assert 0<=x<128 and 0<=y<128
+            image[y*128+x]=color
     return image
 
 def geometry():
-    from collections import Counter
-    for orbit in [32,40,48]:
-        assert 64-orbit>=4 and 64+(orbit*127)//128-4+8<=128,'Moon name X would require clipping'
-    for stride,expected in [(2,352),(4,288)]:
-        faces,edges,draw=topology(stride)
-        counts=Counter(tuple(sorted((a,b))) for f in faces for a,b in zip(f,f[1:]+f[:1]))
-        assert len(VERTICES)==226 and len(edges)==expected
-        assert len(VERTICES)-len(edges)+len(faces)==2 and set(counts.values())=={2}
-    worst=(0,None)
-    for e in range(1,16):
-        for a in range(128):
-            for z in range(3):
-                samples=0
-                for r,stride in [([18,22,26][z],2),([8,10,12][z],4)]:
-                    v=vertices(r,e,a)
-                    assert all(-32<=c<32 for p in v for c in p[:2]),'signed-six-bit vertex overflow'
-                    for u,w in topology(stride)[1]:samples+=max(abs(v[w][0]-v[u][0]),abs(v[w][1]-v[u][1]))+1
-                if samples>worst[0]:worst=(samples,(e,a,z))
-    return {'vertices':226,'earth_edges':352,'moon_edges':288,'closed_manifold':True,
-            'moon_name_horizontal_clamp_proven_unnecessary':True,
-            'longitude_samples':32,'latitude_rings':7,'legal_camera_zoom_combinations':15*128*3,
-            'worst_line_samples':worst[0],'worst_pose':worst[1]}
+    for zoom,orbit in enumerate([32,40,48]):
+        for elevation in range(1,16):
+            for angle in range(128):
+                x,y,_=solar.project(orbit,angle,elevation)
+                radius=solar.MOON_RADII[zoom]
+                assert radius<=x<128-radius and radius<=y<128-radius
+    return {'projected_moon_positions':3*15*128,'earth_radii':solar.EARTH_RADII,
+            'moon_radii':solar.MOON_RADII,'all_body_bounds':True}
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--tool-dir',type=Path,required=True);args=p.parse_args()
@@ -95,8 +52,10 @@ def main():
               for z in range(3) for e,a in [(1,0),(3,31),(10,64),(15,95)] for s in [0,3,7]]
     cases += [(1,2,3,e,a,[v if n!=8 else a<<17 for n,v in enumerate(START)])
               for e in [1,15] for a in [0,32,64,96]]
-    e,a,z=proof['worst_pose'];cases.append((1,z,3,e,a,START))
+    cases.append((1,2,3,15,95,START))
     cases += [(0,1,3,10,12,START),(1,0,2,10,12,START),(0,1,7,1,95,START)]
+    cases += [(0,z,s,e,a,[rng.randrange(2**24) for _ in range(9)])
+              for z in [0,2] for e,a in [(1,0),(3,31),(10,64),(15,95)] for s in [0,3,7]]
     after=[[((v+increment(n,s))&0xffffff) for n,v in enumerate(ph)] for m,z,s,e,a,ph in cases]
     logs=[]
     def run(cmd,cwd):
@@ -108,7 +67,7 @@ def main():
         (tmp/'phase_before.hex').write_text(''.join(f'{v:06x}\n' for *_,ph in cases for v in ph))
         (tmp/'phase_after.hex').write_text(''.join(f'{v:06x}\n' for ph in after for v in ph))
         (tmp/'modes.hex').write_text(''.join(f'{(m<<16)|(z<<14)|(a<<7)|(e<<3)|s:x}\n' for m,z,s,e,a,ph in cases))
-        images=[canvas(ph,e,a,z) if m else solar.canvas(ph[:8],e,a) for (m,z,s,e,a,_),ph in zip(cases,after)]
+        images=[canvas(ph,e,a,z) if m else solar.canvas(ph[:8],e,a,z) for (m,z,s,e,a,_),ph in zip(cases,after)]
         anchors=[]
         for im in images:
             names={n['index']:n for n in im.names}

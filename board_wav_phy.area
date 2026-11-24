@@ -8,20 +8,20 @@ IO Statistics
   #inout                    1
 
 Utilization Statistics
-#lut                    18929   out of  19600   96.58%
-#reg                     8821   out of  19600   45.01%
-#le                     18929
-  #lut only             10108   out of  18929   53.40%
-  #reg only                 0   out of  18929    0.00%
-  #lut&reg               8821   out of  18929   46.60%
-#bram                      58   out of     64   90.62%
-  #bram9k                  58
+#lut                    18578   out of  19600   94.79%
+#reg                     8891   out of  19600   45.36%
+#le                     18578
+  #lut only              9687   out of  18578   52.14%
+  #reg only                 0   out of  18578    0.00%
+  #lut&reg               8891   out of  18578   47.86%
+#bram                      61   out of     64   95.31%
+  #bram9k                  61
   #fifo9k                   0
-#bram32k                   13   out of     16   81.25%
+#bram32k                   15   out of     16   93.75%
 #dsp                       13   out of     29   44.83%
 #pad                       31   out of    188   16.49%
-  #ireg                     4
-  #oreg                    11
+  #ireg                     0
+  #oreg                    10
   #treg                     0
 #pll                        1   out of      4   25.00%
 #gclk                       4   out of     16   25.00%
@@ -31,14 +31,14 @@ Detailed IO Report
 
       Name         Direction    Location    IOStandard    IOType    DriveStrength    PullType     PackReg   
       clk50          INPUT         R7        LVCMOS33      PAD           N/A          PULLUP       NONE     
-   infrared_n        INPUT        R16        LVCMOS33      PAD           N/A          PULLUP       IREG     
+   infrared_n        INPUT        R16        LVCMOS33      PAD           N/A          PULLUP       NONE     
   key_col_n[3]       INPUT        F10        LVCMOS33      PAD           N/A          PULLUP       NONE     
   key_col_n[2]       INPUT        C11        LVCMOS33      PAD           N/A          PULLUP       NONE     
   key_col_n[1]       INPUT        D11        LVCMOS33      PAD           N/A          PULLUP       NONE     
   key_col_n[0]       INPUT        E11        LVCMOS33      PAD           N/A          PULLUP       NONE     
-    mode_sw7         INPUT        A14        LVCMOS33      PAD           N/A          PULLUP       IREG     
+    mode_sw7         INPUT        A14        LVCMOS33      PAD           N/A          PULLUP       NONE     
       rst_n          INPUT         A9        LVCMOS33      PAD           N/A          PULLUP       NONE     
-     sd_miso         INPUT        D14        LVCMOS33      PAD           N/A          PULLUP       IREG     
+     sd_miso         INPUT        D14        LVCMOS33      PAD           N/A          PULLUP       NONE     
    hdmi_clk_p       OUTPUT         P1         LVDS33       PAD           NA            NONE        DDRX1    
   hdmi_clk_p(n)     OUTPUT         R1         LVDS33       PAD           NA            NONE        NONE     
     hdmi_d0_p       OUTPUT         N1         LVDS33       PAD           NA            NONE        DDRX1    
@@ -60,7 +60,7 @@ Detailed IO Report
       sd_cs         OUTPUT        F13        LVCMOS33      PAD            8            NONE        NONE     
      sd_mosi        OUTPUT        F14        LVCMOS33      PAD            8            NONE        OREG     
      sd_sck         OUTPUT        F15        LVCMOS33      PAD            8            NONE        OREG     
-     rtc_sda         INOUT         T8        LVCMOS33      PAD            8          PULLDOWN    IREG;OREG  
+     rtc_sda         INOUT         T8        LVCMOS33      PAD            8          PULLDOWN      NONE     
        dm0          OUTPUT        S14        LVCMOS25      PAD            8            NONE        NONE     
        cke          OUTPUT        S18        LVCMOS25      PAD            8            NONE        NONE     
       we_n          OUTPUT        S19        LVCMOS25      PAD            8            NONE        NONE     
@@ -122,116 +122,141 @@ Report Clock Domain Luts:
 -------------------------------------------------------------------------------------------------------------
   Index   |  Name    |  Frequency   |  LUT As Logic   |  LUT As Shifter   |  LUT As Dram   |  BRAM   |  DSP
 -------------------------------------------------------------------------------------------------------------
-  #1      |  pixel   |  25MHz       |  2226           |  0                |  0             |  47     |  8
-  #2      |  sdram   |  50MHz       |  24             |  0                |  0             |  0      |  0
-  #3      |  serial  |  125MHz      |  48             |  0                |  0             |  0      |  0
-  #4      |  system  |  50MHz       |  7208           |  0                |  0             |  44     |  5
+  #1      |  pixel   |  25MHz       |  2192           |  0                |  0             |  54     |  8
+  #2      |  sdram   |  50MHz       |  30             |  0                |  0             |  0      |  0
+  #3      |  serial  |  125MHz      |  52             |  0                |  0             |  0      |  0
+  #4      |  system  |  50MHz       |  7070           |  0                |  0             |  46     |  5
 -------------------------------------------------------------------------------------------------------------
 
 Clock Resource Statistics
 Index     ClockNet          Type               DriverType         Driver                  Fanout
-#1        u_pll/clk2_buf    Global             pll                u_pll/pll_inst.clkc2    4038
-#2        u_pll/clk0_buf    Global             pll                u_pll/pll_inst.clkc0    1679
-#3        u_pll/clk1_buf    Global             pll                u_pll/pll_inst.clkc1    32
+#1        u_pll/clk2_buf    Global             pll                u_pll/pll_inst.clkc2    4047
+#2        u_pll/clk0_buf    Global             pll                u_pll/pll_inst.clkc0    1720
+#3        u_pll/clk1_buf    Global             pll                u_pll/pll_inst.clkc1    33
 #4        clk50_dup_1       GeneralRouting     io                 clk50_syn_2.di          1
 
 Report Hierarchy Area:
-+--------------------------------------------------------------------------------------------------------------------+
-|Instance                          |Module                     |le      |lut     |ripple  |seq     |bram    |dsp     |
-+--------------------------------------------------------------------------------------------------------------------+
-|top                               |hdmi_media_board_top       |18929   |16934   |1995    |8836    |71      |13      |
-|  adjust_controls                 |media_adjust_control       |82      |64      |18      |40      |0       |0       |
-|  av                              |hdmi_av_output             |6949    |6163    |786     |2816    |47      |9       |
-|    audio_packet                  |hdmi_data_island_encoder   |285     |281     |4       |206     |0       |0       |
-|    auxiliary_packet              |hdmi_data_island_encoder   |242     |238     |4       |195     |0       |0       |
-|    brightness_lut                |video_brightness_lut       |268     |236     |32      |58      |0       |3       |
-|    chinese$home$display          |video_home                 |610     |500     |110     |125     |13      |0       |
-|      assets                      |home_assets_rom            |42      |42      |0       |6       |13      |0       |
-|    chinese$prepare$progress      |video_prepare_overlay      |117     |108     |9       |55      |0       |0       |
-|    chinese$settings$menu         |video_chinese_settings     |870     |797     |73      |261     |3       |2       |
-|      font                        |settings_font_rom          |217     |217     |0       |22      |3       |0       |
-|    chinese$subtitle              |video_chinese_subtitle     |171     |104     |67      |33      |1       |2       |
-|      font                        |subtitle_font_rom          |0       |0       |0       |0       |1       |0       |
-|    fifo                          |audio_async_fifo           |182     |154     |28      |100     |11      |0       |
-|    osd                           |video_scroll_osd           |34      |27      |7       |19      |0       |0       |
-|    packets                       |hdmi_audio_packets         |285     |253     |32      |155     |0       |0       |
-|    scene$cube                    |video_scene3d              |2068    |1842    |226     |770     |10      |1       |
-|      label_lines                 |scene_label_line_cache     |180     |137     |43      |77      |1       |0       |
-|      phases                      |solar_phase_ram            |82      |82      |0       |8       |1       |0       |
-|      sidebar                     |scene_sidebar_rom          |12      |12      |0       |8       |1       |0       |
-|        storage                   |scene_sidebar_word_rom     |8       |8       |0       |4       |1       |0       |
-|      unit_sphere                 |scene_sphere_rom           |6       |6       |0       |1       |1       |0       |
-|    source_switch$flush           |audio_source_flush         |14      |14      |0       |8       |0       |0       |
-|    spectrum$visual               |video_audio_spectrum       |996     |849     |147     |373     |7       |1       |
-|      fft                         |audio_fft512               |535     |459     |76      |245     |5       |1       |
-|        capture_storage           |audio_fft_capture_ram      |0       |0       |0       |0       |1       |0       |
-|        coefficients              |audio_fft_coeff_rom        |0       |0       |0       |0       |3       |0       |
-|        fft_storage               |audio_fft_work_ram         |80      |80      |0       |9       |1       |0       |
-|    tone                          |audio_tone_bank            |84      |65      |19      |41      |1       |0       |
-|    video_enc                     |tmds_channels              |188     |170     |18      |56      |0       |0       |
-|      enc_b                       |tmds_encoder               |61      |55      |6       |11      |0       |0       |
-|      enc_g                       |tmds_encoder               |63      |57      |6       |18      |0       |0       |
-|      enc_r                       |tmds_encoder               |64      |58      |6       |27      |0       |0       |
-|  clock_editor                    |rtc_set_control            |123     |123     |0       |57      |0       |0       |
-|  homepage$control                |media_home_control         |31      |31      |0       |22      |0       |0       |
-|  infrared                        |media_infrared_control     |338     |303     |35      |127     |0       |0       |
-|    receiver                      |media_nec_receiver         |217     |198     |19      |82      |0       |0       |
-|  keyboard                        |board_matrix_keys          |69      |62      |7       |38      |0       |0       |
-|  keys                            |board_key                  |104     |98      |6       |84      |0       |0       |
-|  mode_control                    |media_mode_control         |66      |60      |6       |37      |0       |0       |
-|  rtc                             |rtc_ds1302                 |353     |340     |13      |199     |0       |0       |
-|  scene_controls$rotation         |media_3d_control           |80      |72      |8       |35      |0       |0       |
-|  tx                              |tmds_ddr_tx                |44      |44      |0       |36      |0       |0       |
-|  u_player                        |sd_media_player            |10618   |9502    |1116    |5289    |24      |4       |
-|    u_arbiter                     |sd_sector_arbiter          |34      |28      |6       |19      |0       |0       |
-|    u_card                        |sd_subsystem               |769     |712     |57      |426     |0       |0       |
-|      u_init                      |sd_init_controller         |355     |326     |29      |197     |0       |0       |
-|        u_command                 |sd_command_engine          |160     |153     |7       |113     |0       |0       |
-|      u_reader                    |sd_data_block_reader       |359     |335     |24      |191     |0       |0       |
-|      u_spi                       |sd_spi_master              |55      |51      |4       |38      |0       |0       |
-|    u_control                     |media_prefetch_control     |330     |322     |8       |111     |0       |0       |
-|    u_media                       |media_stream_pipeline      |7256    |6426    |830     |3737    |23      |4       |
-|      u_display                   |frame_stream_display       |1825    |1527    |298     |938     |11      |4       |
-|        u_prefetch                |frame_burst_prefetch       |1602    |1330    |272     |815     |11      |4       |
-|          introduction$compositor |frame_intro_prefetch       |1465    |1208    |257     |737     |8       |4       |
-|            geometry              |intro_geometry_rom         |10      |10      |0       |1       |1       |0       |
-|            lines                 |intro_line_store           |14      |14      |0       |2       |2       |0       |
-|            text_layer            |intro_text_layer           |438     |363     |75      |287     |5       |2       |
-|              characters          |intro_character_rom        |0       |0       |0       |0       |1       |0       |
-|              glyphs              |intro_glyph_rom            |4       |4       |0       |2       |4       |0       |
-|          u_fifo                  |pixel_async_fifo           |131     |116     |15      |74      |3       |0       |
-|        u_sink                    |video_pixel_sink           |105     |95      |10      |56      |0       |0       |
-|        u_timing                  |video_raster_timing        |26      |14      |12      |12      |0       |0       |
-|      u_loader                    |fat32_frame_loader         |5154    |4671    |483     |2663    |12      |0       |
-|        u_frame                   |frame_buffer_manager       |68      |52      |16      |30      |0       |0       |
-|        u_image                   |fat32_image_loader         |5086    |4619    |467     |2633    |12      |0       |
-|          u_catalog               |fat32_card_catalog         |3026    |2787    |239     |1747    |7       |0       |
-|            u_bpb_math            |fat32_bpb_math             |515     |428     |87      |222     |0       |0       |
-|            u_catalog             |fat32_bmp_catalog          |1788    |1671    |117     |1042    |7       |0       |
-|              u_boot              |fat32_boot_parser          |402     |389     |13      |369     |0       |0       |
-|              u_directory         |fat32_dir_scan             |1188    |1093    |95      |566     |7       |0       |
-|            u_locator             |fat32_volume_locator       |711     |676     |35      |477     |0       |0       |
-|              u_probe             |fat32_boot_parser          |391     |378     |13      |227     |0       |0       |
-|          u_decoder               |bmp_stream_decoder         |686     |620     |66      |313     |0       |0       |
-|          u_file                  |fat32_file_reader          |1342    |1180    |162     |556     |1       |0       |
-|      u_memory                    |eg4s20_stream_memory       |277     |228     |49      |136     |0       |0       |
-|        u_ctrl                    |em638325_stream_controller |217     |173     |44      |91      |0       |0       |
-|    u_wav                         |fat32_wav_player           |2186    |1977    |209     |986     |1       |0       |
-|      parser                      |wav_pcm_decoder            |831     |775     |56      |392     |0       |0       |
-|      reader                      |fat32_file_reader          |1329    |1176    |153     |581     |1       |0       |
-|  u_pll                           |board_pll                  |2       |2       |0       |0       |0       |0       |
-+--------------------------------------------------------------------------------------------------------------------+
++----------------------------------------------------------------------------------------------------------------------+
+|Instance                            |Module                     |le      |lut     |ripple  |seq     |bram    |dsp     |
++----------------------------------------------------------------------------------------------------------------------+
+|top                                 |hdmi_media_board_top       |18578   |16650   |1928    |8901    |76      |13      |
+|  adjust_controls                   |media_adjust_control       |148     |130     |18      |50      |0       |0       |
+|  av                                |hdmi_av_output             |6509    |5814    |695     |2774    |52      |9       |
+|    audio_packet                    |hdmi_data_island_encoder   |279     |275     |4       |192     |0       |0       |
+|    auxiliary_packet                |hdmi_data_island_encoder   |247     |243     |4       |198     |0       |0       |
+|    brightness_lut                  |video_brightness_lut       |351     |319     |32      |79      |0       |3       |
+|    chinese$help$display            |video_help                 |32      |32      |0       |13      |3       |0       |
+|      high_font                     |help_glyph_bank1           |0       |0       |0       |0       |1       |0       |
+|      low_font                      |help_glyph_bank0           |0       |0       |0       |0       |1       |0       |
+|      text                          |help_character_rom         |4       |4       |0       |1       |1       |0       |
+|    chinese$home$display            |video_home                 |310     |261     |49      |59      |13      |0       |
+|      assets                        |home_assets_rom            |46      |46      |0       |7       |13      |0       |
+|        bank[0]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[10]$storage            |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[11]$storage            |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[12]$storage            |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[1]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[2]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[3]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[4]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[5]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[6]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[7]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[8]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[9]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|    chinese$prepare$progress        |video_prepare_overlay      |96      |87      |9       |48      |0       |0       |
+|    chinese$settings$menu           |video_chinese_settings     |880     |811     |69      |293     |4       |2       |
+|      font                          |settings_font_rom          |223     |223     |0       |49      |4       |0       |
+|        bank[0]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[1]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[2]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|        bank[3]$storage             |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|    chinese$subtitle                |video_chinese_subtitle     |176     |109     |67      |39      |1       |2       |
+|      font                          |subtitle_font_rom          |0       |0       |0       |0       |1       |0       |
+|        storage                     |anlogic_initialized_rom    |0       |0       |0       |0       |1       |0       |
+|    fifo                            |audio_async_fifo           |176     |148     |28      |98      |11      |0       |
+|    osd                             |video_scroll_osd           |26      |19      |7       |12      |0       |0       |
+|    packets                         |hdmi_audio_packets         |267     |235     |32      |160     |0       |0       |
+|    scene$cube                      |video_scene3d              |1730    |1545    |185     |698     |13      |1       |
+|      label_lines                   |scene_label_line_cache     |170     |127     |43      |75      |1       |0       |
+|      phases                        |solar_phase_ram            |0       |0       |0       |0       |1       |0       |
+|      sidebar                       |scene_sidebar_rom          |15      |15      |0       |7       |1       |0       |
+|        storage                     |scene_sidebar_word_rom     |13      |13      |0       |5       |1       |0       |
+|    source_switch$flush             |audio_source_flush         |17      |17      |0       |14      |0       |0       |
+|    spectrum$visual                 |video_audio_spectrum       |1024    |867     |157     |362     |7       |1       |
+|      fft                           |audio_fft512               |551     |465     |86      |261     |5       |1       |
+|        capture_storage             |audio_fft_capture_ram      |2       |2       |0       |1       |1       |0       |
+|        coefficients                |audio_fft_coeff_rom        |0       |0       |0       |0       |3       |0       |
+|          twiddle_high_coefficients |anlogic_initialized_rom18  |0       |0       |0       |0       |1       |0       |
+|          twiddle_low_coefficients  |anlogic_initialized_rom18  |0       |0       |0       |0       |1       |0       |
+|          window_coefficients       |anlogic_initialized_rom18  |0       |0       |0       |0       |1       |0       |
+|        fft_storage                 |audio_fft_work_ram         |65      |65      |0       |14      |1       |0       |
+|    tone                            |audio_tone_bank            |134     |110     |24      |56      |0       |0       |
+|    video_enc                       |tmds_channels              |185     |167     |18      |66      |0       |0       |
+|      enc_b                         |tmds_encoder               |69      |63      |6       |25      |0       |0       |
+|      enc_g                         |tmds_encoder               |64      |58      |6       |17      |0       |0       |
+|      enc_r                         |tmds_encoder               |52      |46      |6       |24      |0       |0       |
+|  clock_editor                      |rtc_set_control            |135     |135     |0       |58      |0       |0       |
+|  help_control                      |media_help_control         |4       |4       |0       |2       |0       |0       |
+|  homepage$control                  |media_home_control         |62      |62      |0       |25      |0       |0       |
+|  infrared                          |media_infrared_control     |322     |287     |35      |150     |0       |0       |
+|    receiver                        |media_nec_receiver         |202     |183     |19      |93      |0       |0       |
+|  keyboard                          |board_matrix_keys          |62      |55      |7       |47      |0       |0       |
+|  keys                              |board_key                  |90      |84      |6       |76      |0       |0       |
+|  mode_control                      |media_mode_control         |62      |56      |6       |36      |0       |0       |
+|  rtc                               |rtc_ds1302                 |352     |339     |13      |193     |0       |0       |
+|  scene_controls$rotation           |media_3d_control           |130     |122     |8       |36      |0       |0       |
+|  tx                                |tmds_ddr_tx                |46      |46      |0       |36      |0       |0       |
+|  u_player                          |sd_media_player            |10593   |9453    |1140    |5372    |24      |4       |
+|    u_arbiter                       |sd_sector_arbiter          |27      |21      |6       |14      |0       |0       |
+|    u_card                          |sd_subsystem               |784     |727     |57      |431     |0       |0       |
+|      u_init                        |sd_init_controller         |352     |323     |29      |201     |0       |0       |
+|        u_command                   |sd_command_engine          |158     |151     |7       |113     |0       |0       |
+|      u_reader                      |sd_data_block_reader       |380     |356     |24      |189     |0       |0       |
+|      u_spi                         |sd_spi_master              |52      |48      |4       |41      |0       |0       |
+|    u_control                       |media_prefetch_control     |486     |478     |8       |143     |0       |0       |
+|    u_media                         |media_stream_pipeline      |7202    |6348    |854     |3779    |23      |4       |
+|      u_display                     |frame_stream_display       |1840    |1523    |317     |930     |11      |4       |
+|        u_prefetch                  |frame_burst_prefetch       |1603    |1312    |291     |821     |11      |4       |
+|          introduction$compositor   |frame_intro_prefetch       |1444    |1180    |264     |737     |8       |4       |
+|            geometry                |intro_geometry_rom         |10      |10      |0       |5       |1       |0       |
+|            lines                   |intro_line_store           |4       |4       |0       |2       |2       |0       |
+|            text_layer              |intro_text_layer           |464     |389     |75      |267     |5       |2       |
+|              characters            |intro_character_rom        |0       |0       |0       |0       |1       |0       |
+|              glyphs                |intro_glyph_rom            |8       |8       |0       |1       |4       |0       |
+|          u_fifo                    |pixel_async_fifo           |129     |114     |15      |78      |3       |0       |
+|        u_sink                      |video_pixel_sink           |115     |105     |10      |50      |0       |0       |
+|        u_timing                    |video_raster_timing        |26      |14      |12      |12      |0       |0       |
+|      u_loader                      |fat32_frame_loader         |5082    |4594    |488     |2713    |12      |0       |
+|        u_frame                     |frame_buffer_manager       |166     |145     |21      |65      |0       |0       |
+|        u_image                     |fat32_image_loader         |4916    |4449    |467     |2648    |12      |0       |
+|          u_catalog                 |fat32_card_catalog         |2896    |2657    |239     |1752    |7       |0       |
+|            u_bpb_math              |fat32_bpb_math             |500     |413     |87      |223     |0       |0       |
+|            u_catalog               |fat32_bmp_catalog          |1749    |1632    |117     |1040    |7       |0       |
+|              u_boot                |fat32_boot_parser          |434     |421     |13      |377     |0       |0       |
+|              u_directory           |fat32_dir_scan             |1122    |1027    |95      |559     |7       |0       |
+|            u_locator               |fat32_volume_locator       |636     |601     |35      |481     |0       |0       |
+|              u_probe               |fat32_boot_parser          |328     |315     |13      |235     |0       |0       |
+|          u_decoder                 |bmp_stream_decoder         |663     |597     |66      |323     |0       |0       |
+|          u_file                    |fat32_file_reader          |1343    |1181    |162     |564     |1       |0       |
+|      u_memory                      |eg4s20_stream_memory       |280     |231     |49      |136     |0       |0       |
+|        u_ctrl                      |em638325_stream_controller |226     |182     |44      |99      |0       |0       |
+|    u_wav                           |fat32_wav_player           |2047    |1838    |209     |994     |1       |0       |
+|      parser                        |wav_pcm_decoder            |797     |741     |56      |411     |0       |0       |
+|      reader                        |fat32_file_reader          |1232    |1079    |153     |571     |1       |0       |
+|  u_pll                             |board_pll                  |2       |2       |0       |0       |0       |0       |
++----------------------------------------------------------------------------------------------------------------------+
 
 
 DataNet Average Fanout:
 
    Index     Fanout     Nets   
-    #1          1       14030  
-    #2          2       4659   
-    #3          3       2121   
-    #4          4       1249   
-    #5        5-10      2097   
-    #6        11-50      840   
-    #7       51-100      78    
-    #8       101-500     21    
-  Average     2.95             
+    #1          1       13924  
+    #2          2       4690   
+    #3          3       1994   
+    #4          4       1311   
+    #5        5-10      2071   
+    #6        11-50      854   
+    #7       51-100      82    
+    #8       101-500     16    
+  Average     2.96             

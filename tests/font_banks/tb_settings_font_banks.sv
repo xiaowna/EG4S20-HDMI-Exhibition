@@ -28,9 +28,8 @@ module tb_settings_font_banks;
     $fatal(1,"128-slot mapping/latency mismatch at %h: new=%b old=%b golden=%b",target,current128,reference128,golden[target]);
    if(reference128!==historical_golden[target])
     $fatal(1,"historical 128-slot mapping/latency mismatch at %h: old=%b golden=%b",target,reference128,historical_golden[target]);
-   // The first 74 glyphs and all unused slots must remain identical. M02
-   // intentionally filled historical zero slots 74..81 with music-note poses.
-   if((target<74*256||target>=82*256)&&current128!==reference128)
+   // Slots 74..81 contain note poses and slot 82 contains the seconds unit.
+   if((target<74*256||target>=83*256)&&current128!==reference128)
     $fatal(1,"unintended historical glyph change at %h",target);
    if(current64!==reference64)
     $fatal(1,"legacy 64-slot comparison mismatch at %h",target);
@@ -59,7 +58,7 @@ module tb_settings_font_banks;
   // Repeated addresses and the legacy upper-bit alias must also retain data.
   repeat(8)probe(15'h7fff);
   repeat(8)begin probe(15'h0101);probe(15'h4101);end
-  $display("PASS banked settings font: %0d samples; all 32768 addresses against current and historical independent bitmaps, both modes, 74 original glyphs unchanged, 8 added music-note slots, legacy bit-14 alias, bank/bit jumps and one-clock registered output",samples);
+  $display("PASS banked settings font: %0d samples; all addresses in both modes, historical glyphs preserved, note poses and seconds glyph, one-clock output",samples);
   $finish;
  end
  initial begin #1000000;$fatal(1,"font comparison timeout");end

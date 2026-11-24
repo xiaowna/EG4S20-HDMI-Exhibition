@@ -7,7 +7,7 @@ module tb_mode_menu;
  wire cfg_autoplay,autoplay_page;wire [1:0] setting_page;
  integer i,updates=0;
  always #5 clk=~clk;
- media_adjust_control #(.AUTOPLAY_MENU(1)) dut(.home_play(1'b0),.home_music_index(2'd0),.music_count(3'd0),.music_page(),.cfg_music_index(),.cfg_music_request(),.rtc_page(),.rtc_exit(1'b0),.frame_tick(1'b0),.held_key_n(4'hf),.contrast_index(),.*);
+ media_adjust_control #(.AUTOPLAY_MENU(1)) dut(.home_play(1'b0),.home_music_index(2'd0),.music_count(3'd0),.music_page(),.cfg_music_index(),.cfg_music_request(),.rtc_page(),.rtc_exit(1'b0),.frame_tick(1'b0),.held_key_n(4'hf),.contrast_index(),.autoplay_interval(),.*);
  task tick;begin @(negedge clk);#1;end endtask
  task press(input [3:0] key);begin key_press=key;tick;key_press=0;tick;end endtask
  always @(posedge clk)if(rst_n&&cfg_update)updates=updates+1;

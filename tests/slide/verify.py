@@ -20,9 +20,9 @@ def main():
    for w,h,burst in [(3,2,1),(7,5,3),(32,9,32),(640,3,32)]:
     run([args.tool_dir/'iverilog.exe','-g2012','-s','tb_slide_burst',f'-Ptb_slide_burst.W={w}',f'-Ptb_slide_burst.H={h}',f'-Ptb_slide_burst.MAX_BURST={burst}','-o',tmp/'check.vvp',*sources,HERE/'tb_burst.sv'],tmp)
     run([args.tool_dir/'vvp.exe',tmp/'check.vvp'],tmp);records.append({'width':w,'height':h,'burst':burst})
-   for bad in [0,1]:
-    run([args.tool_dir/'iverilog.exe','-g2012','-s','tb_slide_pipeline',f'-Ptb_slide_pipeline.BAD={bad}','-o',tmp/'pipeline.vvp',*core,HERE/'tb_pipeline.sv'],tmp)
-    run([args.tool_dir/'vvp.exe',tmp/'pipeline.vvp'],ROOT/'tests');records.append({'real_fat_sdram_pipeline':True,'bad_file':bad})
+   for fast,bad in [(0,0),(0,1),(1,0),(1,1)]:
+    run([args.tool_dir/'iverilog.exe','-g2012','-s','tb_slide_pipeline',f'-Ptb_slide_pipeline.BAD={bad}',f'-Ptb_slide_pipeline.FAST={fast}','-o',tmp/'pipeline.vvp',*core,HERE/'tb_pipeline.sv'],tmp)
+    run([args.tool_dir/'vvp.exe',tmp/'pipeline.vvp'],ROOT/'tests');records.append({'real_fat_sdram_pipeline':True,'bad_file':bad,'fast':bool(fast)})
    for full in [0,1]:
     run([args.tool_dir/'iverilog.exe','-g2012','-s','tb_slide_full',f'-Ptb_slide_full.FULL={full}','-o',tmp/'full.vvp',*core,HERE/'tb_full.sv'],tmp)
     run([args.tool_dir/'vvp.exe',tmp/'full.vvp'],tmp);records.append({'full_size_display':bool(full)})

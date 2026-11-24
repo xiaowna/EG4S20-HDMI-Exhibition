@@ -156,6 +156,7 @@
             </File>
             <File Path="rtl/media_playlist_control.v">
                 <FileInfo>
+                    <Attr Name="AutoExcluded" Val="true"/>
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
@@ -311,6 +312,7 @@
             </File>
             <File Path="rtl/hdmi_bch8.v">
                 <FileInfo>
+                    <Attr Name="AutoExcluded" Val="true"/>
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
@@ -423,6 +425,7 @@
             </File>
             <File Path="rtl/video_audio_waveform.v">
                 <FileInfo>
+                    <Attr Name="AutoExcluded" Val="true"/>
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
@@ -511,6 +514,7 @@
             </File>
             <File Path="rtl/rtc_ds3231.v">
                 <FileInfo>
+                    <Attr Name="AutoExcluded" Val="true"/>
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
@@ -637,13 +641,45 @@
                     <Attr Name="CompileOrder" Val="78"/>
                 </FileInfo>
             </File>
-        
             <File Path="rtl/scene_sphere_rom.v">
                 <FileInfo>
+                    <Attr Name="AutoExcluded" Val="true"/>
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
                     <Attr Name="CompileOrder" Val="79"/>
+                </FileInfo>
+            </File>
+            <File Path="rtl/media_help_control.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="80"/>
+                </FileInfo>
+            </File>
+            <File Path="rtl/help_assets_rom.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="81"/>
+                </FileInfo>
+            </File>
+            <File Path="rtl/anlogic_initialized_rom.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="83"/>
+                </FileInfo>
+            </File>
+            <File Path="rtl/video_help.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="82"/>
                 </FileInfo>
             </File>
         </Verilog>
@@ -689,15 +725,13 @@
         <Run Name="syn_1" Type="Synthesis" ConstraintSet="constraint_1" Description="" Active="true">
             <Strategy Name="Default_Synthesis_Strategy">
                 <GateProperty>
-                    <eram_init>on</eram_init>
-                    <opt_area>medium</opt_area>
                     <pack_effort>high</pack_effort>
                 </GateProperty>
             </Strategy>
             <UserParams>
                 <param>set_param gate eram_init on</param>
-                <param>set_param gate opt_area high</param>
                 <param>set_param gate pack_effort high</param>
+                <param>set_param gate opt_area high</param>
             </UserParams>
         </Run>
         <Run Name="phy_1" Type="PhysicalDesign" ConstraintSet="constraint_1" Description="" SynRun="syn_1" Active="true">
@@ -707,28 +741,29 @@
                     <hfn_opt_effort>high</hfn_opt_effort>
                     <opt_timing>high</opt_timing>
                     <post_place_opt>high</post_place_opt>
-                    <pr_strategy>1</pr_strategy>
+                    <pr_strategy>5</pr_strategy>
                 </PlaceProperty>
-                <RouteProperty><effort>routability</effort><post_route_opt>auto</post_route_opt></RouteProperty>
+                <RouteProperty>
+                    <effort>routability</effort>
+                </RouteProperty>
             </Strategy>
             <UserParams>
                 <param>set_param place pr_strategy 5</param>
                 <param>set_param place hfn_opt_effort high</param>
                 <param>set_param place post_place_opt high</param>
-                <param>set_param route post_route_opt high</param>
                 <param>set_param route effort routability</param>
             </UserParams>
         </Run>
     </Runs>
     <MultiSeed>
-        <Property Enable="true" GenBit="true" EndStep="route" Random="false" Num="1" Init="13" Jobs="1" Save="1" Step="1">
+        <Property Enable="true" GenBit="true" EndStep="route" Random="false" Num="1" Init="19" Jobs="1" Save="1" Step="1">
             <Filter enabled="false">
                 <congestion>100</congestion>
                 <place_swns>0</place_swns>
                 <route_swns>0</route_swns>
             </Filter>
         </Property>
-        <Seeds select="13">13 </Seeds>
+        <Seeds select="19">19 </Seeds>
     </MultiSeed>
     <Project_Settings>
     </Project_Settings>

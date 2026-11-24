@@ -4,6 +4,18 @@ proc hdmi_gui_read_design {prj_name hdmi_root} {
   set_param gate opt_area high
   set_param gate pack_effort high
   puts "HDMI_GUI_GATE_PROFILE eram_init=[get_param gate eram_init] opt_area=[get_param gate opt_area] pack_effort=[get_param gate pack_effort]"
+  set rom_path [file join $hdmi_root rtl anlogic_initialized_rom.v]
+  set run_project [format "%s.prj" $prj_name]
+  if {![file isfile $run_project]} { set run_project [format "%s.al" $prj_name] }
+  if {[file isfile $rom_path] && [file isfile $run_project]} {
+    set source_list [open $run_project r]
+    set registered [regexp {<File\s+Path="[^"]*[/\\]anlogic_initialized_rom\.v"} [read $source_list]]
+    close $source_list
+    if {!$registered} {
+      reanalyze -file $rom_path
+      puts "HDMI_GUI_ROM_SOURCE_ANALYZED $rom_path"
+    }
+  }
   set hdmi_receipt [open .hdmi_gui_read_design.profile w]
   puts $hdmi_receipt [list stage read_design root $hdmi_root checked_at [clock seconds]]
   close $hdmi_receipt

@@ -147,13 +147,13 @@
     }
   ],
   "source_sha256": {
-    "rtl/fat32_boot_parser.v": "303b72364d49f158b615b4e20eab5acc9de2bf43defc41b7190a1e879f77193b",
-    "rtl/fat32_volume_locator.v": "184991b41e329c534b72b2c4406880efdaa8a8e90da28ae3a03b5c778454f9a6",
-    "reports/o22_signature_flags_20261023/before/worktree/rtl/fat32_boot_parser.v": "7c5d92f962b0668c3d9cbf4749a139604ed2ab39e7c48372a9f227c63993ed03",
-    "reports/o22_signature_flags_20261023/before/worktree/rtl/fat32_volume_locator.v": "3c7446ac7eaf6ed97474909e83eda77c4dd5548512e4567eff7090f9d494d41c",
-    "tests/signature_flags/tb_signature_boot.sv": "981791e2523371578f63a852da2a9f9b07852f62bc61794500034de973c6645c",
-    "tests/signature_flags/tb_signature_locator.sv": "d6a04a3878aa7c2206335671d2512f6ae7a9d17b640eade85d55a2b4e199dc51",
-    "tests/signature_flags/verify.py": "56dbbbf9281997a523b69d4a266b34ad8098f80e56b64921666605682058f020"
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\rtl\\fat32_boot_parser.v": "303b72364d49f158b615b4e20eab5acc9de2bf43defc41b7190a1e879f77193b",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\rtl\\fat32_volume_locator.v": "184991b41e329c534b72b2c4406880efdaa8a8e90da28ae3a03b5c778454f9a6",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\reports\\o22_signature_flags_20261023\\before\\worktree\\rtl\\fat32_boot_parser.v": "7c5d92f962b0668c3d9cbf4749a139604ed2ab39e7c48372a9f227c63993ed03",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\reports\\o22_signature_flags_20261023\\before\\worktree\\rtl\\fat32_volume_locator.v": "3c7446ac7eaf6ed97474909e83eda77c4dd5548512e4567eff7090f9d494d41c",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\tests\\signature_flags\\tb_signature_boot.sv": "981791e2523371578f63a852da2a9f9b07852f62bc61794500034de973c6645c",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\tests\\signature_flags\\tb_signature_locator.sv": "d6a04a3878aa7c2206335671d2512f6ae7a9d17b640eade85d55a2b4e199dc51",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\tests\\signature_flags\\verify.py": "56dbbbf9281997a523b69d4a266b34ad8098f80e56b64921666605682058f020"
   },
   "frozen_modules_independently_renamed": [
     "fat32_boot_parser",

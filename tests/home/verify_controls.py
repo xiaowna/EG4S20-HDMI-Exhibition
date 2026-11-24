@@ -11,7 +11,7 @@ HERE = Path(__file__).resolve().parent
 BOARD = ['rtc_ds1302.v', 'rtc_set_control.v', 'hdmi_media_board_top.v',
          'board_key.v', 'media_control_events.v', 'media_rotary_encoder.v',
          'media_nec_receiver.v', 'media_infrared_control.v', 'media_mode_control.v',
-         'media_adjust_control.v', 'board_matrix_keys.v', 'media_home_control.v',
+         'media_adjust_control.v', 'board_matrix_keys.v', 'media_home_control.v','media_help_control.v',
          'home_album_config.v', 'media_3d_control.v']
 
 def main():
@@ -20,7 +20,7 @@ def main():
     args = parser.parse_args()
     models = [ROOT/'tests/dmz_media/tb_hdmi_media_board_top.sv',
               ROOT/'tests/dmz_media/dmz_keyboard_model.sv']
-    jobs = [('tb_home_control', ['media_home_control.v', 'home_album_config.v'],
+    jobs = [('tb_home_control', ['media_home_control.v','media_help_control.v', 'home_album_config.v'],
              [HERE/'tb_control.sv'], {}),
             ('tb_home_board', BOARD, [HERE/'tb_board.sv', *models], {'FINE_ADJUST': 0}),
             ('tb_home_board', BOARD, [HERE/'tb_board.sv', *models], {'FINE_ADJUST': 1}),

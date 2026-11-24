@@ -4,7 +4,7 @@ set hdmi_project_file [hdmi_prepare_project]
 set hdmi_gui_directory [hdmi_gui_run_directory]
 set hdmi_gui_database [file join $hdmi_gui_directory HDMI_media_board_WAV_pr.db]
 if {![file isfile $hdmi_gui_database]} {
-    error "No routed seed-13 GUI database; run the full MultiSeed flow first"
+    error "No routed seed-19 GUI database; run the full MultiSeed flow first"
 }
 import_device eagle_s20.db -package EG4S20BG256
 open_project $hdmi_project_file

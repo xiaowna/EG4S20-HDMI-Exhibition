@@ -44,7 +44,7 @@ def simulation_rom_source(path,tmp):
 
 def main():
  p=argparse.ArgumentParser();p.add_argument('--tool-dir',type=Path,required=True);p.add_argument('--compile-only',action='store_true');a=p.parse_args()
- board=['rtc_ds1302.v','rtc_set_control.v','hdmi_media_board_top.v','board_key.v','media_control_events.v','media_rotary_encoder.v','media_nec_receiver.v','media_infrared_control.v','media_mode_control.v','media_adjust_control.v','board_matrix_keys.v','media_home_control.v','home_album_config.v','media_3d_control.v']
+ board=['rtc_ds1302.v','rtc_set_control.v','hdmi_media_board_top.v','board_key.v','media_control_events.v','media_rotary_encoder.v','media_nec_receiver.v','media_infrared_control.v','media_mode_control.v','media_adjust_control.v','board_matrix_keys.v','media_home_control.v','media_help_control.v','home_album_config.v','media_3d_control.v']
  av=['hdmi_av_output.v','video_prepare_overlay.v','video_brightness_lut.v','video_scroll_osd.v','video_audio_waveform.v','video_chinese_subtitle.v','subtitle_font_rom.v','video_chinese_settings.v','settings_font_rom.v','video_home.v','home_assets_rom.v','audio_source_flush.v','audio_tone_bank.v','audio_async_fifo.v','hdmi_audio_packets.v','hdmi_bch8.v','hdmi_terc4.v','hdmi_data_island_encoder.v','tmds_encoder.v','tmds_channels.v']
  jobs=[('tb_prepare_pixels',['video_prepare_overlay.v'],['tb_pixels.sv']),('tb_prepare_count',['frame_buffer_manager.v'],['tb_count.sv']),('tb_prepare_board',board,['tb_board.sv',ROOT/'tests/dmz_media/tb_hdmi_media_board_top.sv',ROOT/'tests/dmz_media/dmz_keyboard_model.sv']),('tb_prepare_av',av,['tb_av.sv'])]
  logs=[];cases=[];inputs=set();vectors=0;rom_equivalence=None

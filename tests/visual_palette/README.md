@@ -7,9 +7,9 @@
 运行：
 
 ```powershell
-python -B tests/visual_palette/verify.py --tool-dir C:/iverilog/bin
-python -B tests/music_toast/verify.py --tool-dir C:/iverilog/bin
-python -B tests/osd_lookup/verify.py --tool-dir C:/iverilog/bin
+python -B tests/visual_palette/verify.py --tool-dir PUBLIC_SOURCE/.codex/toolchains/iverilog-iccoder-2.0.10/bin
+python -B tests/music_toast/verify.py --tool-dir PUBLIC_SOURCE/.codex/toolchains/iverilog-iccoder-2.0.10/bin
+python -B tests/osd_lookup/verify.py --tool-dir PUBLIC_SOURCE/.codex/toolchains/iverilog-iccoder-2.0.10/bin
 ```
 
 专项结果：3,345,424 个独立 RGB 像素向量通过，旧 OSD 的 9,999,624 次公共输出比较通过；音乐提示的 315 项时序检查通过，仍为 238 帧完整显示、60 帧渐隐。覆盖首页五卡与双向轮播、中文设置、准备/完成/错误状态、字幕全部 17 档边缘透明度、RTC 输入框与保存状态，以及四首音乐/八个音符姿态/全部渐隐档位。

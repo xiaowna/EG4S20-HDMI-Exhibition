@@ -49,17 +49,17 @@ class FixedRemoteConfigTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'do not match'):check_profile(self.root)
 
     def test_extra_keys_round_trip(self):
-        extras=dict(back='420D',egg_a='4246',egg_b='4244')
+        extras=dict(back='420D',zoom='4246',model='4244')
         apply_profile(self.root,build_profile(self.codes,extras))
-        self.assertEqual(check_profile(self.root)['extras'],dict(back='0D',egg_a='46',egg_b='44'))
+        self.assertEqual(check_profile(self.root)['extras'],dict(back='0D',zoom='46',model='44'))
 
     def test_extra_keys_reject_wrong_address(self):
         with self.assertRaisesRegex(ValueError,'same NEC address'):
-            build_profile(self.codes,dict(back='000D',egg_a='4246',egg_b='4244'))
+            build_profile(self.codes,dict(back='000D',zoom='4246',model='4244'))
 
     def test_extra_keys_reject_navigation_collision(self):
         with self.assertRaisesRegex(ValueError,'different commands'):
-            build_profile(self.codes,dict(back='420D',egg_a='4246',egg_b='4245'))
+            build_profile(self.codes,dict(back='420D',zoom='4246',model='4245'))
 
     def test_direction_keys_round_trip(self):
         apply_profile(self.root,build_profile(self.codes,direction_codes=dict(up='4240',down='4219')))
@@ -70,7 +70,7 @@ class FixedRemoteConfigTests(unittest.TestCase):
             with self.subTest(directions=directions),self.assertRaises(ValueError):
                 build_profile(self.codes,direction_codes=directions)
         with self.assertRaisesRegex(ValueError,'different commands'):
-            build_profile(self.codes,dict(back='420D',egg_a='4246',egg_b='4244'),dict(up='4246',down='4219'))
+            build_profile(self.codes,dict(back='420D',zoom='4246',model='4244'),dict(up='4246',down='4219'))
 
     def test_direction_manifest_detects_rtl_disagreement(self):
         apply_profile(self.root,build_profile(self.codes,direction_codes=dict(up='4240',down='4219')))

@@ -7,7 +7,7 @@ NAMES=['fat32_boot_parser','fat32_volume_locator','fat32_bpb_math']
 
 def main():
  p=argparse.ArgumentParser(description=__doc__)
- p.add_argument('--tool-dir',type=Path,default=(Path.home()/'.codex/toolchains/iverilog-iccoder-2.0.10/bin'))
+ p.add_argument('--tool-dir',type=Path,default=Path('bin'))
  p.add_argument('--rtl-dir',type=Path,default=ROOT/'rtl');p.add_argument('--baseline-dir',type=Path,default=DEFAULT_BASE)
  p.add_argument('--timeouts',type=int,nargs='+',default=[800,2048]);p.add_argument('--shared',type=int,nargs='+',default=[0,1])
  p.add_argument('--tag',default='regression');a=p.parse_args()

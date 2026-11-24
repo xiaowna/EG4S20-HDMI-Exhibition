@@ -59,14 +59,14 @@ module tb_gallery_tempo;
  initial begin #1000000;$fatal(1,"tempo timeout");end
 endmodule
 
-module frame_burst_prefetch #(parameter FRAME_PIXELS=307200,FIFO_ADDR_BITS=8,SLIDE_TRANSITIONS=0,LINE_PIXELS=640,INTRO_ANIMATION=0)(
+module frame_burst_prefetch #(parameter FRAME_PIXELS=307200,FIFO_ADDR_BITS=8,SLIDE_TRANSITIONS=0,LINE_PIXELS=640,INTRO_ANIMATION=0,CACHE_FRAMES=0)(
  input wire rst_n,sys_clk,pix_clk,start,input wire [31:0] frame_base,
  output wire start_ready,busy,done,error,burst_valid,output wire [31:0] burst_addr,
  output wire [8:0] burst_words,input wire burst_ready,burst_data_valid,burst_last,burst_error,
  input wire [31:0] burst_data,output wire pixel_valid,output wire [31:0] pixel_addr,
  output wire [23:0] pixel_rgb,output wire pixel_last,input wire pixel_ready,
  input wire slide_active,slide_right,input wire [15:0] slide_offset,
- input wire intro_active,input wire [1:0] intro_topic,input wire [5:0] intro_phase,slide_alpha);
+ input wire intro_active,input wire [1:0] intro_topic,input wire [5:0] intro_phase,slide_alpha,input wire [20:0] back_base);
  assign start_ready=1;assign busy=0;assign done=0;assign error=0;
  assign burst_valid=0;assign burst_addr=0;assign burst_words=0;
  assign pixel_valid=0;assign pixel_addr=0;assign pixel_rgb=0;assign pixel_last=0;

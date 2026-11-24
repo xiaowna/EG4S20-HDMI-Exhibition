@@ -1,11 +1,11 @@
 {
   "status": "passed",
   "inputs_sha256": {
-    "rtl/settings_font_rom.v": "d5038b1d0d7c47db9f2a6d9eeff1f02eb810e68577829ecfee74429b9492c54d",
-    "assets/settings_v04.json": "2718774698c99f66cf184a60db6c3e75402c4a75d47771aed891080a46b566a4",
+    "rtl/settings_font_rom.v": "206b79e9dca85b068ed0f1f33f5f7ccab95bdf26685a60415d824a6733473280",
+    "assets/settings_v04.json": "835ff9d016b62c754ed016f5344586d886a56340ce8d413053e7a0a45564e489",
     "tests/font_banks/reference_settings_font_rom.v": "8d6417b26175b55dddd0842004687f27400534d5371fcbdb99134eb325939c05",
-    "tests/font_banks/tb_settings_font_banks.sv": "0400fa10f0c204063af1eef83a60e45279d3147b5a0a998a1c20719f3ef0cf92",
-    "tests/font_banks/verify.py": "1d08682c00a13e016e0e1419996f55e3161d9783271aa9d044b738ff7abb493d",
+    "tests/font_banks/tb_settings_font_banks.sv": "9376f36ad3795f813c6b9f835369d070ca9ca458ecec3c52df13596d61c2b015",
+    "tests/font_banks/verify.py": "44ab806e3d79b7c8336aa39fc88a5b539235df3d23a867fce1e9a9f946a08c57",
     "tests/font_banks/reference_settings_v04.json": "dbeeda4b1e22585afbed4a847d15a0f5038c1e147ba347f9ea1e0c556b465e1b"
   },
   "hardware_tested": false,
@@ -21,6 +21,7 @@
     74,
     81
   ],
-  "changed_bits_confined_to_added_slots": 312,
+  "seconds_glyph_slot": 82,
+  "changed_bits_confined_to_added_slots": 379,
   "both_historical_and_current_exhaustive_bitmaps": true
 }

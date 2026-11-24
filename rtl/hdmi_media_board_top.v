@@ -1,4 +1,4 @@
-// 硬木课堂 DMZ-EG4S20：SD 图片 + 48 kHz 双声道 WAV/测试音（尚待上板确认）。
+// 硬木课堂 DMZ-EG4S20：SD 图片 + 48 kHz 双声道 WAV/测试音。
 // SW0: DOWN reset / UP run. SW7: 0 demo / 1 product.
 // KEY0 home; KEY1 right, KEY2 OK, KEY3 left, KEY4 settings.
 // M0 HDMI/TF, core keyboard and left40 peripheral pins are in board.adc.
@@ -79,6 +79,7 @@ wire next_press,prev_press,pause_press;reg paused;
  wire setting_active;
  wire [1:0] setting_page;
  wire cfg_autoplay,autoplay_page;
+ wire [2:0] autoplay_interval;
  wire autoplay_enabled=!mode_switching&&(!product_mode||cfg_autoplay)&&!home_visible&&!view_active;
  wire [3:0] mode_status={mode_switching,product_mode,autoplay_page,autoplay_enabled};
  generate if(FINE_ADJUST)begin:fine_frames
@@ -99,41 +100,55 @@ wire next_press,prev_press,pause_press;reg paused;
   .key_n({matrix_scene_n,matrix_home_n,matrix_view_n,matrix_key_n}),.press(all_key_press),.stable_n(all_key_stable_n));
  wire [3:0] control_event,infrared_event,normal_control_event;
  wire [3:0] ir_direction_event;
- wire ir_learning,ir_learning_enter,ir_home,ir_back,ir_easter_toggle,ir_model_event;
+ wire ir_learning,ir_learning_enter,ir_home,ir_back,ir_model_event,ir_zoom_event;
  wire [2:0] ir_learning_led;
+ wire help_visible,help_open;
+ wire [1:0] help_page;
+ wire help_block=help_visible||help_open;
  // Captured reset defaults remove learning circuitry from the fixed remote.
  media_infrared_control #(.HOME_KEY(1),.FIXED_ENABLE(IR_FIXED_ENABLE),
   .FIXED_KEYS(IR_FIXED_KEYS),.LEARN_ENABLE(!IR_FIXED_ENABLE),.EXTRA_ENABLE(IR_EXTRA_ENABLE),
   .DIRECTION_ENABLE(IR_DIRECTION_ENABLE&&IR_FIXED_ENABLE),
   .UP_COMMAND(IR_DIRECTION_KEYS[15:8]),.DOWN_COMMAND(IR_DIRECTION_KEYS[7:0]),
-  .BACK_COMMAND(IR_EXTRA_KEYS[23:16]),.EGG_A(IR_EXTRA_KEYS[15:8]),.EGG_B(IR_EXTRA_KEYS[7:0])) infrared(.clk(sys_clk),.rst_n(core_rst_n),.enable(keys_rst_n),
+  .BACK_COMMAND(IR_EXTRA_KEYS[23:16]),.ZOOM_COMMAND(IR_EXTRA_KEYS[15:8]),.MODEL_COMMAND(IR_EXTRA_KEYS[7:0])) infrared(.clk(sys_clk),.rst_n(core_rst_n),.enable(keys_rst_n),
   .infrared_n(infrared_n),.key_settings_down(!key_stable_n[3]),.key_settings_press(key_press[3]),
+  .gallery_navigation(!home_visible&&!view_active&&!setting_active),
+  .home_navigation(home_visible&&!setting_active),
   .infrared_event(infrared_event),.direction_event(ir_direction_event),.learning(ir_learning),.learning_enter(ir_learning_enter),
-  .learning_led(ir_learning_led),.paired(),.home_event(ir_home),.back_event(ir_back),.easter_toggle(ir_easter_toggle),.model_event(ir_model_event));
+  .learning_led(ir_learning_led),.paired(),.home_event(ir_home),.back_event(ir_back),.model_event(ir_model_event),.zoom_event(ir_zoom_event));
  // In a 3D view IR left/right rotate; the physical KEY1/3 keep time control.
  // A menu, HOME/BACK or a settings command wins over a coincident direction.
- wire ir_scene_context=IR_FIXED_ENABLE&&view_active&&!home_visible&&!setting_active&&!ir_learning&&!controls_block&&
+ wire ir_scene_ready=IR_FIXED_ENABLE&&view_active&&!home_visible&&!ir_learning&&!controls_block&&
   all_key_stable_n[9]&&!ir_home&&!ir_back&&!infrared_event[3]&&!(|key_press);
+ wire ir_scene_context=ir_scene_ready&&!setting_active;
  wire ir_scene_controls=IR_DIRECTION_ENABLE&&ir_scene_context;
+ wire [1:0] ir_menu_speed=(IR_DIRECTION_ENABLE&&ir_scene_ready&&setting_active&&!(|all_key_press))?
+  ir_direction_event[3:2]:2'd0;
  // 0045 shares KEY5's model/reset path. Any physical key has priority.
  wire [2:0] scene_key_event=(|all_key_press)?all_key_press[12:10]:{2'd0,ir_scene_context&&ir_model_event};
  wire [3:0] ir_navigation_event=ir_scene_controls?(infrared_event&4'b1010):infrared_event;
  media_control_events control_events(.enable(keys_rst_n&&!ir_learning&&all_key_stable_n[9]),.key_press(key_press),
   .encoder_event(4'd0),.infrared_event(ir_navigation_event),.control_event(normal_control_event));
  // Close the existing menu once when learning begins; all settings persist.
- assign control_event=(ir_learning_enter&&setting_active)?4'b1000:normal_control_event;
+ assign control_event=help_block?4'd0:((ir_learning_enter&&setting_active)?4'b1000:normal_control_event);
+ wire help_enabled=HOME_UI&&home_visible&&!home_starting&&!setting_active&&!ir_learning&&!controls_block&&!mode_change;
+ assign help_open=help_enabled&&normal_control_event==0&&!ir_home&&!ir_back&&
+  ((|all_key_press)?all_key_press[7]:ir_direction_event[2]);
+ media_help_control help_control(.clk(sys_clk),.rst_n(core_rst_n),.enable(help_enabled),
+  .open_event(help_open),.close_event(ir_home||ir_back||all_key_press[9]),
+  .key_event(normal_control_event),.visible(help_visible),.page(help_page));
  // Do not cancel an I2C write already being acknowledged by the RTC.
  wire home_return=HOME_UI&&product_mode&&(all_key_press[9]||ir_home||(ir_back&&!setting_active&&!home_visible))&&!ir_learning&&!rtc_busy;
- wire [3:0] adjusted_event=home_return?(setting_active?4'b1000:4'd0):
+ wire [3:0] adjusted_event=help_block?4'd0:home_return?(setting_active?4'b1000:4'd0):
   ((ir_back&&setting_active&&!rtc_busy)?4'b1000:control_event);
  rtc_set_control clock_editor(.clk(sys_clk),.rst_n(core_rst_n),
   .enable(rtc_page),.key_press(adjusted_event),.time_bcd(rtc_time),.time_valid(rtc_valid),
   .set_busy(rtc_busy),.set_done(rtc_done),.set_error(rtc_error),.draft(rtc_draft),
   .field(rtc_field),.status(rtc_status),.set_request(rtc_request),.exit_request(rtc_exit));
- media_adjust_control #(.AUTOPLAY_MENU(1),.MUSIC_MENU(1),.RTC_MENU(1),.HOME_UI(HOME_UI),.FINE_ADJUST(FINE_ADJUST)) adjust_controls(.clk(sys_clk),.rst_n(controls_rst_n),
+ media_adjust_control #(.AUTOPLAY_MENU(1),.AUTOPLAY_INTERVAL_MENU(1),.MUSIC_MENU(1),.RTC_MENU(1),.HOME_UI(HOME_UI),.FINE_ADJUST(FINE_ADJUST)) adjust_controls(.clk(sys_clk),.rst_n(controls_rst_n),
   .rtc_page(rtc_page),.rtc_exit(rtc_exit|ir_learning_enter|home_return),
   .product_mode(product_mode),.mode_change(mode_change),
-  .cfg_autoplay(cfg_autoplay),.autoplay_page(autoplay_page),
+  .cfg_autoplay(cfg_autoplay),.autoplay_page(autoplay_page),.autoplay_interval(autoplay_interval),
   .music_count(music_count),.music_page(music_page),.cfg_music_index(cfg_music_index),.cfg_music_request(cfg_music_request),
   .home_play(home_autoplay),.home_music_index(active_music_index),
   .key_press(home_visible&&!setting_active?((home_starting||home_word[13])?4'd0:{adjusted_event[3],3'd0}):
@@ -190,7 +205,7 @@ wire next_press,prev_press,pause_press;reg paused;
   home_album_config #(.TOPIC_FOLDERS(1)) config_data(.index(home_index),.first_image(album_first),.image_limit(album_limit),.music_index(album_music),.folder_info(folder_info_ui));
   // The themed home is also the welcome screen; no second dismiss-only page.
   media_home_control #(.VIEW_3D(VIEW_3D),.EXHIBIT(0)) control(.clk(sys_clk),.rst_n(core_rst_n),.vsync(vs),
-   .product_mode(product_mode),.mode_change(mode_change),.setting_active(setting_active),.home_request(home_return),
+   .product_mode(product_mode),.mode_change(mode_change),.setting_active(setting_active||help_block),.home_request(home_return||help_open),
    .key_press(ir_learning?4'd0:control_event),.catalog_ready(catalog_ready&&folder_ui_ready),.image_count({{(6-COUNT_BITS){1'b0}},image_count}),
    .first_image(album_first),.image_limit(album_limit),.switching(mode_switching),
    .view_ready(view_ready),.view_active(view_active),.album_ready(album_ready),.album_error(album_error),.visible(home_visible),.starting(home_starting),
@@ -207,9 +222,10 @@ wire next_press,prev_press,pause_press;reg paused;
    else begin vs1<=vs;vs2<=vs1;vs_prev<=vs2;end
   media_3d_control #(.GENERAL_KEYS(1),.DIRECTION_KEYS(1)) rotation(.clk(sys_clk),.rst_n(core_rst_n),
    .right_pulse(control_event[0]),.left_pulse(control_event[2]),.ok_pulse(control_event[1]),
-   .direction_pulse(ir_scene_controls?ir_direction_event:4'd0),
+   .direction_pulse(ir_scene_controls?ir_direction_event:4'd0),.menu_speed(ir_menu_speed),
    .enable(view_active),.pause_controls(home_visible||setting_active||ir_learning||controls_block),
    .frame_tick(vs_prev&&!vs2),.key_press(all_key_press[8:4]),
+   .zoom_toggle(ir_scene_context&&ir_zoom_event&&!(|all_key_press)),
    .key_stable_n(all_key_stable_n[8:4]),.scene_key_press(scene_key_event),
    .scene_mode(scene_mode),.zoom(scene_zoom),.yaw(view_yaw),.pitch(view_pitch));
  end else begin:no_scene_controls
@@ -220,15 +236,30 @@ wire next_press,prev_press,pause_press;reg paused;
  always @(posedge sys_clk or negedge core_rst_n)
   if(!core_rst_n)transition_ready_sys<=0;
   else transition_ready_sys<={transition_ready_sys[0],transition_ready_pix};
- sd_media_player #(.MODE_CONTROL(1),.MAX_IMAGES(MAX_IMAGES),.SLIDE_TRANSITIONS(1),.MAX_WAVS(4),.ALBUMS(HOME_UI),.INTRO_ANIMATION(HOME_UI)) u_player(.clk(sys_clk),.pix_clk(pix_clk),.rst_n(core_rst_n),
+ // The shared key arbiter has already selected one source. Capture that
+ // direction once in the gallery; remote and matrix keys both request a cut.
+ wire gallery_keys=!home_visible&&!view_active&&!setting_active;
+ reg photo_next,photo_prev;
+ always @(posedge sys_clk or negedge core_rst_n)
+  if(!core_rst_n)begin photo_next<=0;photo_prev<=0;end
+  else begin
+   photo_next<=gallery_keys&&adjusted_event[0];
+   photo_prev<=gallery_keys&&adjusted_event[2];
+  end
+ wire fast_photo=photo_next||photo_prev;
+ // home_play is asserted only on entry to WAIT. Use the selected card
+ // for the album request without the 3D view-state decode in its path.
+ wire album_play=home_play&&!(VIEW_3D&&product_mode&&home_index==3'd4);
+ sd_media_player #(.FAST_MANUAL(1),.MODE_CONTROL(1),.MAX_IMAGES(MAX_IMAGES),.SLIDE_TRANSITIONS(1),.MAX_WAVS(4),.ALBUMS(HOME_UI),.INTRO_ANIMATION(HOME_UI),.AUTOPLAY_INTERVAL_MENU(1)) u_player(.clk(sys_clk),.pix_clk(pix_clk),.rst_n(core_rst_n),
   .intro_enable(!home_visible&&!view_active),.intro_pause(setting_active||mode_switching),.folder_info(folder_info),
   .preparing(preparing),.prepare_pixels(prepare_pixels),
-  .album_request(home_play&&!view_active),.album_enable(product_mode),.album_first(album_first),.album_limit(album_limit[COUNT_BITS-1:0]),
+  .album_request(album_play),.album_enable(product_mode),.album_first(album_first),.album_limit(album_limit[COUNT_BITS-1:0]),
   .album_ready(album_ready),.album_error(album_error),
-  .auto_enable(autoplay_enabled),.wav_enable(wav_enable&&(!home_visible||home_starting)),.wav_idle(wav_idle),
+  .auto_enable(autoplay_enabled),.autoplay_interval(product_mode?autoplay_interval:3'd7),
+  .wav_enable(wav_enable&&(!home_visible||home_starting)),.wav_idle(wav_idle),
   .wav_index(active_music_index),.wav_count(music_count),
   .sd_miso(miso2),.sd_sck(sd_sck),.sd_mosi(sd_mosi),.sd_cs(sd_cs),
-  .next_pulse(next_press&&!home_visible&&!view_active),.prev_pulse(prev_press&&!home_visible&&!view_active),.pause(paused),.de(de),.hsync(hs),.vsync(vs),.rgb(rgb),
+  .next_pulse(photo_next),.prev_pulse(photo_prev),.fast_pulse(fast_photo),.pause(paused||(product_mode&&setting_active)),.de(de),.hsync(hs),.vsync(vs),.rgb(rgb),
   .card_ready(card_ready),.card_error(card_error),.sdram_ready(mem_ready),.memory_fault(mem_error),
   .prefetch_error(prefetch_error),.frame_underflow(underflow),.loading(loading),.image_error(image_error),
   .image_count(image_count),.image_index(image_index),
@@ -239,14 +270,15 @@ wire next_press,prev_press,pause_press;reg paused;
   .transition_active(transition_active),.transition_ready(transition_ready_sys[1]),.slide_transition(slide_transition));
  wire [9:0] tr,tg,tb;
  wire audio_fault;
- hdmi_av_output #(.SETTINGS_UI(1),.MODE_CONTROL(1),.CHINESE_SUBTITLE(1),.CHINESE_SETTINGS(1),.SPECTRUM_FFT(1),.MUSIC_MENU(1),.RTC_OVERLAY(1),.RTC_SETTING(1),.HOME_UI(HOME_UI),.VIEW_3D(HOME_UI&&VIEW_3D),.FINE_ADJUST(FINE_ADJUST),.PREPARE_UI(1),.MUSIC_TOAST(HOME_UI),.MAX_IMAGES(MAX_IMAGES)) av(.sys_clk(sys_clk),.pix_clk(pix_clk),.rst_n(core_rst_n),
-  .prepare_word(prepare_word),.easter_toggle(ir_easter_toggle),
+ hdmi_av_output #(.SETTINGS_UI(1),.MODE_CONTROL(1),.CHINESE_SUBTITLE(1),.CHINESE_SETTINGS(1),.SPECTRUM_FFT(1),.MUSIC_MENU(1),.RTC_OVERLAY(1),.RTC_SETTING(1),.HOME_UI(HOME_UI),.HELP_UI(HOME_UI),.VIEW_3D(HOME_UI&&VIEW_3D),.FINE_ADJUST(FINE_ADJUST),.PREPARE_UI(1),.MUSIC_TOAST(HOME_UI),.MAX_IMAGES(MAX_IMAGES),.AUTOPLAY_INTERVAL_MENU(1)) av(.sys_clk(sys_clk),.pix_clk(pix_clk),.rst_n(core_rst_n),
+  .help_word({help_visible,help_page}),
+  .prepare_word(prepare_word),
   .fine_adjust_word(fine_adjust_word),.scene_enable(view_active),.scene_yaw(view_yaw),.scene_pitch(view_pitch),.scene_mode(scene_mode),.scene_zoom(scene_zoom),.scene_ready(view_ready),
   .home_word(home_word),.rtc_edit_word(rtc_edit_word),
   .rtc_word({rtc_valid,rtc_time}),
   .force_tone(!product_mode),.audio_flush_request(audio_flush_request),
   .audio_flush_done(audio_flush_done),.mode_status(mode_status),
-  .settings_word(settings_word),.music_status(music_status),
+  .settings_word(settings_word),.music_status(music_status),.autoplay_word({cfg_autoplay,autoplay_interval}),
   .audio_enable(!paused&&!mode_switching&&!home_visible),.tone_sel(3'd2),.brightness(brightness_value),.gain_q8(gain_q8_value),
   .loading(transition_active&&!slide_transition&&!view_active),.transition_ready(transition_ready_pix),
   .fade_enabled(fade_enabled_value&&!slide_transition&&!view_active),.wave_enabled(wave_enabled_value),

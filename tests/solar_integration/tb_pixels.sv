@@ -3,7 +3,6 @@ module tb_solar_home_pixels;
  reg clk=0,rst_n=0,de=0,vsync=1,scene_enable=0,scene_side=0;
  reg [2:0] scene_rate=3;reg [9:0] x=0,y=0;reg [14:0] home_word=0;
  wire [23:0] rgb_out,legacy_rgb;wire overlay_valid,legacy_valid;
- reg easter_toggle=0;wire easter_valid;
  integer file,k,matched,xx,yy,rr,mask,scan,case_id,rate,side,scene,word,cases;
  reg [255:0] filename;
  always #5 clk=~clk;

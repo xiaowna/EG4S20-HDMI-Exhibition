@@ -19,7 +19,7 @@ module tb_slide_burst #(parameter W=640,H=3,MAX_BURST=32);
   begin color=(a*37)^(a<<7)^24'h5a39c7;end
  endfunction
  frame_burst_prefetch #(.FRAME_PIXELS(N),.MAX_BURST(MAX_BURST),.FIFO_ADDR_BITS(6),
-  .SLIDE_TRANSITIONS(1),.LINE_PIXELS(W)) dut(.intro_active(1'b0),.intro_topic(2'd0),.intro_phase(6'd0),.slide_alpha(6'd32),.*);
+  .SLIDE_TRANSITIONS(1),.LINE_PIXELS(W)) dut(.intro_active(1'b0),.intro_topic(2'd0),.intro_phase(6'd0),.slide_alpha(6'd32),.back_base(21'd0),.*);
  always @(negedge sys_clk)begin
   burst_data_valid=0;burst_last=0;
   if(responding)begin

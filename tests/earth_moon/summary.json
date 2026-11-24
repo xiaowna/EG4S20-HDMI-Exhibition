@@ -1,38 +1,36 @@
 {
   "status": "passed",
   "geometry": {
-    "vertices": 226,
-    "earth_edges": 352,
-    "moon_edges": 288,
-    "closed_manifold": true,
-    "moon_name_horizontal_clamp_proven_unnecessary": true,
-    "longitude_samples": 32,
-    "latitude_rings": 7,
-    "legal_camera_zoom_combinations": 5760,
-    "worst_line_samples": 2754,
-    "worst_pose": [
-      9,
-      3,
-      2
-    ]
+    "projected_moon_positions": 5760,
+    "earth_radii": [
+      14,
+      18,
+      22
+    ],
+    "moon_radii": [
+      6,
+      8,
+      10
+    ],
+    "all_body_bounds": true
   },
-  "canvas_cases": 57,
-  "canvas_pixels": 933888,
+  "canvas_cases": 81,
+  "canvas_pixels": 1327104,
   "raster_pixels": 307200,
   "native_and_behavioral": true,
   "nine_phases_and_work_ram_partition": true,
   "source_sha256": {
-    "rtl/video_scene3d.v": "d95b2655a6bbc28a6a793a2ce64c0f4645eb986233dd8c0d5da46e3fbd300549",
-    "rtl/scene_sidebar_rom.v": "1603428cdc751e0ac33293987b17a266aca7154f0fcfc8f081a9b943e114eec8",
+    "rtl/video_scene3d.v": "900eb9ae4ba1677cfa3cb813250948956ce94141e5d65720b8c70699bf0cec4f",
+    "rtl/scene_sidebar_rom.v": "ceba32d66d3e3c9b88e19c2e068890a19bab27ae44d54db398df8ae3ef76b54d",
     "rtl/scene_sphere_rom.v": "707c2ec91365f48d319e2e383fc08a1ab5e39bf1b3c8c17751249ce3dc2af04c",
-    "rtl/media_3d_control.v": "513b1f37800537a204bd6fb548447f9d7c8699d785ec96d0ad8b4441f0d569cf",
+    "rtl/media_3d_control.v": "a6ab35e0939f7eab2fcdf5c090169c7fcba8d9824a069a2877ab7a713bdf3a5e",
     "rtl/board_matrix_keys.v": "60646786c85983fb4871ab0ef9514bd8bb9db15f051ab1baa45edfd8906f2827",
     "tests/earth_moon/tb_matrix.sv": "5f14b88fa59e2a04f2688aed2c552a7c3b686592fbfba1962789ba884f153cab",
-    "tests/earth_moon/tb_scene.sv": "473c78d80badc59f5e58a5141e4518f4309cc7a488902b09dddedc8248345c91",
-    "tests/earth_moon/verify.py": "ba473cb38d49272f4cf18731869298a0c95ead59749dc9de0a95360657fca9de",
-    "assets/scene_sidebar.json": "fad69bc4741bec2e438c1c33604e05063294eee7822c0388ecdef033a8911bca",
+    "tests/earth_moon/tb_scene.sv": "131182401070b87097a7b11a70896031f84f6b5610fd5d67d8d5dd65da6761ae",
+    "tests/earth_moon/verify.py": "576e2a57e0801cbfb85ef5833d8b9aae06a55aa06b7bc8c1c9093aa74bc464bc",
+    "assets/scene_sidebar.json": "b7853c2b051e201253f99be94875f321728c952b8c4afa5ffd90bb5582dfa2f6",
     "assets/scene_periods.json": "0adb9a740c4307290e4f437d154bda0fd768c030fd98124bea80bc39836c71fe",
-    "tests/solar_scene/verify.py": "c1e6025989a2184de4a676701793b2a772e5358609c144cda0f2c6546d4ac4a5",
+    "tests/solar_scene/verify.py": "31429109cef3b9cc950b6b215c197c9ef4c6a404e28a352306e786410857bcfa",
     "tests/solar_scene/bram32k_contract.sv": "5a6e53b94a9402ebad173ea8cd55e228018dd3d1cbc0cc49156b8c69e420c81d"
   },
   "hardware_tested": false

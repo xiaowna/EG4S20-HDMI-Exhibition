@@ -4,7 +4,7 @@ import argparse, json, re
 
 ROOT = Path(__file__).resolve().parents[1]
 KEYS = ('right', 'ok', 'left', 'settings', 'home')
-EXTRAS = ('back', 'egg_a', 'egg_b')
+EXTRAS = ('back', 'zoom', 'model')
 DIRECTIONS = ('up', 'down')
 
 
@@ -29,7 +29,7 @@ def build_profile(codes, extra_codes=None, direction_codes=None):
         if any(a != values[0][0] for a,c in extra_values):
             raise ValueError('Extra keys must use the same NEC address')
         if len({c for a,c in values+extra_values}) != 8:
-            raise ValueError('Eight different commands are required for navigation and the secret')
+            raise ValueError('Eight different commands are required for navigation and 3D')
         profile.update(schema_version=2, extras={k:f'{v[1]:02X}' for k,v in zip(EXTRAS,extra_values)})
     if direction_codes is not None:
         direction_values = [parse_code(direction_codes[n]) for n in DIRECTIONS]
@@ -37,7 +37,7 @@ def build_profile(codes, extra_codes=None, direction_codes=None):
             raise ValueError('Direction keys must use the same NEC address')
         previous = values + (extra_values if extra_codes is not None else [])
         if len({c for a,c in previous+direction_values}) != len(previous)+2:
-            raise ValueError('Direction keys must have different commands from navigation and the secret')
+            raise ValueError('Direction keys must have different commands from navigation and 3D')
         profile.update(schema_version=3, directions={k:f'{v[1]:02X}' for k,v in zip(DIRECTIONS,direction_values)})
     return profile
 
@@ -129,7 +129,7 @@ def main():
                 parser.error('Provide --right, --ok, --left, --settings and --home, or use --check')
             extras = {k:getattr(args,k) for k in EXTRAS}
             if any(extras.values()) and not all(extras.values()):
-                parser.error('Provide all three of --back, --egg-a and --egg-b')
+                parser.error('Provide all three of --back, --zoom and --model')
             directions = {k:getattr(args,k) for k in DIRECTIONS}
             if any(directions.values()) and not all(directions.values()):
                 parser.error('Provide both --up and --down')

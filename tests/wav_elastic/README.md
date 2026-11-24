@@ -1,7 +1,7 @@
 # WAV 单字节弹性边界定向验证
 
 ```powershell
-python -B tests/wav_elastic/verify.py --tool-dir C:/iverilog/bin
+python -B tests/wav_elastic/verify.py --tool-dir PUBLIC_SOURCE/.codex/toolchains/iverilog-iccoder-2.0.10/bin
 ```
 
 测试使用真实 `fat32_wav_player`、`fat32_file_reader` 和 `wav_pcm_decoder`，模拟完整 512 字节扇区及滞后的 CRC/完成边界。独立生成 48kHz 立体声 PCM 文件与期望样本，16 位和 24 位各验证以下六种情况：

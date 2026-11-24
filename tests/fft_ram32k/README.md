@@ -6,8 +6,8 @@ and leave RAM contents and outputs unreset. The core gates writes with reset.
 Run from the repository root:
 
 ```powershell
-python tests/fft_ram32k/verify.py --tool-dir C:/iverilog/bin
-python tests/audio_spectrum/verify.py --tool-dir C:/iverilog/bin --unit-only
+python tests/fft_ram32k/verify.py --tool-dir PUBLIC_SOURCE/.codex/toolchains/iverilog-iccoder-2.0.10/bin
+python tests/audio_spectrum/verify.py --tool-dir PUBLIC_SOURCE/.codex/toolchains/iverilog-iccoder-2.0.10/bin --unit-only
 ```
 
 The first command checks every logical RAM word, 4096 randomized simultaneous

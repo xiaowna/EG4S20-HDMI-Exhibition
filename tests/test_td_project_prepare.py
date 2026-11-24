@@ -2,7 +2,7 @@
 from pathlib import Path
 import shutil,tempfile,unittest
 from tools.prepare_td_project import prepare,restored_text
-from tools.check_project import check_project
+from tools.check_project import GUI_SEED,check_project
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -33,6 +33,23 @@ class PrepareProjectTests(unittest.TestCase):
   self.assertEqual(check_project(self.root)['top_ports'],27)
   current=self.path.read_bytes();self.assertEqual(prepare(self.root)['restored_options'],[])
   self.assertEqual(current,self.path.read_bytes())
+
+ def test_gui_last_selected_seed_is_restored(self):
+  self.saved_by_gui()
+  text=self.path.read_text(encoding='utf-8-sig')
+  text=text.replace(f'Init="{GUI_SEED}"','Init="26"')
+  for seed_tag in ('<Seeds select="26">','<Seeds>'):
+   with self.subTest(seed_tag=seed_tag):
+    old=f'<Seeds select="{GUI_SEED}">{GUI_SEED} </Seeds>'
+    self.assertIn(old,text)
+    self.path.write_text(text.replace(old,seed_tag+'26 </Seeds>'),encoding='utf-8')
+    before=self.path.read_bytes()
+    with self.assertRaisesRegex(ValueError,f'seed {GUI_SEED}'):check_project(self.root)
+    result=prepare(self.root)
+    self.assertIn(f'MultiSeed seed {GUI_SEED}',result['restored_options'])
+    self.assertEqual(Path(result['backup']).read_bytes(),before)
+    self.assertEqual(check_project(self.root)['top_ports'],27)
+    self.assertEqual(prepare(self.root)['restored_options'],[])
 
  def test_explicit_conflict_and_duplicates_are_not_overwritten(self):
   original=self.path.read_text(encoding='utf-8-sig')

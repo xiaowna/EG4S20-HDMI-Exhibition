@@ -1,5 +1,5 @@
 // Four physical directions orbit the camera. KEY10 restores the initial view.
-// KEY1/3 adjust time speed; KEY2 cycles eight preset views.
+// KEY1/3 adjust time speed; IR up/down can adjust it in settings.
 // Optional remote directions use the same camera actions in either model.
 // Keep the existing AV wires: yaw=azimuth, pitch={elevation[3:0],speed[2:0]}.
 module media_3d_control #(parameter INITIAL_YAW=7'd12,INITIAL_PITCH=7'd83,
@@ -7,8 +7,8 @@ module media_3d_control #(parameter INITIAL_YAW=7'd12,INITIAL_PITCH=7'd83,
  input wire clk,rst_n,enable,frame_tick,pause_controls,
  input wire [4:0] key_press,key_stable_n,
  input wire right_pulse,left_pulse,ok_pulse,
- input wire [3:0] direction_pulse,
- input wire [2:0] scene_key_press,
+ input wire [3:0] direction_pulse,input wire [1:0] menu_speed,
+ input wire [2:0] scene_key_press,input wire zoom_toggle,
  output reg scene_mode,output reg [1:0] zoom,
  output reg [6:0] yaw,pitch);
  localparam integer MAX_DELAY=(HOLD_FRAMES>REPEAT_FRAMES)?HOLD_FRAMES:REPEAT_FRAMES;
@@ -48,7 +48,11 @@ module media_3d_control #(parameter INITIAL_YAW=7'd12,INITIAL_PITCH=7'd83,
   if(!rst_n)begin yaw<=INITIAL_YAW;pitch<=INITIAL_PITCH;repeat_delay<=0;armed<=0;preset_index<=0;scene_mode<=0;zoom<=1;end
   else if(!enable)begin
    yaw<=INITIAL_YAW;pitch<=INITIAL_PITCH;repeat_delay<=0;armed<=0;preset_index<=0;scene_mode<=0;zoom<=1;
-  end else if(pause_controls)begin armed<=0;repeat_delay<=0;end
+  end else if(pause_controls)begin
+   armed<=0;repeat_delay<=0;
+   if(menu_speed==2'b01&&pitch[2:0]<7)pitch[2:0]<=pitch[2:0]+1'b1;
+   else if(menu_speed==2'b10&&pitch[2:0]!=0)pitch[2:0]<=pitch[2:0]-1'b1;
+  end
   else begin
    if(held==0)begin armed<=1;repeat_delay<=0;end
    else if(armed)begin
@@ -65,8 +69,9 @@ module media_3d_control #(parameter INITIAL_YAW=7'd12,INITIAL_PITCH=7'd83,
     scene_mode<=!scene_mode;zoom<=1;preset_index<=0;
     yaw<=scene_mode?INITIAL_YAW:7'd0;pitch[6:3]<=scene_mode?INITIAL_PITCH[6:3]:4'd3;
    end
-   else if(armed&&scene_mode&&scene_key_press==3'b010)begin if(zoom!=0)zoom<=zoom-1'b1;end
-   else if(armed&&scene_mode&&scene_key_press==3'b100)begin if(zoom<2)zoom<=zoom+1'b1;end
+   else if(armed&&scene_key_press==3'b010)begin if(zoom!=0)zoom<=zoom-1'b1;end
+   else if(armed&&scene_key_press==3'b100)begin if(zoom<2)zoom<=zoom+1'b1;end
+   else if(armed&&zoom_toggle)zoom<=(zoom==2)?2'd1:2'd2;
    else if(rotation_action==5'b01000)begin if(pitch[6:3]<15)pitch[6:3]<=pitch[6:3]+1'b1;end
    else if(rotation_action==5'b10000)begin if(pitch[6:3]>1)pitch[6:3]<=pitch[6:3]-1'b1;end
    else if(rotation_action==5'b00001)yaw<=yaw+1'b1;

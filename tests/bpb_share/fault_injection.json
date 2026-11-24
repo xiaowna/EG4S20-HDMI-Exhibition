@@ -4,32 +4,32 @@
     {
       "fault": "wrong_shared_owner",
       "rejected": true,
-      "diagnostic": "tests/bpb_share/tb_bpb_share.sv:46: \n       Time: 27566000  Scope: tb_bpb_share.fail"
+      "diagnostic": "candidate=00000200200000000a0000040020000000000000000000000000000000000000000090000001900000034 baseline=00000200200000000a000004002000015b800001b30000222e000001b4000000008090000001900000034\nFAIL BPB share LIMIT=2048 FOUR=0 case=SF to MBR changed geometry no reset cycle=2757 requests=2/3: all public outputs differ\nFATAL: PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\tests\\bpb_share\\tb_bpb_share.sv:46: \n       Time: 27566000  Scope: tb_bpb_share.fail"
     },
     {
       "fault": "missing_partition_offset",
       "rejected": true,
-      "diagnostic": "tests/bpb_share/tb_bpb_share.sv:46: \n       Time: 27566000  Scope: tb_bpb_share.fail"
+      "diagnostic": "candidate=00000200200000000a000004002000015b800000b30000222e000000b4000000008090000001900000034 baseline=00000200200000000a000004002000015b800001b30000222e000001b4000000008090000001900000034\nFAIL BPB share LIMIT=2048 FOUR=0 case=SF to MBR changed geometry no reset cycle=2757 requests=2/3: all public outputs differ\nFATAL: PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\tests\\bpb_share\\tb_bpb_share.sv:46: \n       Time: 27566000  Scope: tb_bpb_share.fail"
     },
     {
       "fault": "missing_active_fat",
       "rejected": true,
-      "diagnostic": "tests/bpb_share/tb_bpb_share.sv:46: \n       Time: 27566000  Scope: tb_bpb_share.fail"
+      "diagnostic": "candidate=00000200200000000a0000040020000104000001b30000222e000001b4000000008090000001900000034 baseline=00000200200000000a000004002000015b800001b30000222e000001b4000000008090000001900000034\nFAIL BPB share LIMIT=2048 FOUR=0 case=SF to MBR changed geometry no reset cycle=2757 requests=2/3: all public outputs differ\nFATAL: PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\tests\\bpb_share\\tb_bpb_share.sv:46: \n       Time: 27566000  Scope: tb_bpb_share.fail"
     },
     {
       "fault": "missing_fat_capacity_check",
       "rejected": true,
-      "diagnostic": "tests/bpb_share/tb_bpb_share.sv:46: \n       Time: 173916000  Scope: tb_bpb_share.fail"
+      "diagnostic": "candidate=00000200200000000000000000000001040000010440002278e0000104800000006040000000000000000 baseline=0000020020000000000000000000000000000000000000000000000000000000000040000000000000000\nFAIL BPB share LIMIT=2048 FOUR=0 case=FAT capacity smaller than cluster range cycle=17392 requests=2/2: all public outputs differ\nFATAL: PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\tests\\bpb_share\\tb_bpb_share.sv:46: \n       Time: 173916000  Scope: tb_bpb_share.fail"
     }
   ],
   "source_sha256": {
-    "rtl/fat32_boot_parser.v": "2037ce40b55b7c16f3e0975f5895391ee769e218790e6cbd088a9bac666a3ef3",
-    "rtl/fat32_volume_locator.v": "3c7446ac7eaf6ed97474909e83eda77c4dd5548512e4567eff7090f9d494d41c",
-    "rtl/fat32_bmp_catalog.v": "c570690ff9f2f8b543ec891ddf9771ec54b62eebe999d98abd2e4650dbfc60d0",
-    "rtl/fat32_dir_scan.v": "f02e503b4f13a03c4618b43aee2c3b4529e031d12966524959eddd1e0c2e1654",
-    "rtl/fat32_card_catalog.v": "d247b7b27ed7008422c058ebf8ad5bfb60023c05aa02105072d491ab7498bbfa",
-    "tests/bpb_share/tb_bpb_share.sv": "c7e9e426d8d2d1c99a80c4db2facd0fe737678e6b9186ca8d711c1728594707c",
-    "tests/bpb_share/fault_injection.py": "d8ac03788e6a1061a99b52bf792017713ca88da5ee25649374f5524afcda695f"
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\rtl\\fat32_boot_parser.v": "2037ce40b55b7c16f3e0975f5895391ee769e218790e6cbd088a9bac666a3ef3",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\rtl\\fat32_volume_locator.v": "3c7446ac7eaf6ed97474909e83eda77c4dd5548512e4567eff7090f9d494d41c",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\rtl\\fat32_bmp_catalog.v": "c570690ff9f2f8b543ec891ddf9771ec54b62eebe999d98abd2e4650dbfc60d0",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\rtl\\fat32_dir_scan.v": "f02e503b4f13a03c4618b43aee2c3b4529e031d12966524959eddd1e0c2e1654",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\rtl\\fat32_card_catalog.v": "d247b7b27ed7008422c058ebf8ad5bfb60023c05aa02105072d491ab7498bbfa",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\tests\\bpb_share\\tb_bpb_share.sv": "c7e9e426d8d2d1c99a80c4db2facd0fe737678e6b9186ca8d711c1728594707c",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\tests\\bpb_share\\fault_injection.py": "d8ac03788e6a1061a99b52bf792017713ca88da5ee25649374f5524afcda695f"
   },
   "scope": "Temporary copies only; no production source or config modified."
 }

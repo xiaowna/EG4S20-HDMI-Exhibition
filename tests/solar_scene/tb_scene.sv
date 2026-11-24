@@ -9,7 +9,7 @@ module tb_solar_scene;
  always #10 sys_clk=~sys_clk;always #20 pix_clk=~pix_clk;
  video_scene3d dut(.*);
  reg [23:0] before_phase[0:CASES*8-1],after_phase[0:CASES*8-1];
- reg [13:0] modes[0:CASES-1];reg [2:0] golden[0:CASES*16384-1];
+ reg [15:0] modes[0:CASES-1];reg [4:0] golden[0:CASES*16384-1];
  reg [23:0] pixels[0:307199];
  reg [13:0] labels[0:CASES*10-1];
  integer i,j,k,n,elapsed,max_elapsed=0,max_budget=0;
@@ -59,7 +59,7 @@ module tb_solar_scene;
   for(j=0;j<16384;j=j+1)if(dut.canvas[j]!==golden[3*16384+j])$fatal(1,"cold canvas initialization");
   for(i=0;i<CASES;i=i+1)begin
    dut.phase_initialized=1;
-   yaw=modes[i][13:7];pitch=modes[i][6:0];
+   zoom=modes[i][15:14];yaw=modes[i][13:7];pitch=modes[i][6:0];
    for(j=0;j<8;j=j+1)begin
     dut.phases.memory[j]=before_phase[i*8+j];
    end
@@ -74,7 +74,7 @@ module tb_solar_scene;
     $fatal(1,"name did not follow projected body case=%0d index=%0d",i,j);
   end
   // Produce the exact same nominal view for independent full pixel checking.
-  i=3;yaw=12;pitch=83;for(j=0;j<8;j=j+1)begin dut.phases.memory[j]=before_phase[24+j];end frame();ticks(100);
+  i=3;zoom=1;yaw=12;pitch=83;for(j=0;j<8;j=j+1)begin dut.phases.memory[j]=before_phase[24+j];end frame();ticks(100);
   n=0;
   for(k=0;k<480;k=k+1)begin
    for(j=0;j<640;j=j+1)begin
@@ -97,7 +97,7 @@ module tb_solar_scene;
   // Ready crosses domains, then ten pixel clocks latch the name anchors.
   ticks(40);de=1;@(posedge pix_clk);#1;
   if(valid_out)$fatal(1,"disabled scene covered video");
-  $display("PASS XYZ wireframe solar: %0d canvas oracles (%0d pixels), 307200 raster pixels, independent phases, guards; max wait %0d clocks draw_budget=%0d",CASES,CASES*16384,max_elapsed,max_budget);
+  $display("PASS shaded solar spheres: %0d canvas oracles (%0d pixels), 307200 raster pixels, independent phases, guards; max wait %0d clocks draw_budget=%0d",CASES,CASES*16384,max_elapsed,max_budget);
   $finish;
  end
  initial begin #200000000;$fatal(1,"scene timeout");end

@@ -3,9 +3,9 @@ from pathlib import Path,PureWindowsPath
 import argparse,datetime,re,xml.etree.ElementTree as ET
 from xml.sax.saxutils import escape
 if __package__:
-    from .check_project import PROJECT,TOP,check_project,check_logic_project
+    from .check_project import GUI_SEED,PROJECT,TOP,check_project,check_logic_project
 else:
-    from check_project import PROJECT,TOP,check_project,check_logic_project
+    from check_project import GUI_SEED,PROJECT,TOP,check_project,check_logic_project
 
 EXPECTED={
  'syn_1':[('gate','eram_init','on'),('gate','opt_area','high'),('gate','pack_effort','high')],
@@ -18,6 +18,21 @@ def restored_text(text,root):
         or Path(xml.attrib.get('Path','')).resolve()!=Path(root).resolve()):
         raise ValueError('Refusing to repair an unrelated device, top or project path')
     newline='\r\n' if '\r\n' in text else '\n';added=[]
+    # TD can save an already open, pre-update source list over the project.
+    rom_source='rtl/anlogic_initialized_rom.v'
+    if ((Path(root)/rom_source).is_file() and
+        'anlogic_initialized_rom.v' in (Path(root)/'sources.txt').read_text(encoding='utf-8-sig').splitlines() and
+        not any(node.get('Path')==rom_source for node in xml.findall('Source_Files/Verilog/File'))):
+        original=r'(^[ \t]*<File Path="rtl/help_assets_rom\.v">.*?^[ \t]*</File>)'
+        matches=list(re.finditer(original,text,re.M|re.S))
+        if len(matches)!=1:
+            raise ValueError('Cannot restore native ROM source without the expected Verilog file group')
+        order=max(int(node.get('Val')) for node in xml.findall('Source_Files/Verilog/File/FileInfo/Attr')
+                  if node.get('Name')=='CompileOrder')+1
+        entry=matches[0][1].replace('rtl/help_assets_rom.v',rom_source)
+        entry=re.sub(r'(<Attr Name="CompileOrder" Val=")\d+',lambda m: m[1]+str(order),entry)
+        text=text[:matches[0].end()]+newline+entry+text[matches[0].end():]
+        added.append(rom_source)
     for run,options in EXPECTED.items():
         node=xml.find(f"Runs/Run[@Name='{run}']")
         if node is None:raise ValueError('Missing TD run '+run)
@@ -46,6 +61,21 @@ def restored_text(text,root):
             if '<param>'+command+'</param>' not in body:raise ValueError('Unsupported UserParams layout')
         text=text[:match.start()]+match[1]+body+match[3]+text[match.end():]
         added.extend(missing)
+    # TD can save its last selected seed back into the project. Restore the
+    # qualified seed for an otherwise consistent single-seed configuration.
+    seed_config=xml.find('MultiSeed/Property')
+    seed_list=xml.find('MultiSeed/Seeds')
+    if seed_config is not None and seed_list is not None:
+        seed=seed_config.get('Init','')
+        if (seed!=GUI_SEED and seed.isascii() and seed.isdecimal()
+            and seed_list.get('select',seed)==seed and (seed_list.text or '').split()==[seed]):
+            block,=re.finditer(r'<MultiSeed>.*?</MultiSeed>',text,re.S)
+            fixed,count=re.subn(r'(<Property\b[^>]*\bInit=")'+seed+r'"',rf'\g<1>{GUI_SEED}"',block[0])
+            fixed,list_count=re.subn(r'<Seeds(?:\s+select="'+seed+r'")?>(\s*)'+seed+r'(\s*</Seeds>)',
+                                      rf'<Seeds select="{GUI_SEED}">\g<1>{GUI_SEED}\g<2>',fixed)
+            if count!=1 or list_count!=1:raise ValueError('Unsupported TD seed configuration')
+            text=text[:block.start()]+fixed+text[block.end():]
+            added.append(f'MultiSeed seed {GUI_SEED}')
     return text,added
 
 def relocated_text(text,root):
@@ -64,7 +94,7 @@ def relocated_text(text,root):
         path=(root/name).resolve()
         if not path.is_relative_to(root):raise ValueError('Relocation source escapes project directory: '+name)
         if not path.is_file():raise ValueError('Relocation source file is missing: '+name)
-    if Path(xml.attrib.get('Path','')).is_absolute() and Path(xml.attrib.get('Path','')).resolve()==root:return text,False
+    if Path(xml.attrib.get('Path','')).resolve()==root:return text,False
     matches=list(re.finditer(r'(<Project\b[^>]*\bPath=")([^"]*)(")',text))
     if len(matches)!=1:raise ValueError('Ambiguous TD project path')
     match=matches[0]

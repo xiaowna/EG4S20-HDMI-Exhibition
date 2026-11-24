@@ -47,7 +47,7 @@ module settings_font_rom #(parameter CLOCK_FONT=0)(input wire clk,input wire [14
   256'h0000000000000000000000000000000000000000000000000000000000000000,
   256'h0000000000000000000000000000000000000000000000000000000000000000,
   256'h0000000000000000000000000000000000000000000000000000000000000000,
-  256'h0000000000000000000000000000000000000000000000000000000000000000,
+  256'h0000001001d006100c1218163054245c24b80598457e65103510041404780400,
   256'h0000018003c0078007800300018000c000600030007803f001c0000000000000,
   256'h0000000000001c003c003c001ff80ffc00180038003000700000000000000000,
   256'h0000000000000020007000f021b87b187e183c10180000000000000000000000,
@@ -138,11 +138,18 @@ module settings_font_rom #(parameter CLOCK_FONT=0)(input wire clk,input wire [14
  wire [BANKS*2-1:0] pairs;
  genvar b;
  generate for(b=0;b<BANKS;b=b+1)begin:bank
+`ifdef __ICARUS__
   (* rom_style="bram" *) reg [1:0] memory[0:4095];
-  reg [1:0] q;integer i;
-  initial for(i=0;i<4096;i=i+1)memory[i]=FONT[b*8192+i*2+:2];
+  reg [1:0] q;
+  genvar i;
+  for(i=0;i<4096;i=i+1)begin:initialize_memory
+   initial memory[i]=FONT[b*8192+i*2+:2];
+  end
   always @(posedge clk)q<=memory[address[12:1]];
   assign pairs[b*2+:2]=q;
+`else
+  anlogic_initialized_rom #(.DATA(FONT[b*8192+:8192])) storage(clk,address[12:1],pairs[b*2+:2]);
+`endif
  end endgenerate
  reg [SELECT_BITS-1:0] select_q;
  always @(posedge clk)

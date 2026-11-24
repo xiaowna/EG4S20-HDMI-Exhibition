@@ -3,7 +3,7 @@ module media_stream_pipeline #(parameter integer CLK_HZ=50000000, FRAME_WIDTH=64
  parameter H_FP=16,H_SYNC=96,H_BP=48,V_FP=10,V_SYNC=2,V_BP=33,FIFO_ADDR_BITS=8,
  parameter integer TIMEOUT_CYCLES=50_000_000,FIND_WAV=0,CONTROLLED_SWAP=0,MAX_IMAGES=4,
  parameter integer INDEX_BITS=(MAX_IMAGES>1)?$clog2(MAX_IMAGES):1,
- parameter integer COUNT_BITS=(MAX_IMAGES>0)?$clog2(MAX_IMAGES+1):1,parameter SLIDE_TRANSITIONS=0,parameter MAX_WAVS=1,parameter INTRO_ANIMATION=0)(
+ parameter integer COUNT_BITS=(MAX_IMAGES>0)?$clog2(MAX_IMAGES+1):1,parameter SLIDE_TRANSITIONS=0,parameter MAX_WAVS=1,parameter INTRO_ANIMATION=0,parameter ABORTABLE=0,CACHE_FRAMES=0)(
  input wire clk,pix_clk,rst_n,scan_start,load_start,input wire [INDEX_BITS-1:0] image_index,
  output wire load_ready,busy,catalog_ready,scan_done,image_done,error,
  output wire [COUNT_BITS-1:0] image_count,
@@ -16,13 +16,16 @@ module media_stream_pipeline #(parameter integer CLK_HZ=50000000, FRAME_WIDTH=64
  output wire front_valid,front_bank,frame_committed,frame_rejected,
  output wire de,hsync,vsync,output wire [23:0] rgb,output wire frame_underflow,video_started,
  output wire sdram_ready,memory_fault,prefetch_error,
- input wire commit_enable,discard_cached,output wire frame_prepared,
+ input wire commit_enable,discard_cached,abort_load,output wire frame_prepared,
  input wire slide_request,slide_right,output wire slide_ready,
  input wire [1:0] wav_index,output wire [2:0] wav_count,output wire [6:0] prepare_pixels,
- input wire intro_enable,intro_pause,input wire [4:0] intro_index,output wire intro_animating,output wire [24:0] folder_info);
+ input wire intro_enable,intro_pause,input wire [4:0] intro_index,output wire intro_animating,output wire [24:0] folder_info,
+ input wire intro_instant,
+ input wire retain_album,front_matches,input wire [INDEX_BITS-1:0] retain_first);
  wire wr_valid,wr_ready,wr_drained,swap_window,bv,br,dv,last,berr,fetch_busy;
+ wire [20:0] front_base,back_base;
  wire [31:0] wr_addr,wr_data,ba,data;wire [8:0] words;
- fat32_frame_loader #(.FRAME_WIDTH(FRAME_WIDTH),.FRAME_HEIGHT(FRAME_HEIGHT),.TIMEOUT_CYCLES(TIMEOUT_CYCLES),.FIND_WAV(FIND_WAV),.CONTROLLED_SWAP(CONTROLLED_SWAP),.MAX_IMAGES(MAX_IMAGES),.MAX_WAVS(MAX_WAVS)) u_loader(
+ fat32_frame_loader #(.FRAME_WIDTH(FRAME_WIDTH),.FRAME_HEIGHT(FRAME_HEIGHT),.TIMEOUT_CYCLES(TIMEOUT_CYCLES),.FIND_WAV(FIND_WAV),.CONTROLLED_SWAP(CONTROLLED_SWAP),.MAX_IMAGES(MAX_IMAGES),.MAX_WAVS(MAX_WAVS),.ABORTABLE(ABORTABLE),.CACHE_FRAMES(CACHE_FRAMES)) u_loader(
  .clk(clk),
   .prepare_pixels(prepare_pixels),.folder_info(folder_info),
  .rst_n(rst_n),
@@ -59,17 +62,20 @@ module media_stream_pipeline #(parameter integer CLK_HZ=50000000, FRAME_WIDTH=64
  .front_bank(front_bank),
  .frame_committed(frame_committed),
  .frame_rejected(frame_rejected),
- .commit_enable(commit_enable),.discard_cached(discard_cached),.swap_pending(frame_prepared),
- .read_valid(1'b0),.read_addr(32'd0),.rgb_ready(1'b1),.mem_read_ready(1'b0),.mem_response_valid(1'b0),.mem_response_data(32'd0));
+ .commit_enable(commit_enable),.discard_cached(discard_cached),.abort_load(abort_load),.swap_pending(frame_prepared),
+ .read_valid(1'b0),.read_addr(32'd0),.rgb_ready(1'b1),.mem_read_ready(1'b0),.mem_response_valid(1'b0),.mem_response_data(32'd0),
+ .retain_album(retain_album),.front_matches(front_matches),.retain_first(retain_first),
+ .cache_hit(),.front_base(front_base),.back_base(back_base));
  eg4s20_stream_memory #(.CLK_HZ(CLK_HZ)) u_memory(
  .clk(clk),.rst_n(rst_n),.wr_valid(wr_valid),.wr_addr(wr_addr),.wr_data(wr_data),.wr_ready(wr_ready),.wr_drained(wr_drained),
  .burst_valid(bv),.burst_addr(ba),.burst_words(words),.burst_ready(br),.burst_data_valid(dv),.burst_last(last),.burst_data(data),.burst_error(berr),.fault(memory_fault),.init_done(sdram_ready));
  frame_stream_display #(.H_ACTIVE(FRAME_WIDTH),.V_ACTIVE(FRAME_HEIGHT),.H_FP(H_FP),.H_SYNC(H_SYNC),.H_BP(H_BP),
- .V_FP(V_FP),.V_SYNC(V_SYNC),.V_BP(V_BP),.FIFO_ADDR_BITS(FIFO_ADDR_BITS),.SLIDE_TRANSITIONS(SLIDE_TRANSITIONS),.INTRO_ANIMATION(INTRO_ANIMATION)) u_display(
- .rst_n(rst_n),.sys_clk(clk),.pix_clk(pix_clk),.front_valid(front_valid),.front_bank(front_bank),.swap_window(swap_window),
+ .V_FP(V_FP),.V_SYNC(V_SYNC),.V_BP(V_BP),.FIFO_ADDR_BITS(FIFO_ADDR_BITS),.SLIDE_TRANSITIONS(SLIDE_TRANSITIONS),.INTRO_ANIMATION(INTRO_ANIMATION),.CACHE_FRAMES(CACHE_FRAMES)) u_display(
+ .rst_n(rst_n),.sys_clk(clk),.pix_clk(pix_clk),.front_valid(front_valid),.front_bank(front_bank),.swap_window(swap_window),.front_base(front_base),.back_base(back_base),
  .burst_valid(bv),.burst_addr(ba),.burst_words(words),.burst_ready(br),.burst_data_valid(dv),.burst_last(last),.burst_error(berr),.burst_data(data),
  .prefetch_error(prefetch_error),.de(de),.hsync(hsync),.vsync(vsync),.rgb(rgb),
  .frame_underflow(frame_underflow),.fetch_busy(fetch_busy),.video_started(video_started),
  .slide_request(slide_request),.slide_right(slide_right),.slide_prepared(frame_prepared),.slide_ready(slide_ready),
- .intro_enable(intro_enable),.intro_pause(intro_pause),.intro_index(intro_index),.intro_animating(intro_animating));
+ .intro_enable(intro_enable),.intro_pause(intro_pause),.intro_index(intro_index),.intro_animating(intro_animating),
+ .intro_instant(ABORTABLE&&intro_instant));
 endmodule

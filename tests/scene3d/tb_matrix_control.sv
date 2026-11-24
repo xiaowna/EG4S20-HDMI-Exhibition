@@ -15,8 +15,8 @@ module tb_3d_keys_board;
   .col_n(col_n),.row_n(row_n),.key_n(normal_key_n),.view_key_n(view_key_n),.ready(ready));
  board_key #(.COUNT(12),.WIDTH(9)) keys(.clk(clk),.rst_n(rst_n&&ready),
   .key_n({view_key_n,normal_key_n}),.press(all_press),.stable_n(all_stable_n));
- media_3d_control controls(.clk(clk),.rst_n(rst_n),.enable(enable),.pause_controls(1'b0),.frame_tick(frame_tick),
-  .key_press(all_press[8:4]),.key_stable_n(all_stable_n[8:4]),.yaw(yaw),.pitch(pitch));
+ media_3d_control controls(.clk(clk),.rst_n(rst_n),.enable(enable),.pause_controls(1'b0),.menu_speed(2'd0),.frame_tick(frame_tick),
+  .key_press(all_press[8:4]),.key_stable_n(all_stable_n[8:4]),.yaw(yaw),.pitch(pitch),.zoom_toggle(1'b0));
  always @(posedge clk)if(rst_n&&|all_press[3:0])normal_events<=normal_events+1;
  task ticks(input integer n);repeat(n)begin @(negedge clk);#1;end endtask
  task tap(input integer k);begin pressed=16'b1<<k;ticks(180);pressed=0;ticks(180);end endtask

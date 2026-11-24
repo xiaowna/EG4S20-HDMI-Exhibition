@@ -37,7 +37,8 @@ def settings_rom(path,tmp):
 def main():
  p=argparse.ArgumentParser();p.add_argument('--tool-dir',type=Path,required=True);a=p.parse_args()
  asset=json.loads((ROOT/'assets/settings_v04.json').read_text(encoding='utf-8'))
- assert asset['music_note_first']==74 and asset['music_note_frames']==8 and len(asset['glyphs'])==82
+ assert asset['music_note_first']==74 and asset['music_note_frames']==8
+ assert [g['character'] for g in asset['glyphs'][74:82]]==[chr(0xe100+i) for i in range(8)]
  glyphs={g['character']:g['rows'] for g in asset['glyphs']}
  logs=[];records=[];count=0
  with tempfile.TemporaryDirectory(prefix='music_toast_') as folder:

@@ -10,7 +10,7 @@ module tb_topic_prefetch_equiv;
  integer cycles=0,pixels=0,response=0,length=0,commands=0,checks=0;reg [31:0] address=0;reg responding=0;
  wire burst_ready=!responding&&cycles%7!=0,pixel_ready=cycles%11!=0;
  always #10 sys_clk=~sys_clk;always #20 pix_clk=~pix_clk;
- frame_burst_prefetch #(.FRAME_PIXELS(307200),.SLIDE_TRANSITIONS(1),.INTRO_ANIMATION(1)) dut(.*);
+ frame_burst_prefetch #(.FRAME_PIXELS(307200),.SLIDE_TRANSITIONS(1),.INTRO_ANIMATION(1)) dut(.back_base(21'd0),.*);
  frame_burst_prefetch_reference #(.FRAME_PIXELS(307200),.SLIDE_TRANSITIONS(1),.INTRO_ANIMATION(1)) old(
   .start_ready(r_start_ready),.busy(r_busy),.done(r_done),.error(r_error),.burst_valid(r_burst_valid),
   .pixel_valid(r_pixel_valid),.pixel_last(r_pixel_last),.burst_addr(r_burst_addr),.pixel_addr(r_pixel_addr),

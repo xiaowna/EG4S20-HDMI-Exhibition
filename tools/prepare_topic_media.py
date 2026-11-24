@@ -8,7 +8,7 @@ import argparse,hashlib,json,shutil,sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from check_demo_media import check_bmp,check_wav,check_directory,SHORT_NAME
 
-DEFAULT=(Path.home() / 'Desktop' / '太阳系特展_交付包_20261023')
+DEFAULT=Path('media_source')
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
 def check_topics(root):

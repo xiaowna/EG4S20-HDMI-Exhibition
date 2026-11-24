@@ -11,6 +11,7 @@ def main():
     wrapper=producer+[ROOT/'rtl/frame_burst_prefetch.v',ROOT/'rtl/pixel_async_fifo.v']
     paths=set(producer+wrapper+[ROOT/'rtl/frame_stream_display.v',ROOT/'rtl/media_prefetch_control.v',ROOT/'rtl/sd_media_player.v',ROOT/'rtl/sd_sector_arbiter.v',ROOT/'assets/intro_assets.json',ROOT/'tests/intro_animation/verify_producer.py',ROOT/'tests/intro_animation/line_bram32k_model.sv',ROOT/'tests/gallery_caption/pause_pipeline_stubs.sv'])
     paths.update(HERE.glob('*.sv'));paths.update(HERE.glob('*.py'))
+    paths.update([ROOT/'rtl/video_chinese_settings.v',ROOT/'rtl/settings_font_rom.v',ROOT/'assets/settings_v04.json'])
     hashes={p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     logs=[];configs=cases()
     def run(cmd,cwd):
@@ -28,6 +29,15 @@ def main():
                                   ('tb_gallery_interval_constants',[ROOT/'rtl/sd_media_player.v',ROOT/'rtl/media_prefetch_control.v',ROOT/'rtl/sd_sector_arbiter.v',ROOT/'tests/gallery_caption/pause_pipeline_stubs.sv'],'tb_interval_constants.sv')]:
                 run([a.tool_dir/'iverilog.exe','-g2012','-s',top,'-o',t/'unit.vvp',*rtl,HERE/bench],t)
                 run([a.tool_dir/'vvp.exe',t/'unit.vvp'],t)
+            run([a.tool_dir/'iverilog.exe','-g2012','-s','tb_gallery_autoplay','-Ptb_gallery_autoplay.VARIABLE=1',
+                 '-o',t/'unit.vvp',ROOT/'rtl/media_prefetch_control.v',HERE/'tb_autoplay.sv'],t)
+            run([a.tool_dir/'vvp.exe',t/'unit.vvp'],t)
+            font=json.loads((ROOT/'assets/settings_v04.json').read_text(encoding='utf-8'))
+            bits=''.join(''.join(g['rows']) for g in font['glyphs']).ljust(32768,'0')
+            (t/'interval_font.hex').write_text('\n'.join(bits)+'\n',encoding='ascii')
+            run([a.tool_dir/'iverilog.exe','-g2012','-s','tb_interval_menu','-o',t/'unit.vvp',
+                 ROOT/'rtl/video_chinese_settings.v',ROOT/'rtl/settings_font_rom.v',HERE/'tb_interval_menu.sv'],t)
+            run([a.tool_dir/'vvp.exe',t/'unit.vvp'],t)
             metadata=json.loads((ROOT/'assets/intro_assets.json').read_text(encoding='utf-8'))
             encoded=[]
             for n,case in enumerate(configs):
@@ -37,6 +47,7 @@ def main():
             (t/'cases.hex').write_text(''.join(f'{x:x}\n' for x in encoded)+''.join('0\n' for _ in range(32-len(encoded))),encoding='ascii')
             for native in [False,True]:
                 cmd=[a.tool_dir/'iverilog.exe','-g2012','-s','tb_gallery_motion_producer','-o',t/'producer.vvp']
+                if native:cmd+=['-Ptb_gallery_motion_producer.CACHE=1']
                 if native:cmd+=['-DINTRO_NATIVE_RAM',ROOT/'tests/intro_animation/line_bram32k_model.sv']
                 run(cmd+producer+[HERE/'tb_producer.sv'],t)
                 run([a.tool_dir/'vvp.exe',t/'producer.vvp',f'+CASES={len(configs)}'],t)

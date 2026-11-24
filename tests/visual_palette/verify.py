@@ -138,7 +138,7 @@ def main():
     assert all(sha(ROOT/n)==digest for n,digest in inputs.items()),'palette sources changed during tests'
     result=dict(status='passed',cases=cases,pixel_vectors=vectors,production_color_only=True,
                 source_sha256=inputs,font_initialization_proof=rom_proof,home_initialization_proof=home_proof,
-                logos_and_firework_color_constants_preserved=True,hardware_tested=False,
+                logo_color_constants_preserved=True,hardware_tested=False,
                 limitations='Software RTL raster acceptance; resource packing and final board appearance require TD/hardware verification.')
     (HERE/'summary.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     (HERE/'regression.log').write_text(''.join(logs),encoding='utf-8')

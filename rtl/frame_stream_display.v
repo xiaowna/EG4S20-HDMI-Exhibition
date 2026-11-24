@@ -3,7 +3,7 @@
 // No new transaction until all prior FIFO pixels (including late data) retire.
 module frame_stream_display #(
  parameter H_ACTIVE=640,H_FP=16,H_SYNC=96,H_BP=48,
- parameter V_ACTIVE=480,V_FP=10,V_SYNC=2,V_BP=33,FIFO_ADDR_BITS=8,SLIDE_TRANSITIONS=0,INTRO_ANIMATION=0)(
+ parameter V_ACTIVE=480,V_FP=10,V_SYNC=2,V_BP=33,FIFO_ADDR_BITS=8,SLIDE_TRANSITIONS=0,INTRO_ANIMATION=0,CACHE_FRAMES=0)(
  input wire rst_n,sys_clk,pix_clk,front_valid,front_bank,
  output wire swap_window,burst_valid,output wire [31:0] burst_addr,output wire [8:0] burst_words,input wire burst_ready,
  input wire burst_data_valid,burst_last,burst_error,input wire [31:0] burst_data,
@@ -11,7 +11,8 @@ module frame_stream_display #(
  output wire de,output reg hsync,vsync,output wire [23:0] rgb,
  output wire frame_underflow,output wire fetch_busy,output reg video_started,
  input wire slide_request,slide_right,slide_prepared,output wire slide_ready,
- input wire intro_enable,intro_pause,input wire [4:0] intro_index,output wire intro_animating);
+ input wire intro_enable,intro_pause,input wire [4:0] intro_index,output wire intro_animating,
+ input wire intro_instant,input wire [20:0] front_base,back_base);
  wire raw_de,raw_hs,raw_vs,blank_start,raster_start;
  wire pre_ready,pre_done,pv,plast,pr;wire [31:0] pa;wire [23:0] pd;
  reg pre_start;
@@ -80,8 +81,8 @@ module frame_stream_display #(
  .V_ACTIVE(V_ACTIVE),.V_FP(V_FP),.V_SYNC(V_SYNC),.V_BP(V_BP)) u_timing(
  .clk(pix_clk),.rst_n(rst_n),.de(raw_de),.hsync(raw_hs),.vsync(raw_vs),.blank_start(blank_start),.raster_start(raster_start));
  frame_burst_prefetch #(.FRAME_PIXELS(H_ACTIVE*V_ACTIVE),.FIFO_ADDR_BITS(FIFO_ADDR_BITS),
-  .SLIDE_TRANSITIONS(SLIDE_TRANSITIONS),.LINE_PIXELS(H_ACTIVE),.INTRO_ANIMATION(INTRO_ANIMATION)) u_prefetch(
- .rst_n(rst_n),.sys_clk(sys_clk),.pix_clk(pix_clk),.start(pre_start),.frame_base(front_bank?(H_ACTIVE*V_ACTIVE):32'd0),
+  .SLIDE_TRANSITIONS(SLIDE_TRANSITIONS),.LINE_PIXELS(H_ACTIVE),.INTRO_ANIMATION(INTRO_ANIMATION),.CACHE_FRAMES(CACHE_FRAMES)) u_prefetch(
+ .rst_n(rst_n),.sys_clk(sys_clk),.pix_clk(pix_clk),.start(pre_start),.frame_base(CACHE_FRAMES?{11'd0,front_base}:(front_bank?(H_ACTIVE*V_ACTIVE):32'd0)),.back_base(back_base),
  .start_ready(pre_ready),.busy(fetch_busy),.done(pre_done),.error(prefetch_error),
  .burst_valid(burst_valid),.burst_addr(burst_addr),.burst_words(burst_words),.burst_ready(burst_ready),
  .burst_data_valid(burst_data_valid),.burst_last(burst_last),.burst_error(burst_error),.burst_data(burst_data),
@@ -137,7 +138,9 @@ module frame_stream_display #(
      grant<=front_valid;intro_mode_q<=introduction;intro_seen<=gallery_visible;
      intro_index_q<=intro_index;intro_bank_q<=front_bank;
      intro_topic_q<=(intro_index==5)?2'd0:((intro_index==11)?2'd1:((intro_index==17)?2'd2:2'd3));
-     if(!gallery_visible||!intro_seen||intro_index!=intro_index_q||front_bank!=intro_bank_q)intro_phase_q<=0;
+     if(!gallery_visible)intro_phase_q<=0;
+     else if(intro_instant)intro_phase_q<=phase_limit;
+     else if(!intro_seen||intro_index!=intro_index_q||front_bank!=intro_bank_q)intro_phase_q<=0;
      else if(!intro_pause&&!slide_running&&intro_phase_q<phase_limit)
       intro_phase_q<=introduction?((intro_phase_q>=61)?6'd63:intro_phase_q+6'd2):(intro_phase_q+1'b1);
      if(front_valid)begin pre_start<=1;sys_state<=S_LAUNCH;end

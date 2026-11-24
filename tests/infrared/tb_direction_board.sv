@@ -8,21 +8,23 @@ module tb_ir_direction_board;
  dmz_keyboard_model keyboard_model(.*,.row_n(key_row_n),.col_n(key_col_n));
  hdmi_media_board_top dut(.*);
  defparam dut.infrared.SAMPLE_CYCLES=1,dut.keyboard.SCAN_CYCLES=4,dut.keys.COUNT=8,dut.mode_control.DEBOUNCE_CYCLES=8;
- reg [6:0] saved_yaw,saved_pitch;integer right_events=0,left_events=0,checks=0;
+ reg [6:0] saved_yaw,saved_pitch;integer right_events=0,left_events=0,fast_events=0,checks=0,r,l;
  always @(posedge dut.sys_clk)begin
+  if(dut.u_player.fast_pulse)fast_events=fast_events+1;
   if(dut.control_event[0])right_events=right_events+1;
   if(dut.control_event[2])left_events=left_events+1;
  end
  task cycles(input integer n);begin repeat(n)@(negedge dut.sys_clk);#2;end endtask
  task level(input bit v,input integer n);begin infrared_n=v;cycles(n);end endtask
- task frame(input [7:0] a,c);
+ task full_frame(input [7:0] a,c,input integer gap);
   reg [31:0] data;integer i;
   begin
-   data={~c,c,~a,a};level(1,19000);level(0,900);level(1,450);
+   data={~c,c,~a,a};level(1,gap);level(0,900);level(1,450);
    for(i=0;i<32;i=i+1)begin level(0,56);level(1,data[i]?169:56);end
    level(0,56);level(1,100);
   end
  endtask
+ task frame(input [7:0] a,c);begin full_frame(a,c,19000);end endtask
  task repeat_frame;begin
   level(1,4000);level(0,900);level(1,225);level(0,56);level(1,100);
  end endtask
@@ -50,21 +52,52 @@ module tb_ir_direction_board;
   cycles(8);rst_n=1;cycles(8);dut.u_pll.lock_enable=1;cycles(500);
   dut.u_player.mock_catalog_ready=1;dut.u_player.mock_image_count=24;cycles(5);
   if(!dut.home_visible||dut.home_index!=0)$fatal(1,"home startup");
+  frame(0,8'h46);
+  if(dut.scene_zoom!=1||fast_events!=0)$fatal(1,"zoom/fast photo escaped into home");
   frame(0,8'h45);
   if(!dut.home_visible||dut.home_index!=0||dut.scene_mode)$fatal(1,"0045 must be inactive on home");
   frame(0,8'h40);frame(0,8'h19);
-  if(dut.home_index!=0||!dut.home_visible)$fatal(1,"UP/DOWN must not navigate home");
+  if(dut.home_index!=0||!dut.home_visible||!dut.help_visible)$fatal(1,"UP must open help without navigating home");
+  frame(0,8'h0d);
+  if(dut.help_visible)$fatal(1,"BACK must close help");
+  r=right_events;
+  frame(0,8'h09);repeat(4)repeat_frame();full_frame(0,8'h09,4000);
+  repeat(40)video_frame();cycles(2);
+  if(dut.home_index!=1||right_events!=r+1)
+   $fatal(1,"one homepage press moved more than one card");
+  // This complete frame is a separate press with a shorter gap than 180 ms.
+  full_frame(0,8'h09,7000);repeat(19)video_frame();cycles(2);
+  if(dut.home_index!=2||right_events!=r+2)$fatal(1,"new fast tap was suppressed");
+  frame(0,8'h07);repeat(19)video_frame();cycles(2);
+  frame(0,8'h07);repeat(19)video_frame();cycles(2);
   frame(0,8'h07);repeat(19)video_frame();cycles(2);
   if(dut.home_index!=4)$fatal(1,"LEFT must retain home navigation");
   frame(0,8'h15);cycles(100);repeat(19)video_frame();cycles(3);
   if(!dut.view_active||dut.home_visible||dut.scene_mode)$fatal(1,"enter solar");
   directions;
+  save_camera;frame(0,8'h46);unchanged;
+  if(dut.scene_zoom!=2||dut.scene_mode)$fatal(1,"0046 must enlarge the solar model");
+  repeat(8)repeat_frame();
+  if(dut.scene_zoom!=2)$fatal(1,"held 0046 must not repeat zoom");
+  frame(1,8'h46);
+  if(dut.scene_zoom!=2)$fatal(1,"wrong address toggled zoom");
+  frame(0,8'h46);
+  if(dut.scene_zoom!=1)$fatal(1,"second zoom press must restore normal scale");
+  save_camera;frame(0,8'h43);frame(0,8'h40);
+  if(!dut.setting_active||dut.view_yaw!==saved_yaw||dut.view_pitch[6:3]!==saved_pitch[6:3]||dut.view_pitch[2:0]!==saved_pitch[2:0]+3'd1)
+   $fatal(1,"remote UP in solar settings must accelerate without rotating");
+  frame(0,8'h19);frame(0,8'h0d);unchanged;
   save_camera;tap(1);
   if(dut.view_yaw!==saved_yaw||dut.view_pitch[6:3]!==saved_pitch[6:3]||dut.view_pitch[2:0]!==saved_pitch[2:0]+3'd1)$fatal(1,"physical KEY1 speed behavior lost");
   tap(3);unchanged;
   frame(0,8'h45);
   if(!dut.scene_mode||dut.scene_zoom!=1||dut.view_yaw!=0||dut.view_pitch[6:3]!=3)
    $fatal(1,"0045 must select Earth-Moon using KEY5's initial view");
+  save_camera;frame(0,8'h46);unchanged;
+  if(dut.scene_zoom!=2||!dut.scene_mode)$fatal(1,"0046 must enlarge Earth-Moon");
+  frame(0,8'h46);
+  if(dut.scene_zoom!=1)$fatal(1,"Earth-Moon zoom did not restore");
+  frame(0,8'h45);frame(0,8'h45);
   repeat(8)repeat_frame();
   if(!dut.scene_mode)$fatal(1,"held 0045 repeated the model toggle");
   frame(1,8'h45);if(!dut.scene_mode)$fatal(1,"wrong address toggled model");
@@ -99,23 +132,54 @@ module tb_ir_direction_board;
   cycles(1);force dut.infrared.direction_event=4'd0;release dut.all_key_press;
   cycles(1);release dut.infrared.direction_event;cycles(2);unchanged;
   if(!dut.setting_active)$fatal(1,"IR SETTINGS failed");
+  frame(0,8'h46);unchanged;
+  if(dut.scene_zoom!=1)$fatal(1,"0046 leaked through settings");
   frame(0,8'h45);unchanged;
   if(!dut.scene_mode||!dut.setting_active)$fatal(1,"0045 leaked through settings");
-  frame(0,8'h40);frame(0,8'h19);frame(0,8'h09);frame(0,8'h07);unchanged;
+  frame(0,8'h40);
+  if(dut.view_yaw!==saved_yaw||dut.view_pitch[6:3]!==saved_pitch[6:3]||dut.view_pitch[2:0]!==saved_pitch[2:0]+3'd1)
+   $fatal(1,"remote UP in Earth-Moon settings must accelerate without rotating");
+  frame(1,8'h19);
+  if(dut.view_pitch[2:0]!==saved_pitch[2:0]+3'd1)$fatal(1,"wrong remote address changed speed");
+  frame(0,8'h19);frame(0,8'h09);frame(0,8'h07);unchanged;
   if(right_events==0||left_events<2)$fatal(1,"menu must retain horizontal IR events");
   frame(0,8'h0d);
   if(dut.setting_active||dut.home_visible||!dut.view_active)$fatal(1,"BACK must close settings and retain scene");
   save_camera;frame(0,8'h15);
   if(dut.view_yaw===saved_yaw&&dut.view_pitch[6:3]===saved_pitch[6:3])$fatal(1,"IR OK must retain preset view cycling");
   frame(0,8'h16);if(!dut.home_visible||dut.view_active)$fatal(1,"IR HOME must leave 3D");
-  frame(0,8'h40);frame(0,8'h19);if(!dut.home_visible)$fatal(1,"UP/DOWN leaked outside 3D");
+  frame(0,8'h40);frame(0,8'h19);if(!dut.home_visible||!dut.help_visible)$fatal(1,"help did not open on return home");
+  frame(0,8'h0d);
   frame(0,8'h09);repeat(19)video_frame();cycles(2);
   frame(0,8'h15);cycles(100);dut.u_player.mock_album_ready=1;
   cycles(20);repeat(19)video_frame();cycles(3);
   if(dut.view_active||dut.home_visible)$fatal(1,"photo album entry failed");
   frame(0,8'h45);
   if(dut.view_active||dut.home_visible||dut.setting_active||dut.scene_mode)$fatal(1,"0045 must be inactive in photo album");
-  $display("PASS IR 3D board: %0d camera assertions, wire-level 0045 model switch/held rejection/KEY5 priority/home-album-settings isolation, 0040/0019/0009/0007 in both models, OK/BACK/HOME/KEY5 preservation",checks);$finish;
+  r=dut.u_player.next_events;l=dut.u_player.prev_events;
+  frame(0,8'h46);
+  if(dut.scene_zoom!=1||fast_events!=0)$fatal(1,"zoom/fast photo leaked from 0046 into album");
+  frame(0,8'h09);frame(0,8'h07);
+  if(dut.u_player.next_events!=r+1||dut.u_player.prev_events!=l+1||fast_events!=2)
+   $fatal(1,"0009/0007 did not issue fast next/previous");
+  // A single short NEC repeat after a tap must not turn a second page.
+  repeat_frame();
+  if(dut.u_player.prev_events!=l+1||fast_events!=2)
+   $fatal(1,"one early NEC repeat caused a second page");
+  repeat(8)repeat_frame();
+  if(dut.u_player.prev_events<l+2||fast_events!=1+dut.u_player.prev_events-l)
+   $fatal(1,"held LEFT did not repeat as fast previous");
+  r=dut.u_player.next_events;
+  frame(0,8'h09);full_frame(0,8'h09,4000);
+  if(dut.u_player.next_events!=r+1)$fatal(1,"early full-frame repeat caused a second page");
+  frame(0,8'h09);
+  if(dut.u_player.next_events!=r+2)$fatal(1,"a separate same-direction tap was lost");
+  r=fast_events;tap(1);tap(3);
+  if(fast_events!=r+2)$fatal(1,"physical gallery keys must use the fast path");
+  r=fast_events;
+  frame(0,8'h43);frame(0,8'h09);frame(0,8'h07);
+  if(!dut.setting_active||fast_events!=r)$fatal(1,"settings leaked fast photo events");
+  $display("PASS IR 3D board: 0046 zoom, gallery tap/repeat/full-frame deduplication, held navigation, %0d camera assertions, context and key priority",checks);$finish;
  end
- initial begin #50000000;$fatal(1,"direction board timeout");end
+ initial begin #65000000;$fatal(1,"direction board timeout");end
 endmodule

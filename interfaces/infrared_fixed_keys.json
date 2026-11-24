@@ -11,8 +11,8 @@
   "status": "Compiled from actual captured remote codes; no runtime learning required.",
   "extras": {
     "back": "0D",
-    "egg_a": "46",
-    "egg_b": "45"
+    "zoom": "46",
+    "model": "45"
   },
   "directions": {
     "up": "40",

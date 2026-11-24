@@ -1,8 +1,8 @@
 // 固定 640x480 / 总计 800x525 / 25 MHz。输出完整视频与双声道测试音数据岛。
 // 当前固定格式调试模式；未实现 EDID/HPD 协商。
 module hdmi_av_output #(parameter SETTINGS_UI=0,parameter MODE_CONTROL=0,parameter CHINESE_SUBTITLE=0,parameter CHINESE_SETTINGS=0,parameter SPECTRUM_FFT=0,parameter MUSIC_MENU=0,parameter RTC_OVERLAY=0,parameter RTC_SETTING=0,parameter HOME_UI=0,parameter VIEW_3D=0,parameter FINE_ADJUST=0,parameter PREPARE_UI=0,parameter MUSIC_TOAST=0,
- parameter integer MAX_IMAGES=4,INDEX_BITS=(MAX_IMAGES>1)?$clog2(MAX_IMAGES):1,
- parameter integer COUNT_BITS=(MAX_IMAGES>0)?$clog2(MAX_IMAGES+1):1)(
+ parameter HELP_UI=0,parameter integer MAX_IMAGES=4,INDEX_BITS=(MAX_IMAGES>1)?$clog2(MAX_IMAGES):1,
+ parameter integer COUNT_BITS=(MAX_IMAGES>0)?$clog2(MAX_IMAGES+1):1,parameter AUTOPLAY_INTERVAL_MENU=0)(
  input wire sys_clk,pix_clk,rst_n,audio_enable,input wire [2:0] tone_sel,
  input wire video_started,catalog_ready,wav_found,wav_error,audio_only,image_valid,
  input wire [COUNT_BITS-1:0] image_count,input wire [INDEX_BITS-1:0] image_index,
@@ -16,7 +16,8 @@ module hdmi_av_output #(parameter SETTINGS_UI=0,parameter MODE_CONTROL=0,paramet
  output wire audio_flush_done,input wire [7:0] music_status,input wire [48:0] rtc_word,
  input wire [53:0] rtc_edit_word,input wire [14:0] home_word,
  input wire scene_enable,input wire [6:0] scene_yaw,scene_pitch,output wire scene_ready,input wire [14:0] fine_adjust_word,input wire [9:0] prepare_word,
- input wire easter_toggle,input wire scene_mode,input wire [1:0] scene_zoom);
+ input wire scene_mode,input wire [1:0] scene_zoom,input wire [2:0] help_word,
+ input wire [3:0] autoplay_word);
  wire sample_valid,sample_ready,overflow,fifo_full,fifo_empty,fifo_read;
  localparam AUDIO_FIFO_BITS=11;
  wire [AUDIO_FIFO_BITS:0] fifo_level,fifo_wr_level;
@@ -85,7 +86,9 @@ module hdmi_av_output #(parameter SETTINGS_UI=0,parameter MODE_CONTROL=0,paramet
  localparam STATUS_BASE_BITS=4+COUNT_BITS+INDEX_BITS;
  localparam LEGACY_STATUS_BITS=STATUS_BASE_BITS+(MODE_CONTROL?15:(SETTINGS_UI?11:0))+(MUSIC_MENU?8:0);
  localparam ADJUST_STATUS_BITS=LEGACY_STATUS_BITS+(FINE_ADJUST?15:0);
- localparam STATUS_BITS=ADJUST_STATUS_BITS+(PREPARE_UI?10:0);
+ localparam HELP_STATUS_LOW=ADJUST_STATUS_BITS+(PREPARE_UI?10:0);
+ localparam AUTOPLAY_STATUS_LOW=HELP_STATUS_LOW+(HELP_UI?3:0);
+ localparam STATUS_BITS=AUTOPLAY_STATUS_LOW+(AUTOPLAY_INTERVAL_MENU?4:0);
  // The home/Chinese menu replaces the legacy English debug status strip.
  // Do not transfer its unused image/status fields across clock domains.
  // The home path has no debug strip. Reuse its otherwise-zero bit 0 for
@@ -102,14 +105,22 @@ module hdmi_av_output #(parameter SETTINGS_UI=0,parameter MODE_CONTROL=0,paramet
  localparam [ADJUST_STATUS_BITS-1:0] ADJUST_RESET=FINE_ADJUST?
   {8'd64,7'd50,{LEGACY_STATUS_BITS{1'b0}}}:0;
  localparam [STATUS_BITS-1:0] STATUS_RESET=ADJUST_RESET;
- wire [STATUS_BITS-1:0] status_sys=PREPARE_UI?{prepare_word,adjust_status_sys}:adjust_status_sys;
+ wire [HELP_STATUS_LOW-1:0] prepare_status_sys=PREPARE_UI?{prepare_word,adjust_status_sys}:adjust_status_sys;
+ wire [AUTOPLAY_STATUS_LOW-1:0] help_status_sys=HELP_UI?{help_word,prepare_status_sys}:prepare_status_sys;
+ wire [STATUS_BITS-1:0] status_sys=AUTOPLAY_INTERVAL_MENU?{autoplay_word,help_status_sys}:help_status_sys;
+ reg [STATUS_BITS-1:0] status_hold,status_pix;
  wire [9:0] prepare_pix;
  generate if(PREPARE_UI)begin:prepare_status
   assign prepare_pix=status_pix[ADJUST_STATUS_BITS+:10];
  end else begin:no_prepare_status
   assign prepare_pix=0;
  end endgenerate
- reg [STATUS_BITS-1:0] status_hold,status_pix;
+ wire [3:0] autoplay_pix;
+ generate if(AUTOPLAY_INTERVAL_MENU)begin:autoplay_status
+  assign autoplay_pix=status_pix[AUTOPLAY_STATUS_LOW+:4];
+ end else begin:fixed_autoplay_status
+  assign autoplay_pix=0;
+ end endgenerate
  wire [STATUS_BASE_BITS+22:0] status_full=status_pix[LEGACY_STATUS_BITS-1:0];
  wire [14:0] fine_adjust_pix;
  generate if(FINE_ADJUST)begin:fine_status
@@ -207,12 +218,13 @@ module hdmi_av_output #(parameter SETTINGS_UI=0,parameter MODE_CONTROL=0,paramet
   // 101 exact round(percent*256/100) gains. Constant division is performed
   // only at ROM initialization, never in the pixel datapath. Entries above
   // the menu's legal range saturate to 150 percent.
-  reg [8:0] gain_rom[0:127];
+  wire [8:0] gain_rom[0:127];
   reg [8:0] gain;
   reg [7:0] bias_index;
-  integer gain_index;
-  initial for(gain_index=0;gain_index<128;gain_index=gain_index+1)
-   gain_rom[gain_index]=(gain_index>100)?9'd384:(((gain_index+50)*256+50)/100);
+  genvar gain_index;
+  for(gain_index=0;gain_index<128;gain_index=gain_index+1)begin:initialize_gain
+   assign gain_rom[gain_index]=(gain_index>100)?9'd384:(((gain_index+50)*256+50)/100);
+  end
   // Align brightness with the one-clock ROM output; no mixed setting pair.
   always @(posedge pix_clk)begin
    gain<=gain_rom[fine_adjust_pix[6:0]];
@@ -280,23 +292,23 @@ module hdmi_av_output #(parameter SETTINGS_UI=0,parameter MODE_CONTROL=0,paramet
   wire [23:0] subtitle_rgb,content_rgb;
   video_chinese_subtitle #(.SOFT_EDGES(HOME_UI)) subtitle(.clk(pix_clk),.rst_n(rst_n),.de(dp[1]),.vsync(vp[1]),
    .x(x_pipe[1]),.y(y_pipe[1]),.rgb_in(adjusted_rgb),.rgb_out(subtitle_rgb));
-  wire [23:0] home_rgb;wire home_cover,home_easter;
+  wire [23:0] home_rgb;wire home_cover;
   if(HOME_UI)begin:home
    video_home #(.EXHIBIT(VIEW_3D)) display(.clk(pix_clk),.rst_n(rst_n),.de(dp[1]),.vsync(vp[1]),
-    .x(x_pipe[1]),.y(y_pipe[1]),.home_word(home_word),.rgb_out(home_rgb),.overlay_valid(home_cover),.easter_toggle(easter_toggle),.easter_valid(home_easter));
+    .x(x_pipe[1]),.y(y_pipe[1]),.home_word(home_word),.rgb_out(home_rgb),.overlay_valid(home_cover));
   end else begin:no_home
-   assign home_rgb=0;assign home_cover=0;assign home_easter=0;
+   assign home_rgb=0;assign home_cover=0;
   end
   if(CHINESE_SETTINGS&&SETTINGS_UI)begin:settings
    wire [23:0] menu_rgb;
    wire menu_cover;
-   video_chinese_settings #(.SPECTRUM_FFT(SPECTRUM_FFT),.MUSIC_MENU(MUSIC_MENU),.RTC_OVERLAY(RTC_OVERLAY),.RTC_SETTING(RTC_SETTING),.COMPACT_ROWS(HOME_UI),.FINE_ADJUST(FINE_ADJUST),.MUSIC_TOAST(MUSIC_TOAST)) menu(.clk(pix_clk),.rst_n(rst_n),.de(dp[1]),.vsync(vp[1]),
+   video_chinese_settings #(.SPECTRUM_FFT(SPECTRUM_FFT),.MUSIC_MENU(MUSIC_MENU),.RTC_OVERLAY(RTC_OVERLAY),.RTC_SETTING(RTC_SETTING),.COMPACT_ROWS(HOME_UI),.FINE_ADJUST(FINE_ADJUST),.MUSIC_TOAST(MUSIC_TOAST),.AUTOPLAY_INTERVAL_MENU(AUTOPLAY_INTERVAL_MENU)) menu(.clk(pix_clk),.rst_n(rst_n),.de(dp[1]),.vsync(vp[1]),
     .home_word(home_word),.music_playing(status_pix[0]),
     .rtc_edit_word(rtc_edit_word),.fine_adjust_word(fine_adjust_pix),
     .rtc_word(rtc_word),
     .x(x_pipe[1]),.y(y_pipe[1]),.rgb_in(adjusted_rgb),
     .settings_word(status_full[STATUS_BASE_BITS+10:STATUS_BASE_BITS]),.music_status(status_full[STATUS_BASE_BITS+22:STATUS_BASE_BITS+15]),
-  .mode_status(status_full[STATUS_BASE_BITS+14:STATUS_BASE_BITS+11]),
+  .mode_status(status_full[STATUS_BASE_BITS+14:STATUS_BASE_BITS+11]),.autoplay_word(autoplay_pix),
     .rgb_out(menu_rgb),.overlay_valid(menu_cover));
    assign content_rgb=menu_cover?menu_rgb:(home_cover?home_rgb:subtitle_rgb);
   end else begin:no_settings
@@ -311,7 +323,17 @@ module hdmi_av_output #(parameter SETTINGS_UI=0,parameter MODE_CONTROL=0,paramet
   end else begin:no_prepare
    assign prepared_rgb=content_rgb;
   end
-  assign overlay_rgb=home_easter?home_rgb:prepared_rgb;
+  if(HELP_UI)begin:help
+   wire [23:0] help_rgb;wire help_cover;
+   video_help display(.clk(pix_clk),.rst_n(rst_n),.de(dp[0]),.vsync(vp[0]),
+    .x(x_pipe[0]),.y(y_pipe[0]),.help_word(status_pix[HELP_STATUS_LOW+:3]),
+    .hint_enable(home_word[14]&&home_word[13:11]==3'd0&&!status_full[STATUS_BASE_BITS+10]),
+    .rgb_out(help_rgb),.overlay_valid(help_cover));
+   // Help remains readable even if a missing TF card raises a progress error.
+   assign overlay_rgb=help_cover?help_rgb:prepared_rgb;
+  end else begin:no_help
+   assign overlay_rgb=prepared_rgb;
+  end
  end else begin:legacy_subtitle
   assign overlay_rgb=adjusted_rgb;
  end endgenerate

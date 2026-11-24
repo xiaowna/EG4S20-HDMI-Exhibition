@@ -13,7 +13,7 @@ module tb_rtc_set_menu;
  reg [2:0] expected_field=0;reg [1:0] expected_status=0;
  reg [23:0] expected;integer glyph,px,py,i,j,fd,checks=0;reg window;
  always #10 clk=~clk;
- video_chinese_settings #(.MUSIC_MENU(1),.RTC_OVERLAY(1),.RTC_SETTING(1)) dut(.home_word(15'd0),.music_playing(1'b0),.fine_adjust_word(15'd0),.*);
+ video_chinese_settings #(.MUSIC_MENU(1),.RTC_OVERLAY(1),.RTC_SETTING(1)) dut(.home_word(15'd0),.music_playing(1'b0),.fine_adjust_word(15'd0),.autoplay_word(4'd0),.*);
  task tick;begin @(posedge clk);#1;@(negedge clk);end endtask
  task frame;begin de=0;vsync=0;tick;vsync=1;tick;end endtask
  task scan(input integer save);

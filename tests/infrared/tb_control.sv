@@ -10,9 +10,9 @@ endmodule
 module tb_ir_control;
  reg clk=0,rst_n=0,enable=1,infrared_n=1,key_settings_down=0,key_settings_press=0;
  always #10 clk=~clk;
- wire [3:0] infrared_event,direction_event;wire home_event,back_event,easter_toggle,model_event,learning,learning_enter,paired;wire [2:0] learning_led;
+ wire [3:0] infrared_event,direction_event;wire home_event,back_event,model_event,learning,learning_enter,paired;wire [2:0] learning_led;
  media_infrared_control #(.SAMPLE_CYCLES(1),.RELEASE_TICKS(4),.LEARN_HOLD_TICKS(12),
-  .LEARN_TIMEOUT_TICKS(400),.FIRST_REPEAT_TICKS(20),.NEXT_REPEAT_TICKS(8)) dut(.*);
+  .LEARN_TIMEOUT_TICKS(400),.FIRST_REPEAT_TICKS(20),.NEXT_REPEAT_TICKS(8)) dut(.zoom_event(),.gallery_navigation(1'b0),.home_navigation(1'b0),.*);
  integer right=0,left=0,ok=0,back=0,entered=0,checks=0;
  reg [3:0] old_event=0;
  always @(posedge clk)begin #1;

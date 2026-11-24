@@ -31,7 +31,7 @@ module tb_home_album;
  always @(negedge clk)if($test$plusargs("TRACE") &&
   (load_start||next_pulse||prev_pulse||frame_committed||frame_prepared))
   $display("TRACE cycle=%0d state=%0d cursor=%0d fg=%b pending=%b prev=%b next=%b index=%0d shown=%0d ready=%b hold=%b commits=%0d",cycles,control.state,control.cursor,control.foreground,control.pending_request,prev_pulse,next_pulse,image_index,display_index,transition_ready,hold_fade,commits);
- media_prefetch_control #(.INTERVAL_CYCLES(INTERVAL),.CONTROLLED_AUTOPLAY(1),.ALBUMS(1),.MAX_IMAGES(32)) control(.prefetch_enable(1'b1),.preparing(),.prepare_progress_valid(),.auto_enable(1'b1),.*);
+ media_prefetch_control #(.INTERVAL_CYCLES(INTERVAL),.CONTROLLED_AUTOPLAY(1),.ALBUMS(1),.MAX_IMAGES(32)) control(.prefetch_enable(1'b1),.preparing(),.prepare_progress_valid(),.retain_first(),.preserve_album(),.auto_enable(1'b1),.fast_pulse(1'b0),.cancel_load(),.fast_commit(),.autoplay_interval(3'd7),.*);
  frame_buffer_manager #(.FRAME_PIXELS(6),.ALLOW_DISCARD(1)) frame(
   .clk(clk),.rst_n(rst_n),.frame_start(frame_start),.frame_done(image_done),.frame_error(error),
   .frame_ready(frame_ready),.pixel_valid(pixel_valid),.pixel_addr(pixel_addr),

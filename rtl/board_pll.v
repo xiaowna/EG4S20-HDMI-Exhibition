@@ -73,7 +73,8 @@ module board_pll (
     .di(8'b00000000),
     .daddr(6'b000000),
     .do({board_pll_open8, board_pll_open7, board_pll_open6, board_pll_open5, board_pll_open4, board_pll_open3, board_pll_open2, board_pll_open1}),
-    .fbclk(clk0_out),
+    // Feed back the PLL output before the global pixel-clock buffer.
+    .fbclk(clk0_buf),
     .clkc({board_pll_open11, board_pll_open10, clk2_buf, clk1_buf, clk0_buf}) 
   );
 

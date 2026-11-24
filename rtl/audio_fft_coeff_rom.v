@@ -1,7 +1,7 @@
 // Generated Q15 constants. No external file is needed at configuration time.
 module audio_fft_coeff_rom(input wire clk,input wire [8:0] window_address,
- input wire [7:0] twiddle_address,output reg signed [15:0] window_value,
- output reg signed [15:0] twiddle_real,twiddle_imag);
+ input wire [7:0] twiddle_address,output wire signed [15:0] window_value,
+ output wire signed [15:0] twiddle_real,twiddle_imag);
  localparam [8191:0] WINDOW={
   16'h0001,
   16'h0005,
@@ -772,14 +772,30 @@ module audio_fft_coeff_rom(input wire clk,input wire [8:0] window_address,
   32'h7ff6fcdc,
   32'h7ffefe6e,
   32'h7fff0000};
+`ifdef __ICARUS__
  reg [15:0] window_mem[0:511];
  reg [31:0] twiddle_mem[0:255];integer n;
  initial begin
   for(n=0;n<512;n=n+1)window_mem[n]=WINDOW[n*16+:16];
   for(n=0;n<256;n=n+1)twiddle_mem[n]=TWIDDLE[n*32+:32];
  end
+ reg [15:0] window_q;
+ reg [31:0] twiddle_q;
  always @(posedge clk)begin
-  window_value<=window_mem[window_address];
-  {twiddle_real,twiddle_imag}<=twiddle_mem[twiddle_address];
+  window_q<=window_mem[window_address];
+  twiddle_q<=twiddle_mem[twiddle_address];
  end
+ assign window_value=window_q;
+ assign {twiddle_real,twiddle_imag}=twiddle_q;
+`else
+ wire [17:0] window_word,twiddle_low,twiddle_high;
+ anlogic_initialized_rom18 #(.WORDS(512),.WIDTH(16),.DATA(WINDOW)) window_coefficients(
+  clk,window_address,window_word);
+ anlogic_initialized_rom18 #(.WORDS(256),.WIDTH(32),.DATA(TWIDDLE)) twiddle_low_coefficients(
+  clk,{1'b0,twiddle_address},twiddle_low);
+ anlogic_initialized_rom18 #(.WORDS(256),.WIDTH(32),.OFFSET(18),.DATA(TWIDDLE)) twiddle_high_coefficients(
+  clk,{1'b0,twiddle_address},twiddle_high);
+ assign window_value=window_word[15:0];
+ assign {twiddle_real,twiddle_imag}={twiddle_high[13:0],twiddle_low};
+`endif
 endmodule

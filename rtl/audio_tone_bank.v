@@ -87,8 +87,11 @@ module audio_tone_bank #(parameter integer CLK_HZ=50_000_000,
  wire [23:0] fixed_sample;
  generate if(FIXED_1KHZ)begin:fixed_tone
   // Exact 48-sample, 1kHz period at 48kHz; prefetched between sample ticks.
-  (* rom_style="bram" *) reg [15:0] samples[0:47];reg [15:0] q;integer k;
-  initial for(k=0;k<48;k=k+1)samples[k]=FIXED_SAMPLES[k*16+:16];
+  wire [15:0] samples[0:47];reg [15:0] q;
+  genvar k;
+  for(k=0;k<48;k=k+1)begin:initialize_samples
+   assign samples[k]=FIXED_SAMPLES[k*16+:16];
+  end
   always @(posedge clk)q<=samples[fixed_phase];
   assign fixed_sample={q,8'd0};
  end else begin:no_fixed_tone

@@ -1,6 +1,7 @@
 """NEC vectors, learned/fixed keys and context-bound four-direction 3D control."""
 from pathlib import Path
 import argparse, hashlib, json, subprocess, tempfile
+from runpy import run_path
 
 ROOT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).resolve().parent
@@ -56,10 +57,13 @@ def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--tool-dir',type=Path,required=True)
  args=p.parse_args();logs=[];records=[]
  names=['rtc_ds1302.v','rtc_set_control.v','media_nec_receiver.v','media_infrared_control.v','hdmi_media_board_top.v','board_key.v',
-        'board_matrix_keys.v','media_rotary_encoder.v','media_control_events.v','media_mode_control.v','media_adjust_control.v','media_home_control.v','home_album_config.v','media_3d_control.v']
+        'board_matrix_keys.v','media_rotary_encoder.v','media_control_events.v','media_mode_control.v','media_adjust_control.v','media_home_control.v','media_help_control.v','home_album_config.v','media_3d_control.v']
  files=[ROOT/'rtl'/n for n in names]+list(HERE.glob('*.sv'))+[HERE/'verify.py',
   ROOT/'tests/dmz_media/tb_hdmi_media_board_top.sv',ROOT/'tests/dmz_media/dmz_keyboard_model.sv']
- files += list((ROOT/'rtl').glob('*.v'))+[ROOT/'assets/home_assets.json']
+ fixture_script=ROOT/'tests/topic_folders/verify.py'
+ board_model=ROOT/'tests/dmz_media/tb_hdmi_media_board_top.sv'
+ files += list((ROOT/'rtl').glob('*.v'))+[fixture_script,
+  ROOT/'tests/clock_buffer_model.v',ROOT/'tests/em638325_model.sv']
  hashes={f.relative_to(ROOT).as_posix():hashlib.sha256(f.read_bytes()).hexdigest() for f in files}
  def run(top,sources,tmp,params=None):
   exe=tmp/(top+'.vvp')
@@ -82,11 +86,28 @@ def main():
    run('tb_ir_extra',[ROOT/'rtl/media_infrared_control.v',HERE/'tb_control.sv',HERE/'tb_extra.sv'],tmp)
    run('tb_ir_model_toggle',[ROOT/'rtl/media_infrared_control.v',HERE/'tb_control.sv',HERE/'tb_model_toggle.sv'],tmp)
    run('tb_ir_directions',[ROOT/'rtl/media_infrared_control.v',HERE/'tb_control.sv',HERE/'tb_directions.sv'],tmp)
-   run('tb_ir_fixed_board',[*[ROOT/'rtl'/n for n in names],ROOT/'tests/dmz_media/tb_hdmi_media_board_top.sv',ROOT/'tests/dmz_media/dmz_keyboard_model.sv',HERE/'tb_fixed_board.sv'],tmp)
+   # Keep actual HDMI composition for the homepage sequence. Only the board
+   # clocks, media storage, and physical outputs need the board stubs here.
+   model_text=board_model.read_text(encoding='utf-8')
+   tmds_model=model_text[model_text.index('module tmds_ddr_tx'):model_text.index('module tb_hdmi_media_board_top')]
+   (tmp/'home_pins.sv').write_text(model_text[:model_text.index('module hdmi_av_output')]+tmds_model,encoding='utf-8')
+   run('tb_ir_fixed_board',[
+    *[p for p in sorted((ROOT/'rtl').glob('*.v')) if p.name not in ('board_pll.v','sd_media_player.v','tmds_ddr_tx.v')],
+    tmp/'home_pins.sv',ROOT/'tests/dmz_media/dmz_keyboard_model.sv',HERE/'tb_fixed_board.sv'],tmp)
    run('tb_ir_direction_board',[*[ROOT/'rtl'/n for n in names],ROOT/'tests/dmz_media/tb_hdmi_media_board_top.sv',ROOT/'tests/dmz_media/dmz_keyboard_model.sv',HERE/'tb_direction_board.sv'],tmp)
-   asset=json.loads((ROOT/'assets/home_assets.json').read_text(encoding='utf-8'))
-   (tmp/'celebration_font.hex').write_text(''.join(f'{b}\n' for b in asset['bits']),encoding='ascii')
-   run('tb_secret_smile',[*[p for p in sorted((ROOT/'rtl').glob('*.v')) if p.name!='board_pll.v'],HERE/'tb_smile.sv'],tmp)
+   fixture=run_path(str(fixture_script))['fixture']
+   # Reuse the existing PLL and HDMI models; keep the real player and raster.
+   pins=model_text[:model_text.index('module sd_media_player')]
+   pins+=model_text[model_text.index('module hdmi_av_output'):model_text.index('module tb_hdmi_media_board_top')]
+   (tmp/'gallery_pins.sv').write_text(pins,encoding='utf-8')
+   gallery_sources=[
+    *[p for p in sorted((ROOT/'rtl').glob('*.v')) if p.name not in ('board_pll.v','hdmi_av_output.v','tmds_ddr_tx.v','sd_subsystem.v')],
+    ROOT/'tests/clock_buffer_model.v',ROOT/'tests/em638325_model.sv',tmp/'gallery_pins.sv',
+    ROOT/'tests/dmz_media/dmz_keyboard_model.sv',HERE/'tb_gallery_card.sv']
+   for pages in (2,6):
+    card=fixture(0,first_count=pages)
+    (tmp/'ir_gallery_card.hex').write_text(''.join(f'{b:02x}\n' for b in card),encoding='ascii')
+    run('tb_ir_gallery_card',gallery_sources,tmp,{'PAGES':pages})
    run('tb_ir_thresholds',[ROOT/'rtl/media_infrared_control.v',HERE/'tb_control.sv',HERE/'tb_thresholds.sv'],tmp)
    run('tb_ir_board',[*[ROOT/'rtl'/n for n in names],
        ROOT/'tests/dmz_media/tb_hdmi_media_board_top.sv',ROOT/'tests/dmz_media/dmz_keyboard_model.sv',HERE/'tb_board.sv'],tmp)

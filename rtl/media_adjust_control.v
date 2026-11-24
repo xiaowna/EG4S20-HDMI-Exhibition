@@ -1,6 +1,6 @@
 // Debounced KEY1 right, KEY2 OK, KEY3 left, KEY4 settings/back.
 // Settings apply immediately and survive leaving the menu, until reset.
-module media_adjust_control #(parameter AUTOPLAY_MENU=0,parameter MUSIC_MENU=0,parameter RTC_MENU=0,parameter HOME_UI=0,parameter FINE_ADJUST=0)(
+module media_adjust_control #(parameter AUTOPLAY_MENU=0,parameter MUSIC_MENU=0,parameter RTC_MENU=0,parameter HOME_UI=0,parameter FINE_ADJUST=0,parameter AUTOPLAY_INTERVAL_MENU=0)(
  input wire clk,rst_n,input wire [3:0] key_press,
  output reg signed [8:0] cfg_value,
  output reg [8:0] cfg_gain_q8,
@@ -11,7 +11,8 @@ module media_adjust_control #(parameter AUTOPLAY_MENU=0,parameter MUSIC_MENU=0,p
  input wire [2:0] music_count,output wire music_page,
  output reg [1:0] cfg_music_index,output reg cfg_music_request,
  output wire rtc_page,input wire rtc_exit,home_play,input wire [1:0] home_music_index,
- input wire frame_tick,input wire [3:0] held_key_n,output reg [6:0] contrast_index);
+ input wire frame_tick,input wire [3:0] held_key_n,output reg [6:0] contrast_index,
+ output reg [2:0] autoplay_interval);
  localparam NORMAL=0,BRIGHT=1,CONTRAST=2,FADE=3,WAVE=4,AUTO=5,MUSIC=6,RTC=7;
  reg [2:0] state;
  wire pressed_right=key_press[0]&&!key_press[2];
@@ -55,7 +56,7 @@ module media_adjust_control #(parameter AUTOPLAY_MENU=0,parameter MUSIC_MENU=0,p
  always @(posedge clk or negedge rst_n)begin
   if(!rst_n)begin
    state<=NORMAL;cfg_value<=0;cfg_gain_q8<=9'd256;
-   cfg_fade_enabled<=0;cfg_wave_enabled<=0;cfg_update<=0;cfg_autoplay<=0;
+   cfg_fade_enabled<=0;cfg_wave_enabled<=0;cfg_update<=0;cfg_autoplay<=0;autoplay_interval<=3'd1;
    cfg_music_index<=0;cfg_music_request<=0;contrast_index<=7'd50;gain_remainder<=5'd12;
   end else begin
    cfg_update<=0;cfg_music_request<=0;
@@ -103,7 +104,16 @@ module media_adjust_control #(parameter AUTOPLAY_MENU=0,parameter MUSIC_MENU=0,p
      end
     end
     AUTO:if(AUTOPLAY_MENU&&product_mode)begin
-     if((right&&!cfg_autoplay)||(left&&cfg_autoplay))begin cfg_autoplay<=right;cfg_update<=1;end
+     if(AUTOPLAY_INTERVAL_MENU)begin
+      // Off, 3, 5, 10, 15, 30 seconds. The album entry uses the last interval.
+      if(right&&!cfg_autoplay)begin cfg_autoplay<=1;autoplay_interval<=0;cfg_update<=1;end
+      else if(right&&autoplay_interval<4)begin autoplay_interval<=autoplay_interval+1'b1;cfg_update<=1;end
+      else if(left&&cfg_autoplay)begin
+       if(autoplay_interval==0)cfg_autoplay<=0;
+       else autoplay_interval<=autoplay_interval-1'b1;
+       cfg_update<=1;
+      end
+     end else if((right&&!cfg_autoplay)||(left&&cfg_autoplay))begin cfg_autoplay<=right;cfg_update<=1;end
     end
     MUSIC:if(MUSIC_MENU&&product_mode&&music_count>1&&music_count<=4)begin
      if(right || left)begin

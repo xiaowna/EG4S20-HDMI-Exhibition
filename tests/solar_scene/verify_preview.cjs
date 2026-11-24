@@ -34,30 +34,24 @@ keys.keydown({key:'ArrowLeft',preventDefault(){}});assert.equal(state().yaw,11);
 keys.keydown({key:'Enter',preventDefault(){}});assert.equal(state().elev,2);
 elements.get('home').click();assert.equal(state().section,-1);assert.equal(elements.get('canvas').style.display,'none');
 assert(fs.existsSync(path.join(root,elements.get('image').src)));
-// Derive expected edges independently from minimum vertex distance. The
-// authored model renders all of these lines, never triangle interiors.
-const mesh=JSON.parse(vm.runInContext('JSON.stringify({vertices,edges,radii,sizes})',sandbox));
-assert.equal(mesh.vertices.length,12);assert.equal(mesh.edges.length,30);
-const expectedEdges=[],degree=Array(12).fill(0);
-for(let i=0;i<12;i++)for(let j=i+1;j<12;j++){
- const distance=mesh.vertices[i].reduce((sum,v,n)=>sum+(v-mesh.vertices[j][n])**2,0);
- if(distance<=1032){expectedEdges.push([i,j]);degree[i]++;degree[j]++}
+const geometry=JSON.parse(vm.runInContext('JSON.stringify({radii,sizes,palette})',sandbox));
+assert.equal(geometry.radii.length,8);
+assert.equal(geometry.sizes.length,9);
+assert.equal(geometry.palette.length,32);
+for(let i=0;i<8;i++){
+ assert(geometry.radii[i]+geometry.sizes[i]+1<64,'Body must fit the canvas');
+ if(i)assert(geometry.radii[i]>geometry.radii[i-1]);
 }
-assert.deepEqual(mesh.edges,expectedEdges);assert(degree.every(n=>n===5));
-assert.equal(new Set(mesh.edges.map(e=>e.join(','))).size,30);
-assert(!source.includes('for(const face of faces)'),'Do not fill triangle interiors');
-assert(source.includes('twice>-dy')&&source.includes('twice<dx'),'Keep strict Bresenham tie rules');
-for(let i=0;i<8;i++){assert(mesh.radii[i]+mesh.sizes[i]+1<64,'Enlarged geometry must fit the canvas');if(i)assert(mesh.radii[i]>mesh.radii[i-1])}
 let geometryCases=0,geometryPixels=0;
 if(vectorsPath){
  const reference=JSON.parse(fs.readFileSync(vectorsPath,'utf8'));assert.equal(reference.width,128);assert.equal(reference.height,128);
  for(const c of reference.cases){
   assert.equal(c.canvas.length,16384);
-  const actual=vm.runInContext(`yaw=${c.azimuth};elev=${c.elevation};phases=${JSON.stringify(c.phases)};Array.from(renderCanvas()).join('')`,sandbox);
+  const actual=JSON.parse(vm.runInContext(`yaw=${c.azimuth};elev=${c.elevation};phases=${JSON.stringify(c.phases)};JSON.stringify(Array.from(renderCanvas()))`,sandbox));
   let mismatch=-1;for(let i=0;i<16384;i++)if(actual[i]!==c.canvas[i]){mismatch=i;break}
   assert.equal(mismatch,-1,`Python/JavaScript canvas mismatch yaw=${c.azimuth} elevation=${c.elevation}, address=${mismatch}`);
   geometryCases++;geometryPixels+=16384;
  }
  assert(geometryCases>=18,'Include multiple camera poses and collinear occlusions');
 }
-console.log(JSON.stringify({status:'passed',topic_images:24,topics:4,home_entries:5,four_direction_camera:true,rate_bounds:true,wireframe_icosahedron:true,all_30_edges:true,filled_faces:false,independent_geometry_cases:geometryCases,independent_geometry_pixels:geometryPixels,software_canvas_draw_calls:draws,browser_ui_tested:false}));
+console.log(JSON.stringify({status:'passed',topic_images:24,topics:4,home_entries:5,four_direction_camera:true,rate_bounds:true,solid_shaded_spheres:true,independent_geometry_cases:geometryCases,independent_geometry_pixels:geometryPixels,software_canvas_draw_calls:draws,browser_ui_tested:false}));

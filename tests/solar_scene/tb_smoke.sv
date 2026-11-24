@@ -9,8 +9,15 @@ module tb_solar_smoke;
  integer n,t,p;
  initial begin
   repeat(5)@(negedge sys_clk);rst_n=1;
-  for(n=0;n<16;n=n+1)begin
-   yaw=12;pitch=((n<8?10:3)<<3)|(n%8);
+  if(dut.body_radius(7,2)-dut.body_radius(7,1)<4)
+   $fatal(1,"Neptune zoom must gain at least four canvas pixels of body radius");
+  for(n=0;n<8;n=n+1)
+   if(dut.orbital_radius(n[2:0],2)<=dut.orbital_radius(n[2:0],1)||
+      dut.body_radius(n[3:0],2)<=dut.body_radius(n[3:0],1))
+    $fatal(1,"planet %0d did not enlarge its orbit and body",n);
+  for(n=0;n<18;n=n+1)begin
+   zoom=(n<8)?1:2;
+   yaw=(n<16)?12:(n-15);pitch=(((n<8)?10:((n<16)?3:15))<<3)|(n%8);
    repeat(5)@(negedge sys_clk);vsync=0;
    repeat(12)@(negedge sys_clk);vsync=1;
    t=0;

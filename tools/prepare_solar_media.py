@@ -18,7 +18,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 
-DEFAULT = (Path.home() / "Desktop" / "太阳系特展_交付包_20261023")
+DEFAULT = Path("media_source")
 FONT = Path("C:/Windows/Fonts/msyh.ttc")
 FONT_BOLD = Path("C:/Windows/Fonts/msyhbd.ttc")
 SIZE = (640, 480)

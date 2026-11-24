@@ -4,7 +4,7 @@
 module tb_intro_phase_control;
  reg sys_clk=0,pix_clk=0,rst_n=0;
  always #10 sys_clk=~sys_clk;
- reg front_bank=0,intro_enable=1,intro_pause=0;
+ reg front_bank=0,intro_enable=1,intro_pause=0,intro_instant=0;
  reg [4:0] intro_index=5;
  reg request=0,complete_frame=0;
  wire swap_window,burst_valid,prefetch_error,de,hsync,vsync,frame_underflow,fetch_busy,video_started,slide_ready,intro_animating;
@@ -17,7 +17,8 @@ module tb_intro_phase_control;
   .prefetch_error(prefetch_error),.de(de),.hsync(hsync),.vsync(vsync),.rgb(rgb),
   .frame_underflow(frame_underflow),.fetch_busy(fetch_busy),.video_started(video_started),
   .slide_request(1'b0),.slide_right(1'b0),.slide_prepared(1'b0),.slide_ready(slide_ready),
-  .intro_enable(intro_enable),.intro_pause(intro_pause),.intro_index(intro_index),.intro_animating(intro_animating));
+  .intro_enable(intro_enable),.intro_pause(intro_pause),.intro_index(intro_index),.intro_animating(intro_animating),
+  .intro_instant(intro_instant));
  task frame(input integer expected_phase,input integer expected_mode,input integer expected_topic);
   begin
    wait(display.sys_state==0);@(negedge sys_clk);request=!request;
@@ -57,6 +58,12 @@ module tb_intro_phase_control;
   repeat(9)frame(12,0,0);
   if(intro_animating)$fatal(1,"settled ordinary caption remains animating");
   intro_pause=1;repeat(3)frame(12,0,0);intro_pause=0;
+  // Remote selection must show the final composition on the first frame,
+  // including a topic's last page. A subsequent ordinary selection animates.
+  intro_instant=1;intro_index=5;front_bank=0;frame(63,1,0);
+  intro_index=4;front_bank=1;frame(12,0,0);
+  if(intro_animating)$fatal(1,"instant selection started a caption animation");
+  intro_instant=0;intro_index=3;front_bank=0;frame(0,0,0);
   $display("PASS intro phase control transactions=%0d; step2 intro, 12-frame caption entrance, nine menu-paused frames, safe saturation, home disable/reentry, bank/index reset and all4topics",transactions);
   $finish;
  end

@@ -2,10 +2,11 @@
 // Real buffer manager, delayed loader and write draining. The scoreboards use
 // accepted memory words and committed identities, not controller state names.
 module tb_prefetch_control;
- parameter integer COUNT=4,INTERVAL=257;
+ parameter integer COUNT=4,INTERVAL=257,FAST=0;
+ reg fast_pulse=0,expect_fast=0;
  reg clk=0,rst_n=0,card_ready=0,scan_done=0,error=0,pause=1,next_pulse=0,prev_pulse=0;
  reg [2:0] image_count=COUNT;
- wire scan_start,load_start,commit_enable,discard_cached,transition_active;
+ wire scan_start,load_start,commit_enable,discard_cached,transition_active,cancel_load,fast_commit,preparing;
  wire transition_manual,transition_backward;
  wire [1:0] image_index;
  reg [1:0] display_index=0,loaded_index=0;
@@ -15,7 +16,7 @@ module tb_prefetch_control;
  wire pixel_ready,wr_valid;
  wire [31:0] wr_addr,wr_data;
  integer cycles=0,load_count=0,commits=0,discards=0,rejects=0,writes=0,drain=0;
- integer loader_state=0,delay_count=0,fade_ticks=0,fail_slot=-1,failed_loads=0;
+ integer loader_state=0,delay_count=0,fade_ticks=0,fail_slot=-1,failed_loads=0,cancellations=0;
  reg fail_load=0,hold_fade=0;
  reg previous_commit_enable=0;
  wire transition_ready=transition_active && !hold_fade && fade_ticks>=3;
@@ -30,7 +31,7 @@ module tb_prefetch_control;
  always @(negedge clk)if($test$plusargs("TRACE") &&
   (load_start||next_pulse||prev_pulse||frame_committed||frame_prepared))
   $display("TRACE cycle=%0d state=%0d cursor=%0d fg=%b pending=%b prev=%b next=%b index=%0d shown=%0d ready=%b hold=%b commits=%0d",cycles,control.state,control.cursor,control.foreground,control.pending_request,prev_pulse,next_pulse,image_index,display_index,transition_ready,hold_fade,commits);
- media_prefetch_control #(.INTERVAL_CYCLES(INTERVAL)) control(.prefetch_enable(1'b1),.preparing(),.prepare_progress_valid(),.album_request(1'b0),.album_enable(1'b0),.album_first('0),.album_limit('0),.album_ready(),.album_error(),.auto_enable(1'b1),.*);
+ media_prefetch_control #(.INTERVAL_CYCLES(INTERVAL),.FAST_MANUAL(FAST)) control(.prefetch_enable(1'b1),.prepare_progress_valid(),.retain_first(),.preserve_album(),.album_request(1'b0),.album_enable(1'b0),.album_first(2'd0),.album_limit(3'd0),.album_ready(),.album_error(),.auto_enable(1'b1),.autoplay_interval(3'd7),.*);
  frame_buffer_manager #(.FRAME_PIXELS(6),.ALLOW_DISCARD(1)) frame(
   .clk(clk),.rst_n(rst_n),.frame_start(frame_start),.frame_done(image_done),.frame_error(error),
   .frame_ready(frame_ready),.pixel_valid(pixel_valid),.pixel_addr(pixel_addr),
@@ -59,7 +60,10 @@ module tb_prefetch_control;
     busy<=1;frame_start<=1;loaded_index<=image_index;fail_load<=image_index==fail_slot;
     load_count<=load_count+1;delay_count<=25;loader_state<=1;pixel_addr<=0;
    end
-   case(loader_state)
+   if(cancel_load&&busy)begin
+    pixel_valid<=0;busy<=0;image_done<=1;error<=1;loader_state<=0;
+    cancellations<=cancellations+1;
+   end else case(loader_state)
     1:if(delay_count==0)begin pixel_valid<=1;loader_state<=2;end else delay_count<=delay_count-1;
     2:if(pixel_valid&&pixel_ready)begin
      if(pixel_addr==5)begin pixel_valid<=0;loader_state<=3;end else pixel_addr<=pixel_addr+1;
@@ -74,6 +78,8 @@ module tb_prefetch_control;
    end
    if(frame_rejected)rejects<=rejects+1;
    if(discard_cached&&frame_prepared)discards<=discards+1;
+   if(expect_fast&&(transition_active||preparing))$fatal(1,"fast switch started animation or progress overlay");
+   if(expect_fast&&frame_committed&&!fast_commit)$fatal(1,"instant commit flag lost");
    if(transition_active && !frame_prepared && !frame_committed)$fatal(1,"fade before prepared");
   end
  end
@@ -95,7 +101,33 @@ module tb_prefetch_control;
   end
   scan_done=1;tick(1);scan_done=0;
   committed(0,0);
-  if(COUNT==1)begin
+  if(FAST)begin
+   if(COUNT!=4)$fatal(1,"fast test needs four images");
+   wait(frame_prepared);tick(1);hold_fade=1;expect_fast=1;
+   before_load=load_count;start_cycle=cycles;fast_pulse=1;press(0);fast_pulse=0;
+   committed(1,1);
+   if(load_count!=before_load||cycles-start_cycle>22)$fatal(1,"cached fast right waited for load/animation");
+   latency=cycles-start_cycle;
+   wait(busy && loaded_index==2);fast_pulse=1;press(1);fast_pulse=0;
+   committed(0,2);
+   if(cancellations!=1||rejects!=1)$fatal(1,"uncached fast left did not cancel and reject old prefetch");
+   expect_fast=0;wait(frame_prepared);tick(1);press(0);wait(transition_active);tick(30);
+   if(commits!=3)$fatal(1,"ordinary button no longer waits for animation");
+   fast_pulse=1;press(1);press(1);press(1);fast_pulse=0;hold_fade=0;
+   committed(1,3);wait(!transition_active);expect_fast=1;
+   committed(2,4);expect_fast=0;
+   // Let AUTO claim the next image while it is still loading. A subsequent
+   // IR left is relative to the visible page 2, so it must show page 1.
+   wait(busy && loaded_index==3);
+   pause=0;
+   force control.timer=INTERVAL-1;
+   wait(control.foreground);tick(1);release control.timer;
+   pause=1;hold_fade=1;expect_fast=1;
+   fast_pulse=1;press(1);fast_pulse=0;
+   committed(1,5);expect_fast=0;
+   $display("PASS fast gallery: cache hit %0d cycles, reverse miss, queued presses and manual priority over autoplay",latency);
+   $finish;
+  end else if(COUNT==1)begin
    tick(INTERVAL*2);before_load=load_count;press(0);tick(30);press(1);tick(30);
    if(load_count!=before_load || commits!=1)$fatal(1,"single image reloaded");
   end else begin

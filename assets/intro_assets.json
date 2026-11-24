@@ -14797,7 +14797,7 @@
       "original_files": [
         {
           "id": "iss039e009160",
-          "path": "external_inputs/input_001/iss039e009160.jpg",
+          "path": "media_source\\素材来源\\原图\\iss039e009160.jpg",
           "sha256": "090c0e3a9d087c52abf26ea46c99aceff9ed2ba9dd6a826165c6610648723e6c"
         }
       ],
@@ -16432,7 +16432,7 @@
       "original_files": [
         {
           "id": "PIA10369",
-          "path": "external_inputs/input_002/PIA10369.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA10369.jpg",
           "sha256": "1ce496e006d7c8e0eeada63d06c36e6d7ae38c66f389fcfcdd84acf54af91dc2"
         }
       ],
@@ -18067,12 +18067,12 @@
       "original_files": [
         {
           "id": "PIA18182",
-          "path": "external_inputs/input_003/PIA18182.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA18182.jpg",
           "sha256": "975b21fc4430fd56a32f267173f7f4b97baf36cb9c70daf8f4a9dc97670a9d80"
         },
         {
           "id": "PIA02210",
-          "path": "external_inputs/input_004/PIA02210.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA02210.jpg",
           "sha256": "49499ead8ec09a53e96d4971aa609cd44d1a7d02831e2dda4c9a5f82ab230420"
         }
       ],
@@ -19707,7 +19707,7 @@
       "original_files": [
         {
           "id": "PIA14113",
-          "path": "external_inputs/input_005/PIA14113.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA14113.jpg",
           "sha256": "46ee5701b75379127822c09ae666c56c649758507d4ab9efc8cf6c5000380279"
         }
       ],
@@ -21344,7 +21344,7 @@
       "original_files": [
         {
           "id": "SDO_171_20260927",
-          "path": "external_inputs/input_006/SDO_171_20260927.jpg",
+          "path": "media_source\\素材来源\\原图\\SDO_171_20260927.jpg",
           "sha256": "5b9a010aa662bf34096f3b62130cf777ab7a715afa4667a8b09106142d76d990"
         }
       ],
@@ -21371,7 +21371,7 @@
       "original_files": [
         {
           "id": "PIA22661",
-          "path": "external_inputs/input_007/PIA22661.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA22661.jpg",
           "sha256": "84b75dda167371176e59698b34725439fced046d2343a0c4d4d775def57019b3"
         }
       ],
@@ -21398,7 +21398,7 @@
       "original_files": [
         {
           "id": "GSFC_20171208_Archive_e000923",
-          "path": "external_inputs/input_008/GSFC_20171208_Archive_e000923.jpg",
+          "path": "media_source\\素材来源\\原图\\GSFC_20171208_Archive_e000923.jpg",
           "sha256": "cc686ba23763568dc0369c2d5336d42317f0ef714384e1d316581715f6820621"
         }
       ],
@@ -21425,7 +21425,7 @@
       "original_files": [
         {
           "id": "GSFC_20171208_Archive_e001210",
-          "path": "external_inputs/input_009/GSFC_20171208_Archive_e001210.jpg",
+          "path": "media_source\\素材来源\\原图\\GSFC_20171208_Archive_e001210.jpg",
           "sha256": "a4d2a9e11f574f4c7f9c8cb377804b59a4dabc32dbf47ac658e28b42b26f82c9"
         }
       ],
@@ -21452,7 +21452,7 @@
       "original_files": [
         {
           "id": "AFRC2017-0233-009",
-          "path": "external_inputs/input_010/AFRC2017-0233-009.jpg",
+          "path": "media_source\\素材来源\\原图\\AFRC2017-0233-009.jpg",
           "sha256": "b6d0e6adf5666334f19e9826ffac66c8f1c144a84856027d35170d6c7cf0c301"
         }
       ],
@@ -21479,7 +21479,7 @@
       "original_files": [
         {
           "id": "iss039e009160",
-          "path": "external_inputs/input_001/iss039e009160.jpg",
+          "path": "media_source\\素材来源\\原图\\iss039e009160.jpg",
           "sha256": "090c0e3a9d087c52abf26ea46c99aceff9ed2ba9dd6a826165c6610648723e6c"
         }
       ],
@@ -21506,7 +21506,7 @@
       "original_files": [
         {
           "id": "GSFC_20171208_Archive_e001545",
-          "path": "external_inputs/input_011/GSFC_20171208_Archive_e001545.png",
+          "path": "media_source\\素材来源\\原图\\GSFC_20171208_Archive_e001545.png",
           "sha256": "ea804fa2b08f26406edc081ba8421a131f3c92025b11ba800e7fdf6e8fb6aae9"
         }
       ],
@@ -21533,7 +21533,7 @@
       "original_files": [
         {
           "id": "PIA00008",
-          "path": "external_inputs/input_012/PIA00008.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA00008.jpg",
           "sha256": "fa261f90492ba1cd6ec3a753e4bed90843c7a89ab8d7b19a0e94841fa0658442"
         }
       ],
@@ -21560,7 +21560,7 @@
       "original_files": [
         {
           "id": "as17-148-22727",
-          "path": "external_inputs/input_013/as17-148-22727.jpg",
+          "path": "media_source\\素材来源\\原图\\as17-148-22727.jpg",
           "sha256": "a68408d781f529434e210cf261c43fb529754659e300bbc9385a71441ecc0a83"
         }
       ],
@@ -21587,7 +21587,7 @@
       "original_files": [
         {
           "id": "GSFC_20171208_Archive_e001939",
-          "path": "external_inputs/input_014/GSFC_20171208_Archive_e001939.jpg",
+          "path": "media_source\\素材来源\\原图\\GSFC_20171208_Archive_e001939.jpg",
           "sha256": "c78d3c21a99a7bc2e3b2900453d8a5c23d0c1e4e9d842c448bdf0ff98229a008"
         }
       ],
@@ -21614,7 +21614,7 @@
       "original_files": [
         {
           "id": "PIA00199",
-          "path": "external_inputs/input_015/PIA00199.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA00199.jpg",
           "sha256": "2917a7bacb3eef1f641511a1b2c326b8247c80a98e6093ab0647c70fd07a047c"
         }
       ],
@@ -21641,7 +21641,7 @@
       "original_files": [
         {
           "id": "PIA10369",
-          "path": "external_inputs/input_002/PIA10369.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA10369.jpg",
           "sha256": "1ce496e006d7c8e0eeada63d06c36e6d7ae38c66f389fcfcdd84acf54af91dc2"
         }
       ],
@@ -21668,7 +21668,7 @@
       "original_files": [
         {
           "id": "PIA21395",
-          "path": "external_inputs/input_016/PIA21395.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA21395.jpg",
           "sha256": "cf8542dd56bfff092038e42020afe8f6325f54ae7406dbe40d3777642d27e550"
         }
       ],
@@ -21695,7 +21695,7 @@
       "original_files": [
         {
           "id": "PIA14934",
-          "path": "external_inputs/input_017/PIA14934.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA14934.jpg",
           "sha256": "343d152625234c0108468e401be69dbe503bb41d341c144bd721b83b07cc10ae"
         }
       ],
@@ -21722,7 +21722,7 @@
       "original_files": [
         {
           "id": "PIA00275",
-          "path": "external_inputs/input_018/PIA00275.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA00275.jpg",
           "sha256": "dfd85f2d0a480f71cbee5ca6d6c57984b9132eab9b6cdac172afea2598b7f174"
         }
       ],
@@ -21749,7 +21749,7 @@
       "original_files": [
         {
           "id": "PIA07759",
-          "path": "external_inputs/input_019/PIA07759.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA07759.jpg",
           "sha256": "db9904a4c341503b8ad79853b5468f547ca48d3efed9d4f48da55fd920b2e631"
         }
       ],
@@ -21776,7 +21776,7 @@
       "original_files": [
         {
           "id": "PIA08630",
-          "path": "external_inputs/input_020/PIA08630.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA08630.jpg",
           "sha256": "ee94f4bd4a9bcc84ecfd95fd1116d2d413802eb1ceac7ab061de1b64ec8c9fcd"
         }
       ],
@@ -21803,12 +21803,12 @@
       "original_files": [
         {
           "id": "PIA18182",
-          "path": "external_inputs/input_003/PIA18182.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA18182.jpg",
           "sha256": "975b21fc4430fd56a32f267173f7f4b97baf36cb9c70daf8f4a9dc97670a9d80"
         },
         {
           "id": "PIA02210",
-          "path": "external_inputs/input_004/PIA02210.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA02210.jpg",
           "sha256": "49499ead8ec09a53e96d4971aa609cd44d1a7d02831e2dda4c9a5f82ab230420"
         }
       ],
@@ -21835,7 +21835,7 @@
       "original_files": [
         {
           "id": "PIA19952",
-          "path": "external_inputs/input_021/PIA19952.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA19952.jpg",
           "sha256": "773b1566c6a08a0ed81bc610d14c62a4c3fa88b00bfde16ee2abe5d24afd81d3"
         }
       ],
@@ -21862,7 +21862,7 @@
       "original_files": [
         {
           "id": "ARROKOTH",
-          "path": "external_inputs/input_022/ARROKOTH.jpg",
+          "path": "media_source\\素材来源\\原图\\ARROKOTH.jpg",
           "sha256": "cc7c70d1baca07ee80c737c9a9455519276c89e56336446f5cfbf2838d027af2"
         }
       ],
@@ -21889,7 +21889,7 @@
       "original_files": [
         {
           "id": "ESA_67P",
-          "path": "external_inputs/input_023/ESA_67P.jpg",
+          "path": "media_source\\素材来源\\原图\\ESA_67P.jpg",
           "sha256": "cc73778c3ca0773dd40d762b496ec80de554da559fa2a79dce6fae4b01422e40"
         }
       ],
@@ -21916,7 +21916,7 @@
       "original_files": [
         {
           "id": "PIA21895",
-          "path": "external_inputs/input_024/PIA21895.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA21895.jpg",
           "sha256": "db4ae8c8f961b9335bbf74cfe9f6176236d9cf64a5741b88fc133425144748a1"
         }
       ],
@@ -21943,7 +21943,7 @@
       "original_files": [
         {
           "id": "PIA23645",
-          "path": "external_inputs/input_025/PIA23645.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA23645.jpg",
           "sha256": "e8db7430b6d350c9a52895e13704b5bb7ef3317b402b3e287d65f20be5dd49d4"
         }
       ],
@@ -21970,7 +21970,7 @@
       "original_files": [
         {
           "id": "PIA14113",
-          "path": "external_inputs/input_005/PIA14113.jpg",
+          "path": "media_source\\素材来源\\原图\\PIA14113.jpg",
           "sha256": "46ee5701b75379127822c09ae666c56c649758507d4ab9efc8cf6c5000380279"
         }
       ],
@@ -21983,59 +21983,59 @@
     }
   ],
   "input_sha256": {
-    "reports/caption_immediate_20261024/baseline.json": "385d098bacf7e7937326936a8308bfac2fe14b0fc6994fa4c5b4b41bf82ce0db",
-    "tools/prepare_solar_media.py": "2351823b5dd82d9e06bdd5230137d976fe87eb12cb48012d37878d8ce4358c92",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\reports\\caption_immediate_20261024\\baseline.json": "385d098bacf7e7937326936a8308bfac2fe14b0fc6994fa4c5b4b41bf82ce0db",
+    "PUBLIC_SOURCE\\.codex\\worktrees\\3d57\\HDMI v1.0\\tools\\prepare_solar_media.py": "2351823b5dd82d9e06bdd5230137d976fe87eb12cb48012d37878d8ce4358c92",
     "C:\\Windows\\Fonts\\msyh.ttc": "d79c55e68b1131eea0cc1c47be4f572d964f28c682e143db2ad09c1e4cb07a3f",
     "C:\\Windows\\Fonts\\msyhbd.ttc": "4508821b3dffe01f0ef5e5326a3e60df705a44633858811f67b6982dce3f6ee6",
-    "external_inputs/input_026/01.BMP": "aa32b0365cafcc806fbf653583658b81dece9531231ed0777c5ebfcd3e78a5e0",
-    "external_inputs/input_006/SDO_171_20260927.jpg": "5b9a010aa662bf34096f3b62130cf777ab7a715afa4667a8b09106142d76d990",
-    "external_inputs/input_027/02.BMP": "0b9261cf3efb3b09531d76097c8c9740384fb90986792db005e0c6f3369d2fc8",
-    "external_inputs/input_007/PIA22661.jpg": "84b75dda167371176e59698b34725439fced046d2343a0c4d4d775def57019b3",
-    "external_inputs/input_028/03.BMP": "d0d4a4ab41d87c6070ad19bd051a7060a827eb7acf12c7db546cf99121bc1425",
-    "external_inputs/input_008/GSFC_20171208_Archive_e000923.jpg": "cc686ba23763568dc0369c2d5336d42317f0ef714384e1d316581715f6820621",
-    "external_inputs/input_029/04.BMP": "c4e1f095e81727bded107c56200bcd54f5c4b9cee274c69b17bd527f6ada66b2",
-    "external_inputs/input_009/GSFC_20171208_Archive_e001210.jpg": "a4d2a9e11f574f4c7f9c8cb377804b59a4dabc32dbf47ac658e28b42b26f82c9",
-    "external_inputs/input_030/05.BMP": "9483167c3b76242c1fbc7a3b6786cdca7e112ce8436c798241a58b14e2dcb6d1",
-    "external_inputs/input_010/AFRC2017-0233-009.jpg": "b6d0e6adf5666334f19e9826ffac66c8f1c144a84856027d35170d6c7cf0c301",
-    "external_inputs/input_031/06.BMP": "2e3e292d131d364ae54f8377635365755bd10bcb5db5a0693c32b991ff27eb16",
-    "external_inputs/input_001/iss039e009160.jpg": "090c0e3a9d087c52abf26ea46c99aceff9ed2ba9dd6a826165c6610648723e6c",
-    "external_inputs/input_032/07.BMP": "7d0e0a7e00017372bfb226662c6ef3848abe0072d89ca5e7708c5c1935115f75",
-    "external_inputs/input_011/GSFC_20171208_Archive_e001545.png": "ea804fa2b08f26406edc081ba8421a131f3c92025b11ba800e7fdf6e8fb6aae9",
-    "external_inputs/input_033/08.BMP": "253bcf5dca6e8767afcacdd003d333760f4b723af7056d8bdffac13ac36d97dd",
-    "external_inputs/input_012/PIA00008.jpg": "fa261f90492ba1cd6ec3a753e4bed90843c7a89ab8d7b19a0e94841fa0658442",
-    "external_inputs/input_034/09.BMP": "90f15ea85d028b718d7b542f1d22ab1814b79dd2b106e6cbc2b6f64ab76d5c67",
-    "external_inputs/input_013/as17-148-22727.jpg": "a68408d781f529434e210cf261c43fb529754659e300bbc9385a71441ecc0a83",
-    "external_inputs/input_035/10.BMP": "7aa3776912678f7eba2a7406ad2f94046e5e408dfa000d63f1fe02d4b3b38188",
-    "external_inputs/input_014/GSFC_20171208_Archive_e001939.jpg": "c78d3c21a99a7bc2e3b2900453d8a5c23d0c1e4e9d842c448bdf0ff98229a008",
-    "external_inputs/input_036/11.BMP": "be1131543ee48980af30b5b4804a0d91296cb3242cfda4a8d9cdb16f1c99fc62",
-    "external_inputs/input_015/PIA00199.jpg": "2917a7bacb3eef1f641511a1b2c326b8247c80a98e6093ab0647c70fd07a047c",
-    "external_inputs/input_037/12.BMP": "e8bb09858174ab26d9b880959834818231d59cf721cb38081327e090be624c9a",
-    "external_inputs/input_002/PIA10369.jpg": "1ce496e006d7c8e0eeada63d06c36e6d7ae38c66f389fcfcdd84acf54af91dc2",
-    "external_inputs/input_038/13.BMP": "0c69245cd6452c6fb7c05ca5578d80fa1ed612f09b4eb7abbb3d47aa6133147f",
-    "external_inputs/input_016/PIA21395.jpg": "cf8542dd56bfff092038e42020afe8f6325f54ae7406dbe40d3777642d27e550",
-    "external_inputs/input_039/14.BMP": "c40e92b53f480cf2599cfe1bd6666025ac9ec2a5ab9be44625240aacd13a17f2",
-    "external_inputs/input_017/PIA14934.jpg": "343d152625234c0108468e401be69dbe503bb41d341c144bd721b83b07cc10ae",
-    "external_inputs/input_040/15.BMP": "52fc4bfb85491cf1c17121bd4cc1192e5c92612acf35fe7ad8b1cbea22c84a3d",
-    "external_inputs/input_018/PIA00275.jpg": "dfd85f2d0a480f71cbee5ca6d6c57984b9132eab9b6cdac172afea2598b7f174",
-    "external_inputs/input_041/16.BMP": "f3834b654f999eafcc2ae8173aa8b3fbd68d85ea0ae8609d5d816b3211ea465e",
-    "external_inputs/input_019/PIA07759.jpg": "db9904a4c341503b8ad79853b5468f547ca48d3efed9d4f48da55fd920b2e631",
-    "external_inputs/input_042/17.BMP": "0b9fc521be6ec415c788ea81d289495ae7d9ad4d87bf441d3f459648ef3ecf3c",
-    "external_inputs/input_020/PIA08630.jpg": "ee94f4bd4a9bcc84ecfd95fd1116d2d413802eb1ceac7ab061de1b64ec8c9fcd",
-    "external_inputs/input_043/18.BMP": "fcb57a196d2d5c28bc4c6f5502359345e2a65e838d3a44f9d97c207461ba2380",
-    "external_inputs/input_003/PIA18182.jpg": "975b21fc4430fd56a32f267173f7f4b97baf36cb9c70daf8f4a9dc97670a9d80",
-    "external_inputs/input_004/PIA02210.jpg": "49499ead8ec09a53e96d4971aa609cd44d1a7d02831e2dda4c9a5f82ab230420",
-    "external_inputs/input_044/19.BMP": "1071cf68815a420d50018400ed9e67a09bb7f8ae925644fd88bfca9966c5c0ff",
-    "external_inputs/input_021/PIA19952.jpg": "773b1566c6a08a0ed81bc610d14c62a4c3fa88b00bfde16ee2abe5d24afd81d3",
-    "external_inputs/input_045/20.BMP": "2fd36d7e4259adcb7984f5b03198655503e303e0d2a71bbda3bfce0fee2ad6f3",
-    "external_inputs/input_022/ARROKOTH.jpg": "cc7c70d1baca07ee80c737c9a9455519276c89e56336446f5cfbf2838d027af2",
-    "external_inputs/input_046/21.BMP": "419230b1befc4ba71e7f5d0909f5f364091f2f7a1ec9ceb73dc2a50b0d5dbffe",
-    "external_inputs/input_023/ESA_67P.jpg": "cc73778c3ca0773dd40d762b496ec80de554da559fa2a79dce6fae4b01422e40",
-    "external_inputs/input_047/22.BMP": "381306f95b0e8b65384f82f61b5fbe67cdc880b212bcc79f140393d4968e89be",
-    "external_inputs/input_024/PIA21895.jpg": "db4ae8c8f961b9335bbf74cfe9f6176236d9cf64a5741b88fc133425144748a1",
-    "external_inputs/input_048/23.BMP": "c2c5cca58501facd2ba3cb9c72de67ced39a87d055d2bbbac46704119758a33c",
-    "external_inputs/input_025/PIA23645.jpg": "e8db7430b6d350c9a52895e13704b5bb7ef3317b402b3e287d65f20be5dd49d4",
-    "external_inputs/input_049/24.BMP": "790970df83aec77ec46c9cd24e63385106050e4767b41699df943098c6888736",
-    "external_inputs/input_005/PIA14113.jpg": "46ee5701b75379127822c09ae666c56c649758507d4ab9efc8cf6c5000380279"
+    "media_source\\TF卡内容\\01.BMP": "aa32b0365cafcc806fbf653583658b81dece9531231ed0777c5ebfcd3e78a5e0",
+    "media_source\\素材来源\\原图\\SDO_171_20260927.jpg": "5b9a010aa662bf34096f3b62130cf777ab7a715afa4667a8b09106142d76d990",
+    "media_source\\TF卡内容\\02.BMP": "0b9261cf3efb3b09531d76097c8c9740384fb90986792db005e0c6f3369d2fc8",
+    "media_source\\素材来源\\原图\\PIA22661.jpg": "84b75dda167371176e59698b34725439fced046d2343a0c4d4d775def57019b3",
+    "media_source\\TF卡内容\\03.BMP": "d0d4a4ab41d87c6070ad19bd051a7060a827eb7acf12c7db546cf99121bc1425",
+    "media_source\\素材来源\\原图\\GSFC_20171208_Archive_e000923.jpg": "cc686ba23763568dc0369c2d5336d42317f0ef714384e1d316581715f6820621",
+    "media_source\\TF卡内容\\04.BMP": "c4e1f095e81727bded107c56200bcd54f5c4b9cee274c69b17bd527f6ada66b2",
+    "media_source\\素材来源\\原图\\GSFC_20171208_Archive_e001210.jpg": "a4d2a9e11f574f4c7f9c8cb377804b59a4dabc32dbf47ac658e28b42b26f82c9",
+    "media_source\\TF卡内容\\05.BMP": "9483167c3b76242c1fbc7a3b6786cdca7e112ce8436c798241a58b14e2dcb6d1",
+    "media_source\\素材来源\\原图\\AFRC2017-0233-009.jpg": "b6d0e6adf5666334f19e9826ffac66c8f1c144a84856027d35170d6c7cf0c301",
+    "media_source\\TF卡内容\\06.BMP": "2e3e292d131d364ae54f8377635365755bd10bcb5db5a0693c32b991ff27eb16",
+    "media_source\\素材来源\\原图\\iss039e009160.jpg": "090c0e3a9d087c52abf26ea46c99aceff9ed2ba9dd6a826165c6610648723e6c",
+    "media_source\\TF卡内容\\07.BMP": "7d0e0a7e00017372bfb226662c6ef3848abe0072d89ca5e7708c5c1935115f75",
+    "media_source\\素材来源\\原图\\GSFC_20171208_Archive_e001545.png": "ea804fa2b08f26406edc081ba8421a131f3c92025b11ba800e7fdf6e8fb6aae9",
+    "media_source\\TF卡内容\\08.BMP": "253bcf5dca6e8767afcacdd003d333760f4b723af7056d8bdffac13ac36d97dd",
+    "media_source\\素材来源\\原图\\PIA00008.jpg": "fa261f90492ba1cd6ec3a753e4bed90843c7a89ab8d7b19a0e94841fa0658442",
+    "media_source\\TF卡内容\\09.BMP": "90f15ea85d028b718d7b542f1d22ab1814b79dd2b106e6cbc2b6f64ab76d5c67",
+    "media_source\\素材来源\\原图\\as17-148-22727.jpg": "a68408d781f529434e210cf261c43fb529754659e300bbc9385a71441ecc0a83",
+    "media_source\\TF卡内容\\10.BMP": "7aa3776912678f7eba2a7406ad2f94046e5e408dfa000d63f1fe02d4b3b38188",
+    "media_source\\素材来源\\原图\\GSFC_20171208_Archive_e001939.jpg": "c78d3c21a99a7bc2e3b2900453d8a5c23d0c1e4e9d842c448bdf0ff98229a008",
+    "media_source\\TF卡内容\\11.BMP": "be1131543ee48980af30b5b4804a0d91296cb3242cfda4a8d9cdb16f1c99fc62",
+    "media_source\\素材来源\\原图\\PIA00199.jpg": "2917a7bacb3eef1f641511a1b2c326b8247c80a98e6093ab0647c70fd07a047c",
+    "media_source\\TF卡内容\\12.BMP": "e8bb09858174ab26d9b880959834818231d59cf721cb38081327e090be624c9a",
+    "media_source\\素材来源\\原图\\PIA10369.jpg": "1ce496e006d7c8e0eeada63d06c36e6d7ae38c66f389fcfcdd84acf54af91dc2",
+    "media_source\\TF卡内容\\13.BMP": "0c69245cd6452c6fb7c05ca5578d80fa1ed612f09b4eb7abbb3d47aa6133147f",
+    "media_source\\素材来源\\原图\\PIA21395.jpg": "cf8542dd56bfff092038e42020afe8f6325f54ae7406dbe40d3777642d27e550",
+    "media_source\\TF卡内容\\14.BMP": "c40e92b53f480cf2599cfe1bd6666025ac9ec2a5ab9be44625240aacd13a17f2",
+    "media_source\\素材来源\\原图\\PIA14934.jpg": "343d152625234c0108468e401be69dbe503bb41d341c144bd721b83b07cc10ae",
+    "media_source\\TF卡内容\\15.BMP": "52fc4bfb85491cf1c17121bd4cc1192e5c92612acf35fe7ad8b1cbea22c84a3d",
+    "media_source\\素材来源\\原图\\PIA00275.jpg": "dfd85f2d0a480f71cbee5ca6d6c57984b9132eab9b6cdac172afea2598b7f174",
+    "media_source\\TF卡内容\\16.BMP": "f3834b654f999eafcc2ae8173aa8b3fbd68d85ea0ae8609d5d816b3211ea465e",
+    "media_source\\素材来源\\原图\\PIA07759.jpg": "db9904a4c341503b8ad79853b5468f547ca48d3efed9d4f48da55fd920b2e631",
+    "media_source\\TF卡内容\\17.BMP": "0b9fc521be6ec415c788ea81d289495ae7d9ad4d87bf441d3f459648ef3ecf3c",
+    "media_source\\素材来源\\原图\\PIA08630.jpg": "ee94f4bd4a9bcc84ecfd95fd1116d2d413802eb1ceac7ab061de1b64ec8c9fcd",
+    "media_source\\TF卡内容\\18.BMP": "fcb57a196d2d5c28bc4c6f5502359345e2a65e838d3a44f9d97c207461ba2380",
+    "media_source\\素材来源\\原图\\PIA18182.jpg": "975b21fc4430fd56a32f267173f7f4b97baf36cb9c70daf8f4a9dc97670a9d80",
+    "media_source\\素材来源\\原图\\PIA02210.jpg": "49499ead8ec09a53e96d4971aa609cd44d1a7d02831e2dda4c9a5f82ab230420",
+    "media_source\\TF卡内容\\19.BMP": "1071cf68815a420d50018400ed9e67a09bb7f8ae925644fd88bfca9966c5c0ff",
+    "media_source\\素材来源\\原图\\PIA19952.jpg": "773b1566c6a08a0ed81bc610d14c62a4c3fa88b00bfde16ee2abe5d24afd81d3",
+    "media_source\\TF卡内容\\20.BMP": "2fd36d7e4259adcb7984f5b03198655503e303e0d2a71bbda3bfce0fee2ad6f3",
+    "media_source\\素材来源\\原图\\ARROKOTH.jpg": "cc7c70d1baca07ee80c737c9a9455519276c89e56336446f5cfbf2838d027af2",
+    "media_source\\TF卡内容\\21.BMP": "419230b1befc4ba71e7f5d0909f5f364091f2f7a1ec9ceb73dc2a50b0d5dbffe",
+    "media_source\\素材来源\\原图\\ESA_67P.jpg": "cc73778c3ca0773dd40d762b496ec80de554da559fa2a79dce6fae4b01422e40",
+    "media_source\\TF卡内容\\22.BMP": "381306f95b0e8b65384f82f61b5fbe67cdc880b212bcc79f140393d4968e89be",
+    "media_source\\素材来源\\原图\\PIA21895.jpg": "db4ae8c8f961b9335bbf74cfe9f6176236d9cf64a5741b88fc133425144748a1",
+    "media_source\\TF卡内容\\23.BMP": "c2c5cca58501facd2ba3cb9c72de67ced39a87d055d2bbbac46704119758a33c",
+    "media_source\\素材来源\\原图\\PIA23645.jpg": "e8db7430b6d350c9a52895e13704b5bb7ef3317b402b3e287d65f20be5dd49d4",
+    "media_source\\TF卡内容\\24.BMP": "790970df83aec77ec46c9cd24e63385106050e4767b41699df943098c6888736",
+    "media_source\\素材来源\\原图\\PIA14113.jpg": "46ee5701b75379127822c09ae666c56c649758507d4ab9efc8cf6c5000380279"
   },
   "generated_rtl_sha256": "ba9ac535878c33b1cd43d20c34635547e7d9908742784268bdb1ff3ec7672e72",
   "media": [

@@ -350,6 +350,7 @@ module video_scroll_osd #(parameter SETTINGS_UI=0,parameter MODE_CONTROL=0,param
   status_row[3'd7-active_x[3:1]];
  wire [23:0] dim_rgb={1'b0,rgb[23:17],1'b0,rgb[15:9],1'b0,rgb[7:1]};
  wire menu_lit=menu_label && status_row[3'd7-active_x[3:1]];
+ wire [2:0] level=(menu_line==1)?settings_frame[7:5]:settings_frame[4:2];
  reg bar_mark;
  always @* begin
   case(level)
@@ -363,7 +364,6 @@ module video_scroll_osd #(parameter SETTINGS_UI=0,parameter MODE_CONTROL=0,param
  end
  wire in_bar=panel && active_x>=10'd336 && active_x<10'd456 &&
   menu_y[4:0]>=4 && menu_y[4:0]<12;
- wire [2:0] level=(menu_line==1)?settings_frame[7:5]:settings_frame[4:2];
  wire bar_lit=in_bar && ((menu_line==1 || menu_line==2)?
   bar_mark:
   ((menu_line==3 && settings_frame[1])||(menu_line==4 && settings_frame[0])||

@@ -2,12 +2,15 @@
 // Actual asset ROMs, text shader and scanline producer. Expected rasters are
 // independently generated from absolute source-coordinate and font equations.
 module tb_gallery_motion_producer;
+ parameter integer CACHE=0;
  reg intro_active=1,slide_active=0,slide_right=0;
  reg [15:0] slide_offset=0;reg [5:0] slide_alpha=32;
  localparam N=640*480;
  reg sys_clk=0,rst_n=0,start=0;
  always #10 sys_clk=~sys_clk;
  reg [31:0] frame_base=0;
+ reg [20:0] back_base=0;
+ localparam BASE_OFFSET=CACHE?4*N:0;
  reg [1:0] topic=0;
  reg [5:0] phase=0;
  wire start_ready,busy,done,error,burst_valid,pixel_valid,pixel_last;
@@ -29,7 +32,7 @@ module tb_gallery_motion_producer;
  wire burst_ready=!responding&&cycles%7!=0&&mode!=4;
  wire pixel_ready=!hold_output&&cycles%11!=0&&cycles%1501<1373&&
   !(pixel_valid&&pixel_last&&last_stall<512);
- frame_intro_prefetch #(.TIMEOUT_CYCLES(1024),.GALLERY_CAPTIONS(1)) dut(.*);
+ frame_intro_prefetch #(.TIMEOUT_CYCLES(1024),.GALLERY_CAPTIONS(1),.CACHE_FRAMES(CACHE)) dut(.*);
  function automatic [23:0] color(input integer address);
   color=(address*37)^(address<<7)^24'h5a39c7;
  endfunction
@@ -38,7 +41,7 @@ module tb_gallery_motion_producer;
   if(!rst_n)begin responding=0;burst_data_valid=0;held=0;end
   if(rst_n&&burst_valid&&burst_ready)begin
    if(burst_words==0||burst_words>32||burst_addr[7:0]+burst_words>256||
-      burst_addr+burst_words>2*N||burst_addr/N!=(burst_addr+burst_words-1)/N)
+      burst_addr<BASE_OFFSET||burst_addr+burst_words>BASE_OFFSET+2*N||burst_addr/N!=(burst_addr+burst_words-1)/N)
     $fatal(1,"invalid source burst");
    command_address=burst_addr;response=0;length=burst_words;responding=1;commands=commands+1;
   end
@@ -65,7 +68,7 @@ module tb_gallery_motion_producer;
   burst_data_valid=0;burst_last=0;burst_error=0;
   if(rst_n&&responding&&mode!=5)begin
    if(cycles%5!=0)begin
-    burst_data_valid=1;burst_data={8'd0,color(command_address+response)};
+    burst_data_valid=1;burst_data={8'd0,color(command_address+response-BASE_OFFSET)};
     burst_last=response==length-1;
     if(mode==1)burst_last=1;
     if(mode==2&&response==length-1)burst_last=0;
@@ -85,7 +88,7 @@ module tb_gallery_motion_producer;
  endtask
  task launch(input integer t,p,b);
   begin
-   wait(start_ready);@(negedge sys_clk);topic=t;phase=p;frame_base=b*N;start=1;
+   wait(start_ready);@(negedge sys_clk);topic=t;phase=p;frame_base=BASE_OFFSET+b*N;back_base=BASE_OFFSET+(1-b)*N;start=1;
    @(negedge sys_clk);start=0;
   end
  endtask
@@ -113,7 +116,7 @@ module tb_gallery_motion_producer;
    pixels=0;last_stall=0;held=0;checking=1;
    launch(case_topic,case_phase,case_bank);
    // Bundled transaction inputs are deliberately changed while it is busy.
-   repeat(40)@(negedge sys_clk);topic=3-case_topic;phase=63-case_phase;frame_base=(1-case_bank)*N;intro_active=!intro_active;slide_active=!slide_active;slide_offset=640-slide_offset;slide_alpha=0;
+   repeat(40)@(negedge sys_clk);topic=3-case_topic;phase=63-case_phase;frame_base=(1-case_bank)*N;back_base=0;intro_active=!intro_active;slide_active=!slide_active;slide_offset=640-slide_offset;slide_alpha=0;
    wait(done);@(negedge sys_clk);checking=0;
    if(pixels!=N||responses-before_responses!=N||!start_ready||busy||error)$fatal(1,"incomplete frame");
    cases=cases+1;
@@ -127,11 +130,11 @@ module tb_gallery_motion_producer;
    before_responses=commands;launch(0,18,0);repeat(4)@(negedge sys_clk);
    if(!error||busy||burst_valid||commands!=before_responses)$fatal(1,"unsafe gallery descriptor accepted");
   end
-  reset_all();@(negedge sys_clk);frame_base=1;start=1;@(negedge sys_clk);start=0;
+  reset_all();@(negedge sys_clk);frame_base=CACHE?32'd2097152:32'd1;start=1;@(negedge sys_clk);start=0;
   if(!error||busy||burst_valid)$fatal(1,"invalid frame base accepted");
   reset_all();launch(0,63,1);wait(burst_data_valid);reset_all();
   if(error||!start_ready||pixel_valid)$fatal(1,"reset during burst left stale data");
-  $display("PASS gallery motion producer totals frames=%0d pixels=%0d commands=%0d responses=%0d; actual text/geometry, both banks, stalls, last-output retirement, row ownership, malformed responses, timeouts, reset",cases,check_pixels,commands,responses);
+  $display("PASS gallery motion producer CACHE=%0d totals frames=%0d pixels=%0d commands=%0d responses=%0d; actual text/geometry, both banks, stalls, last-output retirement, row ownership, malformed responses, timeouts, reset",CACHE,cases,check_pixels,commands,responses);
   $finish;
  end
  initial begin #3000000000;$fatal(1,"intro producer timeout pixels=%0d cases=%0d",pixels,cases);end

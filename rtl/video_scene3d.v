@@ -1,6 +1,5 @@
-// Solar and Earth-Moon wireframes share one signed 8x8 multiplier and canvas.
-// Solar bodies use 50 vertices/64 edges; Earth-Moon uses denser latitude and longitude curves.
-// True XYZ vertices are projected and connected by Bresenham lines during blank.
+// Solar and Earth-Moon share the orbit projector and solid sphere rasterizer.
+// Render during vertical blanking, in back-to-front order.
 // A shared 128x128 canvas is displayed 3x at x=16,y=48; sidebar is separate.
 // Orbit radii/body sizes are deliberately not to physical scale.
 // yaw: camera azimuth in 128 steps. pitch={4-bit elevation,3-bit speed}.
@@ -13,10 +12,8 @@ module video_scene3d(
  output reg ready,output reg fault);
  localparam IDLE=0,CLEAR=1,UPDATE=2,GEOM_X=3,GEOM_Z=4,GEOM_Y=5,
   ORBIT_X=6,ORBIT_Z=7,ORBIT_Y=8,ORBIT_WRITE=9,FIND=10,OBJECT=11,
-  RING_X=13,RING_Y=14,RING_WRITE=15,PHASE_READ=16,
-  VERT_XA=17,VERT_XB=18,VERT_ZA=19,VERT_ZB=20,VERT_YA=21,VERT_YB=22,VERT_SX=23,VERT_SY=24,
-  EDGE0=25,EDGE1=26,LINE_SETUP=27,RASTER=28,EDGE_NEXT=29,
-  OBJECT_DONE=30,RING_Z=31,EDGE_READ_A=12,EDGE_READ_B=32,VERT_LOAD=33,VERT_DA=34,VERT_DB=35;
+  SPHERE_INIT=12,RING_X=13,RING_Y=14,RING_WRITE=15,PHASE_READ=16,
+  SPHERE_ROW=17,SPHERE_PIXEL=18,OBJECT_DONE=30,RING_Z=31;
  localparam integer DRAW_LIMIT=45000;
  reg [5:0] state;
  reg [13:0] clear_address;
@@ -33,10 +30,10 @@ module video_scene3d(
  function [23:0] initial_phase;
   input [3:0] n;
   begin case(n)
-   0:initial_phase=24'h100000;1:initial_phase=24'h380000;
-   2:initial_phase=24'h700000;3:initial_phase=24'ha00000;
-   4:initial_phase=24'hd40000;5:initial_phase=24'h5c0000;
-   6:initial_phase=24'h900000;7:initial_phase=24'h180000;default:initial_phase=24'h200000;
+   0:initial_phase=24'h680000;1:initial_phase=24'hd80000;
+   2:initial_phase=24'h080000;3:initial_phase=24'hba0000;
+   4:initial_phase=24'h3c0000;5:initial_phase=24'h8c0000;
+   6:initial_phase=24'hf00000;7:initial_phase=24'h6a0000;default:initial_phase=24'h200000;
   endcase end
  endfunction
  reg [6:0] vx[0:9],vy[0:9];
@@ -49,6 +46,10 @@ module video_scene3d(
  reg signed [7:0] best_depth;
  reg signed [5:0] line_x,line_y;
  reg [4:0] radius;
+ reg [9:0] radius_squared,row_squared;
+ reg [10:0] distance_squared;
+ reg [4:0] shade_base;
+ reg light_left,light_above;
  reg [4:0] ring_step;
  reg ring_front;
  reg signed [7:0] ring_x,ring_y;
@@ -68,11 +69,17 @@ module video_scene3d(
   end
  endfunction
  function [5:0] orbital_radius;
-  input [2:0] n;
-  begin case(n)
-   0:orbital_radius=9;1:orbital_radius=14;2:orbital_radius=20;3:orbital_radius=26;
-   4:orbital_radius=34;5:orbital_radius=44;6:orbital_radius=52;default:orbital_radius=57;
-  endcase end
+  input [2:0] n;input [1:0] level;reg [17:0] radii;
+  begin
+   // Leave room for the outer bodies while all eight orbits grow at zoom 2.
+   case(n)
+    0:radii={6'd11,6'd14,6'd16}; 1:radii={6'd16,6'd19,6'd21};
+    2:radii={6'd20,6'd23,6'd25}; 3:radii={6'd24,6'd29,6'd31};
+    4:radii={6'd30,6'd35,6'd38}; 5:radii={6'd36,6'd41,6'd44};
+    6:radii={6'd41,6'd46,6'd49}; default:radii={6'd45,6'd50,6'd52};
+   endcase
+   orbital_radius=(level==0)?radii[17:12]:((level==2)?radii[5:0]:radii[11:6]);
+  end
  endfunction
  // One simulated day is 0.1 s at the nominal 59.52 Hz board frame rate.
  // Ratios use mean sidereal periods; integer Q24 increments retain Neptune's
@@ -107,82 +114,47 @@ module video_scene3d(
   endcase
  end
  function [3:0] body_radius;
-  input [3:0] n;
-  begin case(n)
-   0,3:body_radius=6;1,7:body_radius=7;2:body_radius=8;4:body_radius=11;
-   5:body_radius=10;6:body_radius=9;default:body_radius=13;
-  endcase end
- endfunction
- function [2:0] body_color;
-  input [3:0] n;
-  begin case(n)
-   0:body_color=3;1,8:body_color=2;2,6,7:body_color=4;
-   3:body_color=5;default:body_color=6;
-  endcase end
- endfunction
- // Both scenes project XYZ sphere vertices. The overview takes three latitude
- // rings with 16 samples plus two poles from the same unit-sphere ROM.
- // Round to nearest, ties toward +infinity. No body bitmap or flat silhouette.
- reg [7:0] vertex_index;
- reg [8:0] edge_index;
- reg signed [5:0] vertex_px,end_x,end_y;
- reg signed [7:0] vertex_part,vertex_rx,vertex_rz,vertex_ry,vertex_depth,start_depth;
- reg front_pass;
- reg [5:0] line_dx,line_dy;
- reg step_x_negative,step_y_negative;
- reg signed [7:0] line_error;
- function [15:0] overview_edge;
-  input [5:0] n;reg [7:0] a,b;reg [3:0] next_longitude,longitude;
+  input [3:0] n;input [1:0] level;reg [3:0] normal_radius;
   begin
-   next_longitude=n[3:0]+4'd1;longitude={n[3:2],2'b00};
-   if(n<48)begin a={2'd0,n};b={2'd0,n[5:4],next_longitude};end
-   else case(n[1:0])
-    0:begin a=48;b={4'd0,longitude};end
-    1:begin a={4'd0,longitude};b={4'd1,longitude};end
-    2:begin a={4'd1,longitude};b={4'd2,longitude};end
-    default:begin a={4'd2,longitude};b=49;end
+   case(n)
+    0,3:normal_radius=4;1,7:normal_radius=5;2,6:normal_radius=6;
+    4:normal_radius=8;5:normal_radius=7;default:normal_radius=8;
    endcase
-   overview_edge={a,b};
+   body_radius=(level==0)?normal_radius-4'd1:
+    ((level==2)?((n==7)?4'd9:normal_radius+4'd2):normal_radius);
   end
  endfunction
- // Smooth circles: 7 latitude rings with 32 samples, plus two poles.
- // Earth has 16 meridians, Moon 8, preventing an over-dense small Moon.
- wire signed [7:0] sphere_x,sphere_y,sphere_z;
- wire [7:0] overview_vertex=(vertex_index>=48)?(8'd224+{7'd0,vertex_index[0]}):
-  {vertex_index[5:4],1'b1,vertex_index[3:0],1'b0};
- scene_sphere_rom unit_sphere(.clk(sys_clk),.address(scene_q?vertex_index:overview_vertex),.x(sphere_x),.y(sphere_y),.z(sphere_z));
- function [15:0] sphere_edge;
-  input [8:0] n;input moon;reg [7:0] a,b;reg [8:0] segment;
-  reg [4:0] longitude,next_longitude;reg [2:0] band;
-  begin
-   next_longitude=n[4:0]+5'd1;segment=n-9'd224;band=segment[2:0];
-   longitude=moon?{segment[5:3],2'b00}:{segment[6:3],1'b0};
-   if(n<224)begin a=n[7:0];b={n[7:5],next_longitude};end
-   else if(band==0)begin a=224;b={3'd0,longitude};end
-   else if(band==7)begin a={3'd6,longitude};b=225;end
-   else begin a={(band-3'd1),longitude};b={band,longitude};end
-   sphere_edge={a,b};
-  end
+ function [4:0] body_color;
+  input [3:0] n;
+  begin case(n)
+   0:body_color=2;1:body_color=5;2:body_color=8;3:body_color=11;
+   4:body_color=14;5:body_color=17;6:body_color=20;7:body_color=23;
+   8:body_color=26;default:body_color=29;
+  endcase end
  endfunction
- wire [15:0] mesh_edge=scene_q?sphere_edge(edge_index,object_index==9):overview_edge(edge_index[5:0]);
- wire [8:0] work_address=(state==VERT_SY)?(9'd32+{1'b0,vertex_index}):
-  (((state==EDGE0)||(state==EDGE_READ_A))?(9'd32+{1'b0,mesh_edge[15:8]}):
-   (((state==EDGE1)||(state==EDGE_READ_B))?(9'd32+{1'b0,mesh_edge[7:0]}):{5'd0,planet}));
- wire [23:0] work_write_data=(state==VERT_SY)?{4'd0,vertex_depth,scale_product[10:5],vertex_px}:phase_next;
- wire signed [5:0] vertex_x=$signed(phase_read[5:0]),vertex_y=$signed(phase_read[11:6]);
- wire signed [6:0] delta_x=$signed({end_x[5],end_x})-$signed({line_x[5],line_x});
- wire signed [6:0] delta_y=$signed({end_y[5],end_y})-$signed({line_y[5],line_y});
- wire [5:0] abs_dx=delta_x[6]?-$signed(delta_x):delta_x;
- wire [5:0] abs_dy=delta_y[6]?-$signed(delta_y):delta_y;
- wire signed [8:0] twice_error=$signed({line_error[7],line_error})<<<1;
- wire step_line_x=twice_error>-$signed({3'd0,line_dy});
- wire step_line_y=twice_error<$signed({3'd0,line_dx});
- wire signed [7:0] error_dx=step_line_y?$signed({2'd0,line_dx}):8'sd0;
- wire signed [7:0] error_dy=step_line_x?$signed({2'd0,line_dy}):8'sd0;
+ // Scan the bounding square with first differences. If x advances by one,
+ // x^2 advances by 2*x+1; the same recurrence initializes each row.
+ wire [10:0] next_distance=distance_squared+{{4{line_x[5]}},line_x,1'b1};
+ wire [9:0] next_row_squared=row_squared+{{3{line_y[5]}},line_y,1'b1};
+ wire signed [6:0] light_x=light_left?-$signed({line_x[5],line_x}):$signed({line_x[5],line_x});
+ wire signed [6:0] light_y=light_above?-$signed({line_y[5],line_y}):$signed({line_y[5],line_y});
+ wire signed [6:0] light=light_x+light_y;
+ wire signed [6:0] terminator=$signed({3'b000,radius[4:1]});
+ wire dark=light< -terminator||(distance_squared>({1'b0,radius_squared}-{3'b0,radius_squared[9:2]})&&light<0);
+ wire lit=light>terminator;
+ // Muted color accents sit inside the silhouette instead of tracing a grid.
+ wire signed [6:0] coast=$signed({line_x[5],line_x})+($signed({line_y[5],line_y})>>>1);
+ wire earth_land=object_index==2&&
+  ((line_y<0&&coast<=-2&&coast>= -terminator-7'sd3)||
+   (line_y>=0&&line_y<$signed({2'b0,radius[4:1]})&&coast>=2&&coast<=terminator+7'sd2));
+ wire jupiter_band=object_index==4&&(line_y==-2||line_y==2||line_y==3);
+ wire [1:0] shade=dark?2'd0:((lit&&!jupiter_band)?2'd2:2'd1);
+ wire [4:0] sphere_pixel=earth_land&&!dark?5'd21:shade_base+{3'b0,shade};
  wire [5:0] moon_orbit=(zoom_q==0)?6'd32:((zoom_q==2)?6'd48:6'd40);
- wire [4:0] earth_radius=(zoom_q==0)?5'd18:((zoom_q==2)?5'd26:5'd22);
- wire [4:0] moon_radius=(zoom_q==0)?5'd8:((zoom_q==2)?5'd12:5'd10);
- wire [5:0] active_orbit=(planet==8)?moon_orbit:orbital_radius(planet[2:0]);
+ wire [4:0] earth_radius=(zoom_q==0)?5'd14:((zoom_q==2)?5'd22:5'd18);
+ wire [4:0] moon_radius=(zoom_q==0)?5'd6:((zoom_q==2)?5'd10:5'd8);
+ wire signed [7:0] ring_radius=(zoom_q==0)?8'sd10:((zoom_q==2)?8'sd15:8'sd12);
+ wire [5:0] active_orbit=(planet==8)?moon_orbit:orbital_radius(planet[2:0],zoom_q);
  wire [3:0] geom_index=(planet==8)?4'd9:planet;
  reg signed [7:0] operand;
  reg [6:0] angle;
@@ -194,31 +166,16 @@ module video_scene3d(
    GEOM_Y,ORBIT_Y:begin operand=projected_z;angle={2'b00,elevation_q,1'b0};end
    ORBIT_X:angle=orbit_angle+7'd32;
    ORBIT_Z:angle=orbit_angle;
-   RING_X:begin operand=8'sd14;angle={ring_front?1'b0:1'b1,ring_step,1'b0}+7'd32;end
-   RING_Z:begin operand=8'sd14;angle={ring_front?1'b0:1'b1,ring_step,1'b0};end
+   RING_X:begin operand=ring_radius;angle={ring_front?1'b0:1'b1,ring_step,1'b0}+7'd32;end
+   RING_Z:begin operand=ring_radius;angle={ring_front?1'b0:1'b1,ring_step,1'b0};end
    RING_Y:begin operand=projected_z;angle={2'b00,elevation_q,1'b0};end
-   VERT_XA,VERT_ZB:operand=sphere_x;
-   VERT_XB,VERT_ZA:operand=sphere_z;
-   VERT_YA:operand=sphere_y;
-   VERT_YB,VERT_DA:operand=vertex_rz;
-   VERT_DB:operand=sphere_y;
-   VERT_SX:operand=vertex_rx;VERT_SY:operand=vertex_ry;
+   SPHERE_INIT:operand=$signed({3'd0,radius});
    default:;
   endcase
  end
  reg signed [7:0] coefficient;
  always @*begin
-  coefficient=sine(angle);
-  case(state)
-   VERT_XA:coefficient=sine(azimuth_q+7'd32);
-   VERT_XB,VERT_ZB:coefficient=sine(azimuth_q);
-   VERT_ZA:coefficient=sine(azimuth_q+7'd32);
-   VERT_YA:coefficient=sine({2'b00,elevation_q,1'b0}+7'd32);
-   VERT_YB,VERT_DB:coefficient=sine({2'b00,elevation_q,1'b0});
-   VERT_DA:coefficient=sine({2'b00,elevation_q,1'b0}+7'd32);
-   VERT_SX,VERT_SY:coefficient=$signed({3'd0,radius});
-   default:;
-  endcase
+  coefficient=(state==SPHERE_INIT)?$signed({3'd0,radius}):sine(angle);
  end
  // Register the DSP inputs and result, separating lookup, multiply and RAM
  // write into three clock stages. Every math state consumes only a fresh result.
@@ -228,25 +185,22 @@ module video_scene3d(
  reg [1:0] math_wait;
  wire math_ready=math_wait==2;
  wire math_state=(state>=GEOM_X&&state<=ORBIT_Y)||
-  state==RING_X||state==RING_Y||state==RING_Z||
-  (state>=VERT_XA&&state<=VERT_SY)||state==VERT_DA||state==VERT_DB;
+  state==RING_X||state==RING_Y||state==RING_Z||state==SPHERE_INIT;
  wire signed [8:0] body_x=$signed({2'b0,vx[object_index]})+$signed(line_x);
  wire signed [8:0] body_y=$signed({2'b0,vy[object_index]})+$signed(line_y);
  wire signed [8:0] ring_px=$signed({2'b0,vx[5]})+$signed(ring_x);
  wire signed [8:0] ring_py=$signed({2'b0,vy[5]})+$signed(ring_y);
- wire signed [16:0] round_product=$signed({product[15],product})+17'sd64;
- wire signed [16:0] scale_product=$signed({product[15],product})+17'sd16;
  wire can_write=budget<DRAW_LIMIT&&!de2&&!frame_tick;
  wire body_in_bounds=body_x>=0&&body_x<128&&body_y>=0&&body_y<128;
  wire ring_in_bounds=ring_px>=0&&ring_px<128&&ring_py>=0&&ring_py<128;
  wire writing=can_write&&(state==CLEAR||state==ORBIT_WRITE||
-  (state==RASTER&&body_in_bounds)||(state==RING_WRITE&&ring_in_bounds));
+  (state==SPHERE_PIXEL&&body_in_bounds&&distance_squared<={1'b0,radius_squared})||(state==RING_WRITE&&ring_in_bounds));
  wire [13:0] write_address=(state==CLEAR)?clear_address:
   ((state==ORBIT_WRITE)?{orbit_y,orbit_x}:((state==RING_WRITE)?{ring_py[6:0],ring_px[6:0]}:{body_y[6:0],body_x[6:0]}));
- wire [2:0] write_data=(state==CLEAR)?3'd0:((state==ORBIT_WRITE)?3'd1:
-  ((state==RING_WRITE)?3'd6:(scene_q?(!front_pass?3'd3:((object_index==9)?3'd7:3'd4)):body_color(object_index))));
- (* ram_style="bram" *) reg [2:0] canvas[0:16383];
- reg [2:0] read_pixel;
+ wire [4:0] write_data=(state==CLEAR)?5'd0:((state==ORBIT_WRITE)?5'd1:
+  ((state==RING_WRITE)?(ring_front?5'd19:5'd17):sphere_pixel));
+ (* ram_style="bram" *) reg [4:0] canvas[0:16383];
+ reg [4:0] read_pixel;
  wire [9:0] local_x=x-10'd16,local_y=y-10'd48;
  // Radix-8 division by three: each five-input digit table fits a LUT5.
  // Returning the remainder also removes separate font subpixel arithmetic.
@@ -277,8 +231,8 @@ module video_scene3d(
  wire [6:0] canvas_x=divmod_x[8:2],canvas_y=divmod_y[8:2];
  wire [13:0] read_address={canvas_y,canvas_x};
  always @(posedge sys_clk)if(writing)canvas[write_address]<=write_data;
- solar_phase_ram phases(.clk(sys_clk),.address(work_address),.write_enable((state==GEOM_X||state==VERT_SY)&&math_ready&&can_write),
-  .write_data(work_write_data),.read_data(phase_read));
+ solar_phase_ram phases(.clk(sys_clk),.address({5'd0,planet}),.write_enable(state==GEOM_X&&math_ready&&can_write),
+  .write_data(phase_next),.read_data(phase_read));
  always @(posedge pix_clk)read_pixel<=canvas[read_address];
  integer i;
  always @(posedge sys_clk or negedge rst_n)begin
@@ -289,9 +243,8 @@ module video_scene3d(
    scan_index<=0;best_index<=0;object_index<=0;best_depth<=127;
    line_x<=0;line_y<=0;radius<=0;ring_step<=0;ring_front<=0;ring_x<=0;ring_y<=0;
    phase_next<=0;phase_initialized<=0;
-   vertex_index<=0;edge_index<=0;vertex_part<=0;vertex_rx<=0;vertex_rz<=0;vertex_ry<=0;
-   vertex_px<=0;vertex_depth<=0;start_depth<=0;front_pass<=0;end_x<=0;end_y<=0;line_dx<=0;line_dy<=0;
-   step_x_negative<=0;step_y_negative<=0;line_error<=0;
+   radius_squared<=0;row_squared<=0;distance_squared<=0;
+   shade_base<=0;light_left<=0;light_above<=0;
    for(i=0;i<10;i=i+1)begin vx[i]<=64;vy[i]<=64;vz[i]<=0;end
   end else begin
    vs1<=vsync;vs2<=vs1;vs_prev<=vs2;de1<=de;de2<=de1;
@@ -342,55 +295,33 @@ module video_scene3d(
      if(scan_index==9)state<=OBJECT;else scan_index<=scan_index+1'b1;
     end
     OBJECT:begin
-     object_index<=best_index;front_pass<=0;radius<=scene_q?((best_index==2)?earth_radius:moon_radius):{1'd0,body_radius(best_index)};vertex_index<=0;
+     object_index<=best_index;
+     radius<=scene_q?((best_index==2)?earth_radius:moon_radius):{1'b0,body_radius(best_index,zoom_q)};
+     shade_base<=body_color(best_index);
+     light_left<=vx[best_index]>=64;light_above<=vy[best_index]>=64;
      if(!scene_q&&best_index==5)begin ring_front<=0;ring_step<=0;state<=RING_X;end
-     else state<=VERT_LOAD;
+     else state<=SPHERE_INIT;
     end
-    VERT_LOAD:state<=VERT_XA;
-    VERT_XA:begin vertex_part<=round_product>>>7;state<=VERT_XB;end
-    VERT_XB:begin vertex_rx<=vertex_part-(round_product>>>7);state<=VERT_ZA;end
-    VERT_ZA:begin vertex_part<=round_product>>>7;state<=VERT_ZB;end
-    VERT_ZB:begin vertex_rz<=vertex_part+(round_product>>>7);state<=VERT_YA;end
-    VERT_YA:begin vertex_part<=round_product>>>7;state<=VERT_YB;end
-    VERT_YB:begin vertex_ry<=vertex_part+(round_product>>>7);state<=scene_q?VERT_DA:VERT_SX;end
-    VERT_DA:begin vertex_part<=round_product>>>7;state<=VERT_DB;end
-    VERT_DB:begin vertex_depth<=vertex_part-(round_product>>>7);state<=VERT_SX;end
-    VERT_SX:begin vertex_px<=scale_product>>>5;state<=VERT_SY;end
-    VERT_SY:begin
-     if(vertex_index==(scene_q?8'd225:8'd49))begin edge_index<=0;state<=EDGE0;end
-     else begin vertex_index<=vertex_index+1'b1;state<=VERT_LOAD;end
+    SPHERE_INIT:begin
+     radius_squared<=product[9:0];row_squared<=product[9:0];
+     line_y<= -$signed({1'b0,radius});state<=SPHERE_ROW;
     end
-    EDGE0:state<=EDGE_READ_A;
-    EDGE_READ_A:begin line_x<=vertex_x;line_y<=vertex_y;start_depth<=phase_read[19:12];state<=EDGE1;end
-    EDGE1:state<=EDGE_READ_B;
-    EDGE_READ_B:begin
-     end_x<=vertex_x;end_y<=vertex_y;
-     // Dim back curves first, then bright front curves: crossings stay clear.
-     if(!scene_q||(($signed({start_depth[7],start_depth})+$signed({phase_read[19],phase_read[19:12]})>=0)==front_pass))state<=LINE_SETUP;
-     else state<=EDGE_NEXT;
+    SPHERE_ROW:begin
+     line_x<= -$signed({1'b0,radius});
+     distance_squared<={1'b0,row_squared}+{1'b0,radius_squared};
+     state<=SPHERE_PIXEL;
     end
-    LINE_SETUP:begin
-     line_dx<=abs_dx;line_dy<=abs_dy;
-     step_x_negative<=delta_x[6];step_y_negative<=delta_y[6];
-     line_error<=$signed({2'd0,abs_dx})-$signed({2'd0,abs_dy});
-     state<=RASTER;
-    end
-    RASTER:begin
-     // Include both endpoints. Strict comparisons define the tie rule in
-     // every octant; coincident projected vertices write exactly one pixel.
-     if(line_x==end_x&&line_y==end_y)state<=EDGE_NEXT;
-     else begin
-      if(step_line_x)line_x<=step_x_negative?(line_x-1'b1):(line_x+1'b1);
-      if(step_line_y)line_y<=step_y_negative?(line_y-1'b1):(line_y+1'b1);
-      line_error<=line_error+error_dx-error_dy;
+    SPHERE_PIXEL:begin
+     if(line_x==$signed({1'b0,radius}))begin
+      if(line_y==$signed({1'b0,radius}))begin
+       if(!scene_q&&object_index==5)begin ring_front<=1;ring_step<=0;state<=RING_X;end
+       else state<=OBJECT_DONE;
+      end else begin
+       line_y<=line_y+1'b1;row_squared<=next_row_squared;state<=SPHERE_ROW;
+      end
+     end else begin
+      line_x<=line_x+1'b1;distance_squared<=next_distance;
      end
-    end
-    EDGE_NEXT:begin
-     if(edge_index==(scene_q?((object_index==9)?9'd287:9'd351):9'd63))begin
-      if(scene_q&&!front_pass)begin front_pass<=1;edge_index<=0;state<=EDGE0;end
-      else if(!scene_q&&object_index==5)begin ring_front<=1;ring_step<=0;state<=RING_X;end
-      else state<=OBJECT_DONE;
-     end else begin edge_index<=edge_index+1'b1;state<=EDGE0;end
     end
     OBJECT_DONE:begin
      drawn[object_index]<=1;
@@ -402,7 +333,7 @@ module video_scene3d(
     RING_Y:begin ring_y<=product>>>7;state<=RING_WRITE;end
     RING_WRITE:begin
      if(ring_step==31)begin
-      if(!ring_front)state<=VERT_LOAD;else state<=OBJECT_DONE;
+      if(!ring_front)state<=SPHERE_INIT;else state<=OBJECT_DONE;
      end else begin ring_step<=ring_step+1'b1;state<=RING_X;end
     end
     default:;
@@ -412,7 +343,7 @@ module video_scene3d(
  end
  (* async_reg="true" *) reg [1:0] ready_sync,enable_sync;
  reg inside_q,de_q,valid_q,ready_prev,scene_pix;
- reg [1:0] zoom_pix;
+ reg [1:0] zoom_pix;reg [2:0] speed_pix;
  reg panel_q,text_q,zoom_dot_q,zoom_focus_q;wire text_pixel;
  // Load coherent projected centers after a complete canvas arrives. Ten
  // blanking pixel clocks share one anchor calculator; centers stay unchanged
@@ -423,7 +354,7 @@ module video_scene3d(
  reg label_loading;reg [3:0] label_load_index;
  wire [6:0] load_center_x=vx[label_load_index],load_center_y=vy[label_load_index];
  wire [4:0] load_radius=scene_pix?((label_load_index==2)?earth_radius:moon_radius):
-  {1'd0,body_radius(label_load_index)};
+  {1'd0,body_radius(label_load_index,zoom_pix)};
  wire load_above=load_center_y<64||(!scene_pix&&label_load_index==8)||(scene_pix&&label_load_index==2);
  function [6:0] name_x;
   input [6:0] center;input wide;
@@ -458,37 +389,48 @@ module video_scene3d(
  wire [9:0] star_hash=(x^{y[6:0],y[9:7]})+{y[4:0],y[9:5]};
  wire star=star_hash==10'd423&&x[1:0]!=0;
  wire frame_edge=((x==12||x==403)&&y>=44&&y<436)||((y==44||y==435)&&x>=12&&x<404);
- wire panel=de&&x>=432&&x<624&&y>=104&&y<(scene_pix?232:344);
+ wire panel=de&&x>=432&&x<624&&((y>=104&&y<(scene_pix?232:344))||(y>=440&&y<464));
  wire text_window=de&&x>=464&&x<592&&y>=128&&y<(scene_pix?192:320);
  wire [6:0] text_x=x-10'd464;wire [7:0] text_y=y-10'd128;
  wire [7:0] text_row=scene_pix?{2'b11,text_y[5:0]}:text_y;
+ // Keep the multiplier below the compact settings panel and its shadow.
+ wire speed_window=de&&x>=464&&x<592&&y>=448&&y<456;
+ wire [7:0] speed_row=8'd16+{1'b0,speed_pix,4'b0}+{3'b0,speed_pix,2'b0}+{5'b0,y[2:0]};
+ function speed_atlas;
+  input [5:0] row_group;
+  begin case(row_group)
+   4,5,9,10,14,15,19,20,24,25,29,30,34,35,39,40:speed_atlas=1;
+   default:speed_atlas=0;
+  endcase end
+ endfunction
  wire zoom_dot=de&&scene_pix&&y>=208&&y<212&&x>=480&&x<560&&x[4:0]<16;
  wire [1:0] zoom_dot_index=(x-10'd480)>>5;
  // The two extra names occupy otherwise blank margins of the existing bank.
  // Hide those atlas cells in the fixed sidebar while reading them for labels.
  wire label_atlas=(text_row<12||(text_row>=192&&text_row<204))&&text_x<32;
+ wire sidebar_read=speed_window||(text_window&&!label_atlas&&!speed_atlas(text_row[7:2]));
  scene_label_line_cache label_lines(.clk(pix_clk),.rst_n(rst_n),
   .enable(enable_sync[1]&&ready_sync[1]&&!label_loading),.scene_mode(scene_pix),.de(de),.x(x),.y(y),
-  .anchors_x(name_x_bus),.anchors_y(name_y_bus),.font_available(!(text_window&&!label_atlas)),
+  .anchors_x(name_x_bus),.anchors_y(name_y_bus),.font_available(!sidebar_read),
   .font_pixel(text_pixel),.font_request(line_font_request),.font_address(line_font_address),.name_pixel(line_name_pixel));
- scene_sidebar_rom sidebar(.clk(pix_clk),.address(line_font_request?line_font_address:{text_row,text_x}),.pixel(text_pixel));
+ scene_sidebar_rom sidebar(.clk(pix_clk),.address(line_font_request?line_font_address:{(speed_window?speed_row:text_row),text_x}),.pixel(text_pixel));
  always @(posedge pix_clk or negedge rst_n)begin
   if(!rst_n)begin
    ready_sync<=0;enable_sync<=0;inside_q<=0;de_q<=0;valid_q<=0;background_q<=0;
-   ready_prev<=0;scene_pix<=0;zoom_pix<=1;panel_q<=0;text_q<=0;zoom_dot_q<=0;zoom_focus_q<=0;
+   ready_prev<=0;scene_pix<=0;zoom_pix<=1;speed_pix<=3;panel_q<=0;text_q<=0;zoom_dot_q<=0;zoom_focus_q<=0;
    label_loading<=0;label_load_index<=0;
   end else begin
    ready_sync<={ready_sync[0],ready};enable_sync<={enable_sync[0],enable};
    ready_prev<=ready_sync[1];
    if(ready_sync[1]&&!ready_prev)begin
-    scene_pix<=scene_q;zoom_pix<=zoom_q;label_loading<=1;label_load_index<=0;
+    scene_pix<=scene_q;zoom_pix<=zoom_q;speed_pix<=speed_q;label_loading<=1;label_load_index<=0;
    end else if(label_loading)begin
     label_x[label_load_index]<=name_x(load_center_x,label_load_index==6||label_load_index==7);
     label_y[label_load_index]<=name_y(load_center_y,load_radius,load_above);
     if(label_load_index==9)label_loading<=0;else label_load_index<=label_load_index+1'b1;
    end
    inside_q<=window;de_q<=de;valid_q<=enable_sync[1]&&ready_sync[1];
-   panel_q<=panel;text_q<=text_window&&!label_atlas;
+   panel_q<=panel;text_q<=sidebar_read;
    zoom_dot_q<=zoom_dot;zoom_focus_q<=zoom_dot_index==zoom_pix;
    background_q<=frame_edge?24'h3b5363:(star?24'h93a9b4:24'h0b1420);
   end
@@ -496,13 +438,17 @@ module video_scene3d(
  always @*begin
   valid_out=valid_q&&de_q;rgb_out=background_q;
   if(inside_q)case(read_pixel)
-   1:rgb_out=24'h1e3d4d;
-   2:rgb_out=24'hffcf69;
-   3:rgb_out=scene_pix?24'h3b596b:24'hb4b7bc;
-   4:rgb_out=24'h69cce8;
-   5:rgb_out=24'he38464;
-   6:rgb_out=24'hd9c391;
-   7:rgb_out=24'hf4f3df;
+   1:rgb_out=24'h244456;
+   2:rgb_out=24'h515961; 3:rgb_out=24'h8e9394; 4:rgb_out=24'hc9c8bf;
+   5:rgb_out=24'h88603b; 6:rgb_out=24'hc89754; 7:rgb_out=24'heacb86;
+   8:rgb_out=24'h243d66; 9:rgb_out=24'h417db0;10:rgb_out=24'h70bfe3;
+   11:rgb_out=24'h733c39;12:rgb_out=24'hbc684e;13:rgb_out=24'he99068;
+   14:rgb_out=24'h795645;15:rgb_out=24'hb58969;16:rgb_out=24'he3c39e;
+   17:rgb_out=24'h8a704c;18:rgb_out=24'hc49c64;19:rgb_out=24'he5ca93;
+   20:rgb_out=24'h417a89;21:rgb_out=24'h77a89a;22:rgb_out=24'hb4dce0;
+   23:rgb_out=24'h283a72;24:rgb_out=24'h4e73b7;25:rgb_out=24'h84a9e2;
+   26:rgb_out=24'hdf8d3e;27:rgb_out=24'hffbb61;28:rgb_out=24'hffe2a0;
+   29:rgb_out=24'h5c6269;30:rgb_out=24'h9ea4a6;31:rgb_out=24'hdfdfd5;
    default:;
   endcase
   if(panel_q)rgb_out=24'h162737;
@@ -512,7 +458,7 @@ module video_scene3d(
  end
 endmodule
 
-// One EG4 32K block shares 512 atomic 24-bit slots: phases 0..8, vertices 32..257.
+// The nine orbital phases use the original synchronous 24-bit memory interface.
 // Paired adjacent 16-bit addresses update both halves on the same clock edge.
 // NOREG is the synchronous RAM read without an additional output register.
 module solar_phase_ram(input wire clk,input wire [8:0] address,input wire write_enable,

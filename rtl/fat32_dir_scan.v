@@ -86,16 +86,16 @@ module fat32_dir_scan #(parameter integer MAX_FILES=4,TIMEOUT_CYCLES=50_000_000,
  generate if(MAX_WAVS==1)begin:single_wav
   assign {wav_first_cluster,wav_size}=first_wav_metadata;
  end else begin:music_catalog
-  // No reset on metadata RAM. The complete successful scan and bounded count
-  // authorize reads; a switch changes wav_index only after the old reader/FIFO retire.
-  (* ram_style="bram" *) reg [63:0] files[0:MAX_WAVS-1];
-  reg [63:0] selected;
+  // Store the 28-bit FAT32 cluster and the full 32-bit file size.
+  // The successful scan and bounded entry count authorize the synchronous read.
+  (* ram_style="bram" *) reg [59:0] files[0:MAX_WAVS-1];
+  reg [59:0] selected;
   always @(posedge clk)begin
-   if(rst_n && wav_accept)files[wav_count[1:0]]<={entry_cluster,entry_byte,entry_size[23:0]};
+   if(rst_n && wav_accept)files[wav_count[1:0]]<={entry_cluster[27:0],entry_byte,entry_size[23:0]};
    if(rst_n && state==IDLE && !start && !error && wav_found && {1'b0,wav_index}<wav_count)
     selected<=files[wav_index];
   end
-  assign {wav_first_cluster,wav_size}=selected;
+  assign {wav_first_cluster,wav_size}={4'b0,selected};
  end endgenerate
  function [2:0] spc_log2;
   input [7:0] value;
@@ -181,7 +181,8 @@ module fat32_dir_scan #(parameter integer MAX_FILES=4,TIMEOUT_CYCLES=50_000_000,
        if(pos[1:0]==3) state<=FAT_NEXT;
        else begin pos<=pos+1'b1;state<=FETCH;end
       end else begin
-       pos<=pos+1'b1;state<=FETCH;
+       // At byte 511 the parser has finished the sector unless entry handling changes state.
+       pos<=pos+1'b1;state<=(pos==511)?AFTER_SECTOR:FETCH;
        case(pos[4:0])
         0:begin name0<=entry_byte;entry_cluster<=0;entry_cluster_in_bounds<=0;entry_size<=0;
           folder_name_good<=(entry_byte&8'hdf)==8'h54;
@@ -200,7 +201,6 @@ module fat32_dir_scan #(parameter integer MAX_FILES=4,TIMEOUT_CYCLES=50_000_000,
         26:entry_cluster[7:0]<=entry_byte;27:entry_cluster[15:8]<=entry_byte;
         28:entry_size[7:0]<=entry_byte;29:entry_size[15:8]<=entry_byte;30:entry_size[23:16]<=entry_byte;
         31:begin
-         if(pos==511) state<=AFTER_SECTOR;
          if(topic_entry)begin
           if(folders_seen[folder_tag]||!entry_cluster_in_bounds||entry_cluster==root_cluster)begin
            error<=1;busy<=0;done<=1;state<=IDLE;

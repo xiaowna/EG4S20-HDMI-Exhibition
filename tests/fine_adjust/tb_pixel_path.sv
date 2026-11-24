@@ -39,7 +39,7 @@ module tb_fine_pixel_path;
   .audio_flush_request(1'b0),.mode_status(4'b0100),.audio_flush_done(),.music_status(8'd0),
   .rtc_word(49'd0),.rtc_edit_word(54'd0),.home_word(15'd0),.scene_enable(1'b0),
   .scene_yaw(7'd0),.scene_pitch(7'd0),.scene_mode(1'b0),.scene_zoom(2'd1),.scene_ready(),
-  .prepare_word(10'd0),.easter_toggle(1'b0),.red(red),.green(green),.blue(blue),.audio_fault(),.audio_urgent());
+  .prepare_word(10'd0),.red(red),.green(green),.blue(blue),.audio_fault(),.audio_urgent());
  task sys_cycles(input integer n);repeat(n)@(negedge sys_clk);endtask
  task pixel_cycles(input integer n);repeat(n)@(negedge pix_clk);endtask
  task press(input [3:0] value);begin

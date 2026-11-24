@@ -22,7 +22,7 @@ def main():
  bits=asset['bits']
  spec=importlib.util.spec_from_file_location('legacy_home',ROOT/'tests/home/verify.py')
  legacy=importlib.util.module_from_spec(spec);spec.loader.exec_module(legacy)
- files=[ROOT/'rtl'/n for n in ['media_home_control.v','home_album_config.v','video_home.v','home_assets_rom.v','hdmi_media_board_top.v','media_3d_control.v']]
+ files=[ROOT/'rtl'/n for n in ['media_home_control.v','media_help_control.v','home_album_config.v','video_home.v','home_assets_rom.v','hdmi_media_board_top.v','media_3d_control.v']]
  files+=list((ROOT/'assets/branding').glob('*.jpg'))+list(HERE.glob('*.sv'))+[ROOT/'assets/home_assets.json',ROOT/'assets/home_config.json',ROOT/'tools/generate_home_assets.py',ROOT/'tests/home/verify.py',Path(__file__).resolve()]
  # The board test also instantiates the RTC, IR and matrix-key controllers.
  files+=list((ROOT/'rtl').glob('*.v'))+[ROOT/'tests/dmz_media/tb_hdmi_media_board_top.sv',ROOT/'tests/dmz_media/dmz_keyboard_model.sv']
@@ -69,10 +69,10 @@ def main():
      for x,y in points:
       rgb,mask=reference(x,y,word,scene,rate,side);f.write(f'{x} {y} {rgb:06x} {mask}\n');pixels+=1
    for top,names,bench in [
-    ('tb_solar_home_control',['media_home_control.v','home_album_config.v'],'tb_control.sv'),
+    ('tb_solar_home_control',['media_home_control.v','media_help_control.v','home_album_config.v'],'tb_control.sv'),
     ('tb_solar_home_rom',['home_assets_rom.v'],'tb_rom.sv'),
     ('tb_solar_home_pixels',['video_home.v','home_assets_rom.v'],'tb_pixels.sv'),
-    ('tb_solar_board_controls',['rtc_ds1302.v','rtc_set_control.v','hdmi_media_board_top.v','board_key.v','media_control_events.v','media_rotary_encoder.v','media_nec_receiver.v','media_infrared_control.v','media_mode_control.v','media_adjust_control.v','board_matrix_keys.v','media_home_control.v','home_album_config.v','media_3d_control.v'],'tb_board.sv')]:
+    ('tb_solar_board_controls',['rtc_ds1302.v','rtc_set_control.v','hdmi_media_board_top.v','board_key.v','media_control_events.v','media_rotary_encoder.v','media_nec_receiver.v','media_infrared_control.v','media_mode_control.v','media_adjust_control.v','board_matrix_keys.v','media_home_control.v','media_help_control.v','home_album_config.v','media_3d_control.v'],'tb_board.sv')]:
     extra=[ROOT/'tests/dmz_media/tb_hdmi_media_board_top.sv',ROOT/'tests/dmz_media/dmz_keyboard_model.sv'] if top=='tb_solar_board_controls' else []
     run([a.tool_dir/'iverilog.exe','-g2012','-s',top,'-o',tmp/'check.vvp',*[ROOT/'rtl'/n for n in names],HERE/bench,*extra],tmp)
     run([a.tool_dir/'vvp.exe',tmp/'check.vvp'],tmp);checks.append(top)

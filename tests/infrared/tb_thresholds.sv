@@ -4,8 +4,8 @@
 module tb_ir_thresholds;
  reg clk=0,rst_n=0,enable=1,infrared_n=1,key_settings_down=0,key_settings_press=0;
  always #10 clk=~clk;
- wire [3:0] infrared_event,direction_event;wire home_event,back_event,easter_toggle,model_event,learning,learning_enter,paired;wire [2:0] learning_led;
- media_infrared_control dut(.*);
+ wire [3:0] infrared_event,direction_event;wire home_event,back_event,model_event,learning,learning_enter,paired;wire [2:0] learning_led;
+ media_infrared_control dut(.zoom_event(),.gallery_navigation(1'b0),.home_navigation(1'b0),.*);
  task cycles(input integer n);begin repeat(n)@(negedge clk);#2;end endtask
  initial begin
   cycles(4);rst_n=1;cycles(2500);

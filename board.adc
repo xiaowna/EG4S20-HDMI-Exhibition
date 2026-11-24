@@ -8,14 +8,14 @@
 set_pin_assignment { clk50 } { LOCATION = R7; IOSTANDARD = LVCMOS33; }
 set_pin_assignment { rst_n } { LOCATION = A9; IOSTANDARD = LVCMOS33; }
 # Core schematic pages 2/4: SW7=A14, 3.3V. 0 demo / 1 product.
-set_pin_assignment { mode_sw7 } { LOCATION = A14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { mode_sw7 } { PACKREG = OFF; LOCATION = A14; IOSTANDARD = LVCMOS33; }
 # Encoder removed; LEFT40 pins3/4/5 are no longer connected.
 # Matches front P2 numbering in the supplied board pin diagram.
 # Core LEFT40 pin38 (R16): demodulated IR S. V=3.3V rail, G=pin40 GND.
-set_pin_assignment { infrared_n } { LOCATION = R16; IOSTANDARD = LVCMOS33; PULLTYPE = PULLUP; }
+set_pin_assignment { infrared_n } { PACKREG = OFF; LOCATION = R16; IOSTANDARD = LVCMOS33; PULLTYPE = PULLUP; }
 # Core LEFT40 pins7/8/9: DS1302 CLK/DAT/CE(RST). DAT turns around for reads.
 set_pin_assignment { rtc_scl } { LOCATION = T7; IOSTANDARD = LVCMOS33; }
-set_pin_assignment { rtc_sda } { LOCATION = T8; IOSTANDARD = LVCMOS33; PULLTYPE = PULLDOWN; }
+set_pin_assignment { rtc_sda } { PACKREG = OFF; LOCATION = T8; IOSTANDARD = LVCMOS33; PULLTYPE = PULLDOWN; }
 set_pin_assignment { rtc_ce } { LOCATION = T9; IOSTANDARD = LVCMOS33; }
 # Core schematic (2023.pdf), page 2 pin map and page 4 KEY matrix.
 # Logical row0/1/2/3 = E10/C10/F9/D9 (official LCD ADC numbers rows in reverse).
@@ -39,6 +39,6 @@ set_pin_assignment { led[3] } { LOCATION = C15; IOSTANDARD = LVCMOS33; }
 # sd_sck = TF CLK; sd_mosi = TF CMD; sd_miso = TF DAT0; sd_cs = TF DAT3.
 set_pin_assignment { sd_sck } { LOCATION = F15; IOSTANDARD = LVCMOS33; }
 set_pin_assignment { sd_mosi } { LOCATION = F14; IOSTANDARD = LVCMOS33; }
-set_pin_assignment { sd_miso } { LOCATION = D14; IOSTANDARD = LVCMOS33; }
+set_pin_assignment { sd_miso } { PACKREG = OFF; LOCATION = D14; IOSTANDARD = LVCMOS33; }
 set_pin_assignment { sd_cs } { LOCATION = F13; IOSTANDARD = LVCMOS33; }
 

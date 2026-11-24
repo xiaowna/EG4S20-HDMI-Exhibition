@@ -35,7 +35,7 @@ def main():
     f.write(f'{b} {percent} {page} {len(pixels)}\n')
     for x,y,c in pixels:f.write(f'{x} {y} {c:07x}\n')
     count+=len(pixels)
-  board_sources=['rtc_ds1302.v','rtc_set_control.v','hdmi_media_board_top.v','board_key.v','media_control_events.v','media_rotary_encoder.v','media_nec_receiver.v','media_infrared_control.v','media_mode_control.v','media_adjust_control.v','board_matrix_keys.v','media_home_control.v','home_album_config.v','media_3d_control.v']
+  board_sources=['rtc_ds1302.v','rtc_set_control.v','hdmi_media_board_top.v','board_key.v','media_control_events.v','media_rotary_encoder.v','media_nec_receiver.v','media_infrared_control.v','media_mode_control.v','media_adjust_control.v','board_matrix_keys.v','media_home_control.v','media_help_control.v','home_album_config.v','media_3d_control.v']
   for top,names,benches in [
    ('tb_fine_control',['media_adjust_control.v'],[HERE/'tb_control.sv']),
    ('tb_fine_lut',['video_brightness_lut.v'],[HERE/'tb_lut.sv']),

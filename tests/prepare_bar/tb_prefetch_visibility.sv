@@ -8,7 +8,7 @@ module tb_prefetch_visibility;
  reg [1:0] album_first=2;reg [2:0] album_limit=4;
  wire album_ready,album_error,preparing,prepare_progress_valid;integer checks=0;
  always #5 clk=~clk;
- media_prefetch_control #(.INTERVAL_CYCLES(17),.CONTROLLED_AUTOPLAY(1),.ALBUMS(1)) dut(.prefetch_enable(1'b1),.*);
+ media_prefetch_control #(.INTERVAL_CYCLES(17),.CONTROLLED_AUTOPLAY(1),.ALBUMS(1)) dut(.prefetch_enable(1'b1),.fast_pulse(1'b0),.cancel_load(),.fast_commit(),.autoplay_interval(3'd7),.retain_first(),.preserve_album(),.*);
  task tick;begin @(negedge clk);#1;end endtask
  task wait_load;integer i;begin i=0;while(!load_start&&i<100)begin tick;i=i+1;end
   if(!load_start)$fatal(1,"loader never launched");end endtask

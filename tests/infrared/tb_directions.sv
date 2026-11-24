@@ -5,12 +5,12 @@ module tb_ir_directions;
  reg clk=0,rst_n=0,enable=1,infrared_n=1,key_settings_down=0,key_settings_press=0;
  always #10 clk=~clk;
  wire [3:0] infrared_event,direction_event;
- wire home_event,back_event,easter_toggle,model_event,learning,learning_enter,paired;
+ wire home_event,back_event,model_event,learning,learning_enter,paired;
  wire [2:0] learning_led;
  media_infrared_control #(.HOME_KEY(1),.FIXED_ENABLE(1),.LEARN_ENABLE(0),
-  .FIXED_KEYS(48'h000915074316),.EXTRA_ENABLE(1),.BACK_COMMAND(8'h0d),.EGG_A(8'h46),.EGG_B(8'h45),
+  .FIXED_KEYS(48'h000915074316),.EXTRA_ENABLE(1),.BACK_COMMAND(8'h0d),.ZOOM_COMMAND(8'h46),.MODEL_COMMAND(8'h45),
   .DIRECTION_ENABLE(1),.UP_COMMAND(8'h40),.DOWN_COMMAND(8'h19),
-  .FIRST_REPEAT_TICKS(20),.NEXT_REPEAT_TICKS(8)) dut(.*);
+  .FIRST_REPEAT_TICKS(20),.NEXT_REPEAT_TICKS(8)) dut(.zoom_event(),.gallery_navigation(1'b0),.home_navigation(1'b0),.*);
  integer directions[0:3];integer ordinary[0:3];integer homes=0,backs=0,checks=0,i;
  reg [3:0] old_direction=0;
  always @(posedge clk)begin #1;
@@ -54,7 +54,6 @@ module tb_ir_directions;
   send(0,8'h16,0,0,0);send(0,8'h0d,0,0,0);
   if(homes!=1||backs!=1)$fatal(1,"HOME/BACK mapping changed");
   send(0,8'h46,0,0,0);send(0,8'h45,0,0,0);send(0,8'h46,0,0,0);send(0,8'h45,0,0,0);
-  if(!easter_toggle)$fatal(1,"direction mapping interfered with secret sequence");
   send(0,8'hff,0,0,0);send(1,8'h19,0,0,0);
   enable=0;cycles(2);send(0,8'h40,0,0,0);enable=1;cycles(2);
   send(0,8'h40,1,0,0);send(0,8'h40,0,4,0);
@@ -63,7 +62,7 @@ module tb_ir_directions;
   if(!paired||learning)$fatal(1,"reset lost fixed directional map");
   if(directions[0]!=1||directions[1]!=1||directions[2]!=5||directions[3]!=3)
    $fatal(1,"unexpected direction totals %0d/%0d/%0d/%0d",directions[0],directions[1],directions[2],directions[3]);
-  $display("PASS IR directions: %0d directed cases, captured 0040/0019, address binding, one-cycle atomic events, repeat pacing, disable/stale/orphan rejection, HOME/BACK/secret isolation and reset defaults",checks);$finish;
+  $display("PASS IR directions: %0d directed cases, captured 0040/0019, address binding, one-cycle atomic events, repeat pacing, disable/stale/orphan rejection, HOME/BACK/zoom/model isolation and reset defaults",checks);$finish;
  end
  initial begin #2000000;$fatal(1,"direction policy timeout");end
 endmodule

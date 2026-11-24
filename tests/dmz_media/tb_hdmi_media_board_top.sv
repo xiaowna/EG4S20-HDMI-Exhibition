@@ -11,7 +11,7 @@ module board_pll(input wire refclk,reset,output wire extlock,
  always #10 clk2_out=~clk2_out;
 endmodule
 module sd_media_player #(parameter MODE_CONTROL=0,ALBUMS=0,MAX_IMAGES=4,
- parameter INDEX_BITS=(MAX_IMAGES>1)?$clog2(MAX_IMAGES):1,COUNT_BITS=$clog2(MAX_IMAGES+1),SLIDE_TRANSITIONS=0,MAX_WAVS=1,INTRO_ANIMATION=0)(
+ parameter INDEX_BITS=(MAX_IMAGES>1)?$clog2(MAX_IMAGES):1,COUNT_BITS=$clog2(MAX_IMAGES+1),SLIDE_TRANSITIONS=0,MAX_WAVS=1,INTRO_ANIMATION=0,FAST_MANUAL=0,AUTOPLAY_INTERVAL_MENU=0)(
  input wire clk,pix_clk,rst_n,sd_miso,next_pulse,prev_pulse,pause,audio_urgent,wav_ready,
  output wire sd_sck,sd_mosi,sd_cs,de,hsync,vsync,
  output wire [23:0] rgb,
@@ -26,7 +26,7 @@ module sd_media_player #(parameter MODE_CONTROL=0,ALBUMS=0,MAX_IMAGES=4,
  input wire [1:0] wav_index,output wire [2:0] wav_count,
  input wire album_request,album_enable,input wire [INDEX_BITS-1:0] album_first,
  input wire [COUNT_BITS-1:0] album_limit,output wire album_ready,album_error,preparing,output wire [6:0] prepare_pixels,
- input wire intro_enable,intro_pause,output wire [24:0] folder_info);
+ input wire intro_enable,intro_pause,output wire [24:0] folder_info,input wire fast_pulse,input wire [2:0] autoplay_interval);
  assign folder_info=0;
  reg mock_preparing=0;reg [6:0] mock_prepare_pixels=0;
  assign preparing=mock_preparing;assign prepare_pixels=mock_prepare_pixels;
@@ -61,9 +61,9 @@ module sd_media_player #(parameter MODE_CONTROL=0,ALBUMS=0,MAX_IMAGES=4,
  assign slide_transition=SLIDE_TRANSITIONS&&mock_slide;
 endmodule
 module hdmi_av_output #(parameter SETTINGS_UI=0,parameter MODE_CONTROL=0,parameter CHINESE_SUBTITLE=0,parameter CHINESE_SETTINGS=0,parameter SPECTRUM_FFT=0,parameter MUSIC_MENU=0,parameter RTC_OVERLAY=0,parameter RTC_SETTING=0,parameter HOME_UI=0,parameter VIEW_3D=0,parameter FINE_ADJUST=0,parameter PREPARE_UI=0,parameter MUSIC_TOAST=0,
- parameter MAX_IMAGES=4,INDEX_BITS=(MAX_IMAGES>1)?$clog2(MAX_IMAGES):1,COUNT_BITS=$clog2(MAX_IMAGES+1))(
+ parameter HELP_UI=0,parameter MAX_IMAGES=4,INDEX_BITS=(MAX_IMAGES>1)?$clog2(MAX_IMAGES):1,COUNT_BITS=$clog2(MAX_IMAGES+1),AUTOPLAY_INTERVAL_MENU=0)(
  input wire sys_clk,pix_clk,rst_n,audio_enable,
- input wire [2:0] tone_sel,input wire [COUNT_BITS-1:0] image_count,
+ input wire [2:0] tone_sel,help_word,input wire [COUNT_BITS-1:0] image_count,
  input wire [INDEX_BITS-1:0] image_index,
  input wire image_valid,audio_only,wav_valid,wav_playing,video_started,catalog_ready,wav_found,wav_error,
  input wire [47:0] wav_data,
@@ -76,7 +76,7 @@ module hdmi_av_output #(parameter SETTINGS_UI=0,parameter MODE_CONTROL=0,paramet
  output wire wav_ready,audio_fault,audio_urgent,
  output wire [9:0] red,green,blue,
  input wire force_tone,audio_flush_request,input wire [3:0] mode_status,
- output wire audio_flush_done,input wire [7:0] music_status,input wire [48:0] rtc_word,input wire [53:0] rtc_edit_word,input wire [14:0] home_word,input wire scene_enable,input wire [6:0] scene_yaw,scene_pitch,output wire scene_ready,input wire [14:0] fine_adjust_word,input wire [9:0] prepare_word,input wire easter_toggle,input wire scene_mode,input wire [1:0] scene_zoom);
+ output wire audio_flush_done,input wire [7:0] music_status,input wire [48:0] rtc_word,input wire [53:0] rtc_edit_word,input wire [14:0] home_word,input wire scene_enable,input wire [6:0] scene_yaw,scene_pitch,output wire scene_ready,input wire [14:0] fine_adjust_word,input wire [9:0] prepare_word,input wire scene_mode,input wire [1:0] scene_zoom,input wire [3:0] autoplay_word);
  assign scene_ready=1;
  reg [1:0] mock_flush=0;
  always @(posedge sys_clk or negedge rst_n)
@@ -191,8 +191,16 @@ module tb_hdmi_media_board_top;
    $fatal(1,"SW7 product wiring/default manual");
   tap(4);repeat(4)tap(2);
   if(!dut.autoplay_page)$fatal(1,"physical keys cannot reach AUTO menu");
-  tap(1);if(!dut.u_player.auto_enable || !dut.av.mode_status[0])$fatal(1,"AUTO on did not reach player/status");
-  tap(3);if(dut.u_player.auto_enable)$fatal(1,"AUTO off did not reach player");
+  if(dut.u_player.autoplay_interval!=1||dut.av.autoplay_word!=4'b0001)
+   $fatal(1,"default five-second interval did not reach player/status");
+  for(integer interval=0;interval<5;interval=interval+1)begin
+   tap(1);
+   if(!dut.u_player.auto_enable||!dut.u_player.pause||dut.u_player.autoplay_interval!=interval||
+      dut.av.autoplay_word!={1'b1,interval[2:0]})
+    $fatal(1,"AUTO setting did not reach player/status interval=%0d",interval);
+  end
+  tap(1);if(dut.u_player.autoplay_interval!=4)$fatal(1,"AUTO maximum should saturate");
+  repeat(5)tap(3);if(dut.u_player.auto_enable)$fatal(1,"AUTO off did not reach player");
   tap(2);if(!dut.music_page || !dut.av.music_status[7])$fatal(1,"music item/status unreachable");
   tap(1);if(dut.u_player.wav_index!=1 || dut.cfg_music_index!=1 || !dut.music_page || dut.paused)
    $fatal(1,"music selection/focus/pause index=%0d cfg=%0d page=%b paused=%b switching=%b request=%b",dut.u_player.wav_index,dut.cfg_music_index,dut.music_page,dut.paused,dut.mode_switching,dut.cfg_music_request);

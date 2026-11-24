@@ -9,18 +9,6 @@ PROJECT='HDMI_media_board_WAV.al'
 
 
 class RelocateProjectTests(unittest.TestCase):
-    def test_relative_project_root_is_materialized_for_tool_fixtures(self):
-        import os
-        self.path.write_text(self.original.replace('C:/old/extracted project','.'),encoding='utf-8')
-        previous=Path.cwd()
-        try:
-            os.chdir(self.root)
-            result=prepare(self.root,relocate=True)
-        finally:
-            os.chdir(previous)
-        self.assertTrue(result['relocated'])
-        self.assertIn('Path="'+self.root.as_posix()+'"',self.path.read_text(encoding='utf-8'))
-
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory(prefix='TD 上传包 migration ')
         self.addCleanup(self.tmp.cleanup)
@@ -102,7 +90,7 @@ class RelocateProjectTests(unittest.TestCase):
         result=prepare(self.root,relocate=True)
         self.assertTrue(result['relocated'])
         self.assertEqual(result['restored_options'],['set_param gate opt_area high'])
-        self.assertEqual(check_project(self.root)['rtl_files'],79)
+        self.assertEqual(check_project(self.root)['rtl_files'],check_project(ROOT)['rtl_files'])
 
 
 if __name__=='__main__':

@@ -40,3 +40,7 @@ frame_intro_prefetch.v
 audio_fft_memory.v
 scene_sidebar_rom.v
 scene_sphere_rom.v
+media_help_control.v
+video_help.v
+help_assets_rom.v
+anlogic_initialized_rom.v

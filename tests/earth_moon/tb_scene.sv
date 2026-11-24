@@ -8,7 +8,7 @@ module tb_earth_moon;
  always #10 sys_clk=~sys_clk;always #20 pix_clk=~pix_clk;
  video_scene3d dut(.*);
  reg [23:0] before_phase[0:CASES*9-1],after_phase[0:CASES*9-1];
- reg [16:0] modes[0:CASES-1];reg [2:0] golden[0:CASES*16384-1];
+ reg [16:0] modes[0:CASES-1];reg [4:0] golden[0:CASES*16384-1];
  reg [23:0] pixels[0:307199];
  reg [13:0] labels[0:CASES*10-1];
  integer i,j,k,n,elapsed,max_budget=0;
@@ -23,9 +23,7 @@ module tb_earth_moon;
  always @(posedge sys_clk)if(rst_n)begin
   if(dut.writing&&(ready||dut.budget>=45000||dut.write_address>=16384))$fatal(1,"unsafe canvas write");
   if(dut.phases.write_enable)begin
-   if(dut.state==3)begin if(dut.work_address>8)$fatal(1,"phase write escaped 0..8");end
-   else if(dut.state==24)begin if(dut.work_address<32||dut.work_address>257)$fatal(1,"vertex write escaped 32..257");end
-   else $fatal(1,"unexpected work RAM write state");
+   if(dut.state!=3||dut.planet>8)$fatal(1,"write escaped the nine orbital phases");
   end
  end
  always @(posedge pix_clk)if(rst_n&&dut.label_loading)begin
@@ -44,8 +42,8 @@ module tb_earth_moon;
    for(j=0;j<9;j=j+1)begin dut.phases.memory[j]=before_phase[i*9+j];end
    frame();
    for(j=0;j<9;j=j+1)if(dut.phases.memory[j]!==after_phase[i*9+j])$fatal(1,"phase case=%0d n=%0d",i,j);
-   for(j=9;j<32;j=j+1)if(dut.phases.memory[j]!==24'hdeadde)$fatal(1,"unused low RAM overwritten");
-   for(j=258;j<512;j=j+1)if(dut.phases.memory[j]!==24'hdeadde)$fatal(1,"unused high RAM overwritten");
+   for(j=9;j<512;j=j+1)if(dut.phases.memory[j]!==24'hdeadde)$fatal(1,"unused low RAM overwritten");
+
    for(j=0;j<16384;j=j+1)if(dut.canvas[j]!==golden[i*16384+j])$fatal(1,"canvas case=%0d a=%0d got=%0d expected=%0d",i,j,dut.canvas[j],golden[i*16384+j]);
    ticks(40);
    if(dut.label_loading)$fatal(1,"name anchor load did not finish in blanking");

@@ -83,6 +83,34 @@ class GuiProfileTests(unittest.TestCase):
   interp.call('opt_place_fun')
   self.assertEqual(checked,['elaborate','optimize_rtl','optimize_gate','place'])
 
+ def test_read_design_recovers_missing_native_rom_source(self):
+  interp=tkinter.Tcl()
+  calls=[]
+  interp.createcommand('set_param',lambda *args: '')
+  interp.createcommand('get_param',lambda *args: '')
+  interp.createcommand('puts',lambda *args: '')
+  interp.createcommand('reanalyze',lambda *args: calls.append(args) or '')
+  interp.eval(project_tcl())
+  old_cwd=Path.cwd()
+  with tempfile.TemporaryDirectory(prefix='HDMI TD ROM ') as temp:
+   root=Path(temp)
+   run=root/'syn_1'
+   run.mkdir()
+   rom=root/'rtl/anlogic_initialized_rom.v'
+   rom.parent.mkdir()
+   rom.touch()
+   prj=run/'HDMI_media_board_WAV.prj'
+   interp.call('cd',run.as_posix())
+   try:
+    prj.write_text('<Project><File Path="../../rtl/help_assets_rom.v"/></Project>')
+    interp.call('hdmi_gui_read_design','HDMI_media_board_WAV',root.as_posix())
+    self.assertEqual(calls,[('-file',rom.as_posix())])
+    prj.write_text('<Project><File Path="../../rtl/anlogic_initialized_rom.v"/></Project>')
+    interp.call('hdmi_gui_read_design','HDMI_media_board_WAV',root.as_posix())
+    self.assertEqual(calls,[('-file',rom.as_posix())])
+   finally:
+    interp.call('cd',old_cwd.as_posix())
+
  def test_idempotent_and_vendor_code_preserved(self):
   result=patch(FLOW)
   self.assertEqual(patch(result),result)
@@ -163,7 +191,7 @@ class GuiProfileTests(unittest.TestCase):
    (root/'HDMI_media_board_WAV.al').write_text('fixture')
    (root/'tools/td_gui_profile.tcl').write_text(project_tcl())
    try:
-    for relative,stage in [('syn_1','opt_gate'),('phy_1/seed_13','opt_place')]:
+    for relative,stage in [('syn_1','opt_gate'),('phy_1/seed_17','opt_place')]:
      with self.subTest(run=relative):
       run=runs/relative;run.mkdir(parents=True);os.chdir(run);calls.clear()
       interp.eval(dispatch(stage))

@@ -14,14 +14,18 @@ optimize_rtl
 optimize_gate -packarea board_wav_gate.area
 export_db board_wav_gate.db
 # TD's official MultiSeed.tcl uses this parameter. Keep the chosen placement
-# reproducible for the animated gallery build; all timing gates remain active.
-set_param place seed 13
+# reproducible for the manual IR gallery build; timing gates remain active.
+set_param place seed 19
 set_param place pr_strategy 5
-# Match the routed animated gallery profile; keep seed 13 and strategy 5.
+# Match the routed fast gallery profile; keep seed 19 and strategy 5.
 set_param place effort high
 set_param place hfn_opt_effort high
 set_param place opt_timing high
 set_param place post_place_opt high
+set_param place cn_opt_effort high
+set_param place critical_hfn_opt on
+set_param place ce_weight on
+set_param place enhanced_beeline_opt 3
 set_param route post_route_opt high
 set_param route effort routability
 place
@@ -34,4 +38,6 @@ export_db board_wav_pr.db
 bitgen -bit HDMI_media_board_WAV.bit
 puts {BOARD_BUILD_FINISHED}
 exit
+
+
 

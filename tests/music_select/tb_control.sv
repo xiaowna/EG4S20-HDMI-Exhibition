@@ -14,7 +14,7 @@ module tb_music_control;
   .clk(clk),.rst_n(rst_n),.mode_sw7(1'b1),.wav_idle(wav_idle),.audio_flush_done(audio_flush_done),
   .product_mode(product_mode),.switching(switching),.wav_enable(wav_enable),.audio_flush_request(audio_flush_request),
   .mode_change(mode_change),.music_request(cfg_music_request),.music_index(cfg_music_index),.active_music_index(active_music_index));
- media_adjust_control #(.AUTOPLAY_MENU(1),.MUSIC_MENU(1)) menu(.home_play(1'b0),.home_music_index(2'd0),.frame_tick(1'b0),.held_key_n(4'hf),.contrast_index(),.*,.rtc_page(),.rtc_exit(1'b0));
+ media_adjust_control #(.AUTOPLAY_MENU(1),.MUSIC_MENU(1)) menu(.home_play(1'b0),.home_music_index(2'd0),.frame_tick(1'b0),.held_key_n(4'hf),.contrast_index(),.autoplay_interval(),.*,.rtc_page(),.rtc_exit(1'b0));
  always @(posedge clk)if(rst_n)begin
   if(cfg_music_request)requests=requests+1;
   if(mode_change)changes=changes+1;

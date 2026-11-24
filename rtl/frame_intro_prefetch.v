@@ -2,8 +2,8 @@
 // shares its existing asynchronous pixel FIFO with the ordinary/slide engine.
 // A full source scanline is fetched while the previous scanline is composed.
 // Quotient/remainder DDAs select exact floor-scaled source coordinates.
-module frame_intro_prefetch #(parameter MAX_BURST=32,TIMEOUT_CYCLES=1000000,GALLERY_CAPTIONS=0)(
- input wire rst_n,sys_clk,start,input wire [31:0] frame_base,
+module frame_intro_prefetch #(parameter MAX_BURST=32,TIMEOUT_CYCLES=1000000,GALLERY_CAPTIONS=0,CACHE_FRAMES=0)(
+ input wire rst_n,sys_clk,start,input wire [31:0] frame_base,input wire [20:0] back_base,
  input wire [1:0] topic,input wire [5:0] phase,
  output wire start_ready,output reg busy,done,error,
  output wire burst_valid,output wire [31:0] burst_addr,
@@ -98,7 +98,8 @@ module frame_intro_prefetch #(parameter MAX_BURST=32,TIMEOUT_CYCLES=1000000,GALL
  wire [9:0] limit1=(row_remaining<MAX_BURST)?row_remaining:MAX_BURST;
  wire [9:0] limit2=(limit1<{1'b0,sdram_row_remaining})?limit1:{1'b0,sdram_row_remaining};
  wire [9:0] planned=(segment_left<limit2)?segment_left:limit2;
- wire [20:0] other_base=(base==0)?21'd307200:21'd0;
+ reg [20:0] alternate_base;
+ wire [20:0] other_base=CACHE_FRAMES?alternate_base:((base==0)?21'd307200:21'd0);
  wire [20:0] output_row_base=({12'd0,fetch_row}<<9)+({12'd0,fetch_row}<<7);
  // Every style still fetches exactly two source segments per picture row.
  // Reveal keeps both photographs fixed. Banded reveal reverses alternate
@@ -133,7 +134,7 @@ module frame_intro_prefetch #(parameter MAX_BURST=32,TIMEOUT_CYCLES=1000000,GALL
  always @(posedge sys_clk or negedge rst_n)begin
   if(!rst_n)begin
    config_state<=C_IDLE;fetch_state<=F_IDLE;topic_hold<=0;phase_hold<=0;
-   base<=0;source_cursor<=0;request_address<=0;config_index<=0;config_bad<=0;
+   base<=0;alternate_base<=0;source_cursor<=0;request_address<=0;config_index<=0;config_bad<=0;
    config_source<=0;intro_hold<=0;sliding_hold<=0;direction_hold<=0;style_hold<=0;
    distance_hold<=0;segment_left<=0;segment_first<=0;second_address<=0;
    caption_alpha<=0;caption_offset<=0;request_caption<=0;
@@ -151,11 +152,13 @@ module frame_intro_prefetch #(parameter MAX_BURST=32,TIMEOUT_CYCLES=1000000,GALL
    if(!error)begin
     if(burst_error||bad_response)begin error<=1;busy<=0;end
     else if(start&&start_ready)begin
-     if((frame_base!=0&&frame_base!=FRAME_PIXELS)||MAX_BURST<1||MAX_BURST>32||
+     if((CACHE_FRAMES?({32'b0,frame_base}+FRAME_PIXELS>64'd2097152 ||
+          (slide_active&&({11'd0,back_base}+FRAME_PIXELS>32'd2097152||back_base==frame_base))):
+          (frame_base!=0&&frame_base!=FRAME_PIXELS))||MAX_BURST<1||MAX_BURST>32||
         (GALLERY_CAPTIONS&&slide_active&&
          (slide_offset[15:12]!=0||slide_offset[11:10]==3||slide_offset[9:0]>=640)))begin error<=1;end
      else begin
-      busy<=1;base<=frame_base[20:0];topic_hold<=topic;phase_hold<=phase;
+      busy<=1;base<=frame_base[20:0];alternate_base<=back_base;topic_hold<=topic;phase_hold<=phase;
       config_state<=select_intro?C_REQUEST:C_READY;config_index<=0;config_bad<=0;config_source<=select_intro;fetch_state<=F_IDLE;
       intro_hold<=select_intro;
       sliding_hold<=GALLERY_CAPTIONS&&slide_active&&slide_offset[9:0]!=0;

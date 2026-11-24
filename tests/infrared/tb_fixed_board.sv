@@ -21,7 +21,22 @@ module tb_ir_fixed_board;
   end
  endtask
  task video_frame;begin dut.u_player.mock_vsync=0;cycles(10);dut.u_player.mock_vsync=1;cycles(10);end endtask
+ reg [23:0] homepage_pixel;
+ task sample_home;
+  begin
+   force dut.av.osd_x=10'd320;
+   force dut.av.osd_y=10'd224;
+   force dut.de=1;
+   repeat(6)@(negedge dut.pix_clk);
+   if(!dut.av.chinese.home_cover||$isunknown(dut.av.overlay_rgb))
+    $fatal(1,"homepage pixel was not active");
+   release dut.av.osd_x;
+   release dut.av.osd_y;
+   release dut.de;
+  end
+ endtask
  initial begin
+  force dut.view_ready=1;
   dut.u_pll.lock_enable=1;#1;rst_n=0;dut.u_pll.lock_enable=0;
   cycles(8);rst_n=1;cycles(8);dut.u_pll.lock_enable=1;cycles(500);
   dut.u_player.mock_catalog_ready=1;dut.u_player.mock_image_count=24;
@@ -45,14 +60,16 @@ module tb_ir_fixed_board;
   release dut.rtc_busy;frame(8'h0d);
   if(dut.home_visible||dut.setting_active)$fatal(1,"BACK must keep album");
   frame(8'h0d);if(!dut.home_visible)$fatal(1,"BACK from album must return to parent home");
-  frame(8'h46);frame(8'h45);frame(8'h09);frame(8'h46);frame(8'h45);
-  if(dut.ir_easter_toggle)$fatal(1,"wrong sequence triggered secret");
-  frame(8'h46);frame(8'h45);
-  if(!dut.ir_easter_toggle||dut.home_index!=0||dut.setting_active)$fatal(1,"secret completion/navigation leak");
+  video_frame();sample_home();homepage_pixel=dut.av.overlay_rgb;
+  frame(8'h46);frame(8'h45);frame(8'h46);frame(8'h45);
+  video_frame();sample_home();
+  if(dut.av.overlay_rgb!==homepage_pixel)$fatal(1,"scene key sequence changed the settled homepage pixel");
+  repeat(19)video_frame();
+  if(!dut.home_visible||dut.home_index!=0||dut.setting_active||dut.view_active||dut.scene_mode||dut.scene_zoom!=1)
+   $fatal(1,"scene keys must leave the homepage idle");
   rst_n=0;cycles(8);rst_n=1;cycles(500);
   if(!dut.infrared.paired||dut.ir_learning)$fatal(1,"fixed board reset lost remote");
-  if(dut.ir_easter_toggle)$fatal(1,"reset must clear secret");
-  $display("PASS fixed IR board: actual captured six navigation keys, parent BACK versus HOME, calendar-write fences, secret sequence, reset without learning");$finish;
+  $display("PASS fixed IR board: actual captured six navigation keys, parent BACK versus HOME, calendar-write fences, scene keys isolated on home UI and RGB, reset without learning");$finish;
  end
  initial begin #50000000;$fatal(1,"fixed board timeout");end
 endmodule

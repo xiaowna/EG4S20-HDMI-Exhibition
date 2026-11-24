@@ -13,15 +13,15 @@ module tb_dir_bram;
  reg [7:0] rd_data=0;
  wire rd_start,found_valid,busy,done,error,wav_found;
  wire [31:0] rd_lba,found_first_cluster,found_size,wav_first_cluster,wav_size;
- wire [1:0] found_index;
- wire [2:0] found_count;
+ wire [((MAX_FILES>1)?$clog2(MAX_FILES):1)-1:0] found_index;
+ wire [$clog2(MAX_FILES+1)-1:0] found_count;
  fat32_dir_scan #(.MAX_FILES(MAX_FILES),.FIND_WAV(FIND_WAV),
   .TIMEOUT_CYCLES(TIMEOUT),.MAX_DIR_CLUSTERS(4)) dut (.wav_index(2'd0),.wav_count(),.folder_info(),.*);
 `ifdef COMPARE_BASELINE
  wire b_rd_start,b_found_valid,b_busy,b_done,b_error,b_wav_found;
  wire [31:0] b_rd_lba,b_found_first_cluster,b_found_size,b_wav_first_cluster,b_wav_size;
- wire [1:0] b_found_index;
- wire [2:0] b_found_count;
+ wire [((MAX_FILES>1)?$clog2(MAX_FILES):1)-1:0] b_found_index;
+ wire [$clog2(MAX_FILES+1)-1:0] b_found_count;
  fat32_dir_scan_baseline #(.MAX_FILES(MAX_FILES),.FIND_WAV(FIND_WAV),
   .TIMEOUT_CYCLES(TIMEOUT),.MAX_DIR_CLUSTERS(4)) baseline (
   .clk(clk),.rst_n(rst_n),.start(start),.root_lba(root_lba),

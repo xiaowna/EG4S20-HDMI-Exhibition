@@ -1,6 +1,5 @@
 `timescale 1ns/1ps
 module tb_home_pixels;
- reg easter_toggle=0;wire easter_valid;
  reg scene_enable=0,scene_side=0;reg [2:0] scene_rate=3;
  reg clk=0,rst_n=0,de=0,vsync=1;reg [9:0] x=0,y=0;reg [14:0] home_word=0;
  wire [23:0] rgb_out;wire overlay_valid;

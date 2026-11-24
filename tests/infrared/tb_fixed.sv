@@ -1,12 +1,12 @@
 `timescale 1ns/1ps
 module tb_ir_fixed;
  reg clk=0,rst_n=0,enable=1,infrared_n=1,key_settings_down=0,key_settings_press=0;
- wire [3:0] infrared_event,direction_event;wire home_event,back_event,easter_toggle,model_event,learning,learning_enter,paired;wire [2:0] learning_led;
+ wire [3:0] infrared_event,direction_event;wire home_event,back_event,model_event,learning,learning_enter,paired;wire [2:0] learning_led;
  always #10 clk=~clk;
  // Fixture only. The main board must use codes actually captured from its remote.
  media_infrared_control #(.HOME_KEY(1),.FIXED_ENABLE(1),.LEARN_ENABLE(0),
   .FIXED_KEYS(48'h425a1c081545),.LEARN_HOLD_TICKS(4),
-  .FIRST_REPEAT_TICKS(20),.NEXT_REPEAT_TICKS(8)) dut(.*);
+  .FIRST_REPEAT_TICKS(20),.NEXT_REPEAT_TICKS(8)) dut(.zoom_event(),.gallery_navigation(1'b0),.home_navigation(1'b0),.*);
  integer right=0,ok=0,left=0,settings=0,home=0;
  always @(posedge clk)begin #1;
   if(rst_n)begin

@@ -8,7 +8,7 @@ module tb_3d_control;
  wire [6:0] yaw,pitch;
  integer checks=0;
  always #5 clk=~clk;
- media_3d_control #(.HOLD_FRAMES(HOLD),.REPEAT_FRAMES(INTERVAL)) dut(.pause_controls(1'b0),.*);
+ media_3d_control #(.HOLD_FRAMES(HOLD),.REPEAT_FRAMES(INTERVAL)) dut(.pause_controls(1'b0),.menu_speed(2'd0),.*,.zoom_toggle(1'b0));
  task ticks(input integer n);repeat(n)begin @(negedge clk);#1;end endtask
  task frame;begin frame_tick=1;ticks(1);frame_tick=0;ticks(1);end endtask
  task press(input [4:0] k);begin key_stable_n=~k;key_press=k;ticks(1);key_press=0;ticks(1);end endtask
